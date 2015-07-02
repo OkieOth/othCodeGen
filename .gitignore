@@ -1,0 +1,6 @@
+**/build
+**/.gradle
+**/.idea
+**/.nb-*
+**/*.iml
+**/*.log

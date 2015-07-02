@@ -1,0 +1,70 @@
+/*
+Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.
+See the NOTICE file distributed with this work for additional information regarding copyright ownership.  
+The ASF licenses this file to you under the Apache License, Version 2.0 (the "License"); 
+you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations under the License.
+*/
+
+apply plugin: 'java'
+//apply plugin: 'application'
+
+sourceCompatibility = '1.7'
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+project.group = 'de.othsoft.codeGen'
+project.version = '0.1-SNAPSHOT'
+
+
+// NetBeans will automatically add "run" and "debug" tasks relying on the
+// "mainClass" property. You may however define the property prior executing
+// tasks by passing a "-PmainClass=<QUALIFIED_CLASS_NAME>" argument.
+//
+// Note however, that you may define your own "run" and "debug" task if you
+// prefer. In this case NetBeans will not add these tasks but you may rely on
+// your own implementation.
+/*
+if (!hasProperty('mainClass')) {
+    ext.mainClass = 'de.othsoft.codeGen.dummy.Dummy'
+}
+*/
+
+
+repositories {
+    ivy {
+        url "file://${System.getenv('HOME')}/myGradleRepos"
+        layout "pattern", {
+            artifact "[organisation]/[artifact]/[artifact]-[revision].[ext]"
+        }
+    }
+    mavenCentral()
+    // You may define additional repositories, or even remove "mavenCentral()".
+    // Read more about repositories here:
+    //   http://www.gradle.org/docs/current/userguide/dependency_management.html#sec:repositories
+}
+
+
+// to use enter: gradle upload
+uploadArchives {
+    repositories {
+	flatDir {
+		dirs "${System.getenv('HOME')}/myGradleRepos/${project.group}/${project.name}"
+	}
+    }
+}
+
+
+dependencies {    
+    compile 'commons-dbcp:commons-dbcp:1.4'
+    compile 'org.slf4j:slf4j-api:1.7.5'
+    compile 'ch.qos.logback:logback-classic:1.0.9'
+    compile 'de.othsoft.codeGen:jDaoRequirements:0.1-SNAPSHOT'
+    testCompile group: 'junit', name: 'junit', version: '4.10'
+    testCompile 'postgresql:postgresql:9.1-901-1.jdbc4'
+}
+
