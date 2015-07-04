@@ -23,6 +23,8 @@ import de.othsoft.codeGen.types.AttribType
 /**
  *
  * @author eiko
+ * generates the interface for the produced data factory
+ * @see de.othsoft.codeGen.tests.generators.FactoryInterfGenerator_Test
  */
 class FactoryInterfGenerator implements ICodeGenImpl {
     void genCode(DataModel model,Map params) {

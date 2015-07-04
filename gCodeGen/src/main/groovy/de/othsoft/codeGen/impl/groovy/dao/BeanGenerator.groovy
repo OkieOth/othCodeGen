@@ -21,8 +21,10 @@ import de.othsoft.codeGen.impl.helper.FileHelper
 import de.othsoft.codeGen.impl.java.JavaBeanGeneratorBase
 import groovy.text.SimpleTemplateEngine
 
-/**}
+/**
  * @author hulk
+ * This generator produces the basic beans, that are uses by the dao factory
+ * To see how it works take a look at the test class @see de.othsoft.codeGen.tests.generators.BeanGenerator_Test
  */
 class BeanGenerator extends JavaBeanGeneratorBase implements ICodeGenImpl {
     void genCode(DataModel model,Map params) {            
