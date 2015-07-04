@@ -32,6 +32,8 @@ import de.othsoft.codeGen.tests.models.TestModel_MissingViewName
 import de.othsoft.codeGen.tests.models.TestModel_MissingEntityAttribType
 import de.othsoft.codeGen.tests.models.TestModel_MissingEntityAttribName
 import de.othsoft.codeGen.tests.models.TestModel_MissingEntityName
+import de.othsoft.codeGen.tests.models.TestModel_RightListType
+import de.othsoft.codeGen.tests.models.TestModel_WrongListType
 
 import de.othsoft.codeGen.types.CheckModelException
 
@@ -136,4 +138,21 @@ class DataModelBase {
             assertTrue(e.getMessage().contains('for key=\'name\''))
         }
     }
+
+    @Test
+    public void testModelWithWrongListType() {
+        try {
+            TestModel_WrongListType testModel=new TestModel_WrongListType()
+            fail('no exception is thrown')
+        }
+        catch(CheckModelException e) {
+            assertTrue(e.getMessage().contains('AttribType.t_str_list of other'))
+        }
+    }    
+
+    @Test
+    public void testModelWithRightListType() {
+        TestModel_RightListType testModel=new TestModel_RightListType()
+        assertEquals ('EMv1',testModel.shortName)
+    }    
 }

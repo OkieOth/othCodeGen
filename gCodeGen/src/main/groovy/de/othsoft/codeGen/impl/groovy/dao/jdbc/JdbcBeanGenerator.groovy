@@ -22,7 +22,8 @@ import de.othsoft.codeGen.impl.java.JavaBeanGeneratorBase
 import groovy.text.SimpleTemplateEngine
 
 /**
- *
+ * generates bean classes that work with standard jdbc connections. This beans are returned by jdbc data factories
+ * @see de.othsoft.codeGen.tests.generators.JdbcBeanGenerator_Test
  * @author eiko
  */
 class JdbcBeanGenerator extends JavaBeanGeneratorBase implements ICodeGenImpl {
@@ -209,7 +210,7 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}>,
 
     @Override
     public String getInsSql() {
-        return null;
+        return INSERT_SQL;
     }
 
     @Override
@@ -232,6 +233,28 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}>,
         return DEL_SQL;
     }
 
+    private static String getInsColumnList() {
+        return <% aktElem.attribs.each { attrib -> \n\
+            def colName =  attrib.type == strListType ? "${attrib.name.toLowerCase()}_id" : "${attrib.name.toLowerCase()}"
+            if ( attrib != aktElem.attribs.last()) { 
+        %> "${colName}," +
+        <% } else { %> "${colName}"<% } }%>
+        <% aktElem.refs.each { ref -> %> 
+            + ",${ref.name.toLowerCase()}"<% } \n\
+        %>;
+    }
+
+    private static String getInsParameterStr() {
+        return "<% aktElem.attribs.each { attrib -> if ( attrib != aktElem.attribs.last()) { 
+        %>?,<% } else { %>?<% }} %><% aktElem.refs.each { ref -> %>,?<% } %>";
+    }
+
+    static {
+        INSERT_SQL = "INSERT INTO ${model.shortName}_${baseClassName.substring(baseClassName.lastIndexOf('.')+1)} (" +
+            getInsColumnList() + ") VALUES (" + getInsParameterStr() +")";
+    }
+
+    private final static String INSERT_SQL;
     private final static String DEL_SQL="DELETE FROM ${model.shortName}_${baseClassName.substring(baseClassName.lastIndexOf('.')+1)} WHERE id=?";
 }
 '''    

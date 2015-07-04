@@ -245,3 +245,53 @@ class TestModel_MissingEntityName extends DataModel {
         resolveReferences()
     }
 }
+
+class TestModel_WrongListType extends DataModel {
+    TestModel_WrongListType () {
+        version=1
+        shortName='EMv1'
+        
+        entity ( name:'e1', since:1 )
+            attrib ( name:'name', type:AttribType.t_string,
+                    visKey:true,
+                    since:1 )
+            attrib ( name:'caption1', type:AttribType.t_string )
+            attrib ( name:'caption2', type:AttribType.t_string )
+            attrib ( name:'some', type:AttribType.t_str_list )
+
+        view ( name:'v1', since:1 )
+            attrib ( name:'name', type:AttribType.t_string,
+                    visKey:true,
+                    since:1 )
+            attrib ( name:'caption1', type:AttribType.t_string )
+            attrib ( name:'caption2', type:AttribType.t_string )
+            attrib ( name:'other', type:AttribType.t_str_list )
+        
+        resolveReferences()
+    }
+}
+
+class TestModel_RightListType extends DataModel {
+    TestModel_RightListType () {
+        version=1
+        shortName='EMv1'
+        
+        entity ( name:'e1', since:1 )
+            attrib ( name:'name', type:AttribType.t_string,
+                    visKey:true,
+                    since:1 )
+            attrib ( name:'caption1', type:AttribType.t_string )
+            attrib ( name:'caption2', type:AttribType.t_string )
+            attrib ( name:'some', type:AttribType.t_str_list )
+
+        view ( name:'v1', since:1 )
+            attrib ( name:'name', type:AttribType.t_string,
+                    visKey:true,
+                    since:1 )
+            attrib ( name:'caption1', type:AttribType.t_string )
+            attrib ( name:'caption2', type:AttribType.t_string )
+            attrib ( name:'other', type:AttribType.t_string )
+        
+        resolveReferences()
+    }
+}

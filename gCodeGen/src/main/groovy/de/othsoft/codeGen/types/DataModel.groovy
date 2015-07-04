@@ -145,6 +145,9 @@ class DataModel {
         String type = params.type
         if (!type)
             type = getDefaultTypeOrThrowException(name)
+            
+        if ((type == "t_str_list") && (!(lastUsed instanceof IRefCont )))
+            throw new CheckModelException("AttribType.t_str_list of ${name} is only for entities allowed")
         boolean visKey = params.visKey ? true : false
         boolean needed = params.needed ? true : false
         int since = params.since ? params.since : 1
