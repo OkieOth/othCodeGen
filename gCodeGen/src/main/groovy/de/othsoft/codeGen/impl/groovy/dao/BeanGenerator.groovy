@@ -105,7 +105,7 @@ import de.othsoft.codeGen.requirements.beans.UpdatableBean;
 /**
  * $descr
  */<%}%>
-public class ${className} extends UpdatableBean implements Serializable {
+public class ${className} extends UpdatableBean<${className}> implements Serializable {
     static final long serialVersionUID = ${model.version}L;
 
     public final static String ID_ID="${aktElem.id}.a0";
@@ -170,6 +170,22 @@ public class ${className} extends UpdatableBean implements Serializable {
     }
     <% } } %>
 
+    public ${className} clone() {
+        ${className} newObj = new ${className}();
+    <% aktElem.attribs.each { attrib -> if ( attrib.type == strListType ) { %>
+        newObj.set${attrib.getNameWithFirstLetterUpper()}Id(${attrib.getNameWithFirstLetterLower()}Id);
+        newObj.set${attrib.getNameWithFirstLetterUpper()}IdTxt(${attrib.getNameWithFirstLetterLower()}IdTxt);
+    <% } else { %>
+        newObj.set${attrib.getNameWithFirstLetterUpper()}(${attrib.getNameWithFirstLetterLower()});
+    <% } } %>
+    <% aktElem.refs.each { ref -> %>
+        newObj.set${ref.getUpperCamelCaseName()}(${ref.getLowerCamelCaseName()});
+    <% if (ref.entity.hasVisKey()) { %>
+        newObj.set${ref.getUpperCamelCaseName()}Txt(${ref.getLowerCamelCaseName()}Txt);
+    <% } } %>
+        newObj.resetChangedWithoutSaveOriginalState();
+        return newObj;
+    }
 }
 '''    
 
@@ -189,7 +205,7 @@ import de.othsoft.codeGen.requirements.beans.UpdatableBean;
 /**
  * $descr
  */<%}%>
-public class ${className} extends UpdatableBean implements Serializable {
+public class ${className} extends UpdatableBean<${className}> implements Serializable {
     static final long serialVersionUID = ${model.version}L;
 
     public final static String ID_ID="${aktElem.id}.a0";
@@ -248,6 +264,16 @@ public class ${className} extends UpdatableBean implements Serializable {
     public void setReihenf(Integer reihenf) {
         this.reihenf = reihenf;
         setChanged();
+    }
+
+    public ${className} clone() {
+        ${className} newObj = new ${className}();
+        newObj.setBez(bez);
+        newObj.setLang(lang);
+        newObj.setAktiv(aktiv);
+        newObj.setReihenf(reihenf);\n\
+        newObj.resetChangedWithoutSaveOriginalState();
+        return newObj;
     }
 }
 '''    

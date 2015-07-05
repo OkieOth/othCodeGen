@@ -133,19 +133,29 @@ public class ${className} extends ${baseClassName} {
     ConnectionFactory connectionFactory;
     private static final Logger log = LoggerFactory.getLogger(${className}.class);
 
-    public ${className} (ConnectionFactory connectionFactory) {
+    public ${className} (ConnectionFactory connectionFactory,boolean changeble) {
         super();
+        this.changeble = changeble;
         this.connectionFactory = connectionFactory;
     }
 
-    public static ${baseClassName} byId(ConnectionFactory connectionFactory,UserData userData,CmdData cmdData,int id) throws DaoException {
+    public static ${baseClassName} byId(ConnectionFactory connectionFactory,boolean changeble,UserData userData,CmdData cmdData,int id) throws DaoException {
         SQLExecWrapper<${baseClassName}> wrapper = new SQLExecWrapper(log);
-        return wrapper.byId(wrapperUser,connectionFactory,userData,cmdData,id);
+        ${baseClassName} ret = wrapper.byId(wrapperUser,connectionFactory,userData,cmdData,id);
+        if (ret!=null && changeble)
+            ret.setChangeble(changeble);
+        return ret;
     }
 
-    public static List<${baseClassName}> get(ConnectionFactory connectionFactory,UserData userData,CmdData cmdData,List<QueryRestr> restr,List<QuerySort> sort,int offset,int count) throws DaoException {
+    public static List<${baseClassName}> get(ConnectionFactory connectionFactory,boolean changeble,UserData userData,CmdData cmdData,List<QueryRestr> restr,List<QuerySort> sort,int offset,int count) throws DaoException {
         SQLExecWrapper<${baseClassName}> wrapper = new SQLExecWrapper(log);
-        return wrapper.get(wrapperUser,connectionFactory,userData,cmdData,restr,sort,offset,count);
+        List<${baseClassName}> retList = wrapper.get(wrapperUser,connectionFactory,userData,cmdData,restr,sort,offset,count);
+        if (changeble) {
+            for (${baseClassName} ret : retList) {
+                ret.setChangeble(changeble);
+            }
+        }
+        return retList;
     }
 
     public static int count(ConnectionFactory connectionFactory,UserData userData,CmdData cmdData,List<QueryRestr> restr) throws DaoException {
@@ -154,19 +164,24 @@ public class ${className} extends ${baseClassName} {
     }
 
     @Override
-    public void insert(CmdData cmdData,UserData userData) throws DaoException {
+    public void insert(CmdData cmdData,UserData userData) throws DaoException {\n\\n\
+        if (!changeble) throw new DaoException ("this object is not changeble");
+        // TODO resolve needed text references to their ids
         SQLExecWrapper<${baseClassName}> wrapper = new SQLExecWrapper(log);
         wrapper.insert(wrapperUser,this,connectionFactory,userData,cmdData);
     }
 
     @Override
     public void delete(CmdData cmdData,UserData userData) throws DaoException {
+        if (!changeble) throw new DaoException ("this object is not changeble");
         SQLExecWrapper<${baseClassName}> wrapper = new SQLExecWrapper(log);
         wrapper.delete(wrapperUser,getId(),connectionFactory,userData,cmdData);
     }
 
     @Override
     public void update(CmdData cmdData,UserData userData) throws DaoException {
+        if (!changeble) throw new DaoException ("this object is not changeble");
+        // TODO resolve needed text references to their ids
         SQLExecWrapper<${baseClassName}> wrapper = new SQLExecWrapper(log);
         wrapper.update(wrapperUser,this,connectionFactory,userData,cmdData);
     }
@@ -234,13 +249,13 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}>,
     }
 
     private static String getInsColumnList() {
-        return <% aktElem.attribs.each { attrib -> \n\
+        return <% aktElem.attribs.each { attrib -> 
             def colName =  attrib.type == strListType ? "${attrib.name.toLowerCase()}_id" : "${attrib.name.toLowerCase()}"
             if ( attrib != aktElem.attribs.last()) { 
         %> "${colName}," +
         <% } else { %> "${colName}"<% } }%>
         <% aktElem.refs.each { ref -> %> 
-            + ",${ref.name.toLowerCase()}"<% } \n\
+            + ",${ref.name.toLowerCase()}"<% } 
         %>;
     }
 
@@ -295,19 +310,29 @@ public class ${className} extends ${baseClassName} {
     ConnectionFactory connectionFactory;
     private static final Logger log = LoggerFactory.getLogger(${className}.class);
 
-    public ${className} (ConnectionFactory connectionFactory) {
+    public ${className} (ConnectionFactory connectionFactory,boolean changeble) {
         super();
+        this.changeble = changeble;
         this.connectionFactory = connectionFactory;
     }
 
-    public static ${baseClassName} byId(ConnectionFactory connectionFactory,UserData userData,CmdData cmdData,int id) throws DaoException {
+    public static ${baseClassName} byId(ConnectionFactory connectionFactory,boolean changeble,UserData userData,CmdData cmdData,int id) throws DaoException {
         SQLExecWrapper<${baseClassName}> wrapper = new SQLExecWrapper(log);
-        return wrapper.byId(wrapperUser,connectionFactory,userData,cmdData,id);
+        ${baseClassName} ret = wrapper.byId(wrapperUser,connectionFactory,userData,cmdData,id);
+        if (ret!=null && changeble)
+            ret.setChangeble(changeble);
+        return ret;
     }
 
-    public static List<${baseClassName}> get(ConnectionFactory connectionFactory,UserData userData,CmdData cmdData,List<QueryRestr> restr,List<QuerySort> sort,int offset,int count) throws DaoException {
+    public static List<${baseClassName}> get(ConnectionFactory connectionFactory,boolean changeble,UserData userData,CmdData cmdData,List<QueryRestr> restr,List<QuerySort> sort,int offset,int count) throws DaoException {
         SQLExecWrapper<${baseClassName}> wrapper = new SQLExecWrapper(log);
-        return wrapper.get(wrapperUser,connectionFactory,userData,cmdData,restr,sort,offset,count);
+        List<${baseClassName}> retList = wrapper.get(wrapperUser,connectionFactory,userData,cmdData,restr,sort,offset,count);
+        if (changeble) {
+            for (${baseClassName} ret : retList) {
+                ret.setChangeble(changeble);
+            }
+        }
+        return retList;
     }
 
     public static int count(ConnectionFactory connectionFactory,UserData userData,CmdData cmdData,List<QueryRestr> restr) throws DaoException {
@@ -317,18 +342,21 @@ public class ${className} extends ${baseClassName} {
 
     @Override
     public void insert(CmdData cmdData,UserData userData) throws DaoException {
+        if (!changeble) throw new DaoException ("this object is not changeble");
         SQLExecWrapper<${baseClassName}> wrapper = new SQLExecWrapper(log);
         wrapper.insert(wrapperUser,this,connectionFactory,userData,cmdData);
     }
 
     @Override
     public void delete(CmdData cmdData,UserData userData) throws DaoException {
+        if (!changeble) throw new DaoException ("this object is not changeble");
         SQLExecWrapper<${baseClassName}> wrapper = new SQLExecWrapper(log);
         wrapper.delete(wrapperUser,getId(),connectionFactory,userData,cmdData);
     }
 
     @Override
     public void update(CmdData cmdData,UserData userData) throws DaoException {
+        if (!changeble) throw new DaoException ("this object is not changeble");
         SQLExecWrapper<${baseClassName}> wrapper = new SQLExecWrapper(log);
         wrapper.update(wrapperUser,this,connectionFactory,userData,cmdData);
     }

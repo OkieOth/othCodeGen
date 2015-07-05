@@ -93,44 +93,44 @@ import org.slf4j.LoggerFactory;
 public class DataFactory_${model.shortName} implements IJdbcDataFactory_${model.shortName} {\n\
 <% model.entities.each { entity -> %>
     @Override
-    public ${entity.value.name} create_${entity.value.name}() {
-        return new ${packageName}.beans.Jdbc_${entity.value.name} (connectionFactory);
+    public ${entity.value.name} create_${entity.value.name}(boolean changeble) {
+        return new ${packageName}.beans.Jdbc_${entity.value.name} (connectionFactory,changeble);
     }
 
     @Override
-    public ${entity.value.name} byId_${entity.value.name}(UserData userData,CmdData cmdData,int id) throws DaoException {
-        return ${packageName}.beans.Jdbc_${entity.value.name}.byId(connectionFactory,userData,cmdData,id);
+    public ${entity.value.name} byId_${entity.value.name}(boolean changeble,UserData userData,CmdData cmdData,int id) throws DaoException {
+        return ${packageName}.beans.Jdbc_${entity.value.name}.byId(connectionFactory,changeble,userData,cmdData,id);
     }
 
     @Override
-    public List<${entity.value.name}> get_${entity.value.name}(UserData userData,CmdData cmdData,List<QueryRestr> restr,List<QuerySort> sort,int offset,int count) throws DaoException {
-        return ${packageName}.beans.Jdbc_${entity.value.name}.get(connectionFactory,userData,cmdData,restr,sort,offset,count);
+    public List<${entity.value.name}> get_${entity.value.name}(boolean changeble,UserData userData,CmdData cmdData,List<QueryRestr> restr,List<QuerySort> sort,int offset,int count) throws DaoException {
+        return ${packageName}.beans.Jdbc_${entity.value.name}.get(connectionFactory,changeble,userData,cmdData,restr,sort,offset,count);
     }
 
     @Override
-    public int count_${entity.value.name}(UserData userData,CmdData cmdData,List<QueryRestr> restr,List<QuerySort> sort) throws DaoException {
+    public int count_${entity.value.name}(UserData userData,CmdData cmdData,List<QueryRestr> restr) throws DaoException {
         return ${packageName}.beans.Jdbc_${entity.value.name}.count(connectionFactory,userData,cmdData,restr);
     }
 <% } %>
 
 <% model.entities*.value.attribs*.findAll { it.type == strListType }*.each { attrib -> %>
     @Override
-    public ${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()} create_${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()}() {
-        return new ${packageName}.beans.Jdbc_${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()} (connectionFactory);
+    public ${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()} create_${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()}(boolean changeble) {
+        return new ${packageName}.beans.Jdbc_${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()} (connectionFactory,changeble);
     }
 
     @Override
-    public ${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()} byId_${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()}(UserData userData,CmdData cmdData,int id) throws DaoException {
-        return ${packageName}.beans.Jdbc_${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()}.byId(connectionFactory,userData,cmdData,id);
+    public ${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()} byId_${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()}(boolean changeble,UserData userData,CmdData cmdData,int id) throws DaoException {
+        return ${packageName}.beans.Jdbc_${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()}.byId(connectionFactory,changeble,userData,cmdData,id);
     }
 
     @Override
-    public List<${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()}> get_${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()}(UserData userData,CmdData cmdData,List<QueryRestr> restr,List<QuerySort> sort,int offset,int count) throws DaoException {
-        return ${packageName}.beans.Jdbc_${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()}.get(connectionFactory,userData,cmdData,restr,sort,offset,count);
+    public List<${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()}> get_${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()}(boolean changeble,UserData userData,CmdData cmdData,List<QueryRestr> restr,List<QuerySort> sort,int offset,int count) throws DaoException {
+        return ${packageName}.beans.Jdbc_${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()}.get(connectionFactory,changeble,userData,cmdData,restr,sort,offset,count);
     }
 
     @Override
-    public int count_${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()}(UserData userData,CmdData cmdData,List<QueryRestr> restr,List<QuerySort> sort) throws DaoException {
+    public int count_${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()}(UserData userData,CmdData cmdData,List<QueryRestr> restr) throws DaoException {
         return ${packageName}.beans.Jdbc_${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()}.count(connectionFactory,userData,cmdData,restr);
     }
 <% } %>
@@ -152,7 +152,7 @@ public class DataFactory_${model.shortName} implements IJdbcDataFactory_${model.
     }
 
     @Override
-    public int count_${view.value.name}(UserData userData,CmdData cmdData,List<QueryRestr> restr,List<QuerySort> sort) throws DaoException {
+    public int count_${view.value.name}(UserData userData,CmdData cmdData,List<QueryRestr> restr) throws DaoException {
         return ${packageName}.beans.Jdbc_${view.value.name}.count(connectionFactory,userData,cmdData,restr);
     }
 <% } %>

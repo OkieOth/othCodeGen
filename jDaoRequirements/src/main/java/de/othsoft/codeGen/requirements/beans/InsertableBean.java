@@ -23,11 +23,11 @@ import de.othsoft.codeGen.requirements.UserData;
  */
 public class InsertableBean extends IdBean {
     public void insert(CmdData cmdData,UserData userData) throws DaoException {
-        // Dummy-Implementierung - wird in abgeleiteten Klassen überschrieben
+        // dummy implementation ... saves generated code
     }
-
+    
     public void delete(CmdData cmdData,UserData userData) throws DaoException {
-        // Dummy-Implementierung - wird in abgeleiteten Klassen überschrieben
+        // dummy implementation ... saves generated code        
     }
 
 }

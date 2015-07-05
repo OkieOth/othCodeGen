@@ -75,9 +75,6 @@ import de.othsoft.codeGen.requirements.CmdData;
 import de.othsoft.codeGen.requirements.DaoException;
 
 import java.util.List;
-import java.sql.Connection;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public interface IJdbcDataFactory_${model.shortName} extends IDataFactory_${model.shortName} {
     CmdData startTransaction() throws DaoException;

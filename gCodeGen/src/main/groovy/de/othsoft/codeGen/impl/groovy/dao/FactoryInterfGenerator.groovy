@@ -75,38 +75,33 @@ class FactoryInterfGenerator implements ICodeGenImpl {
 
 import ${beanPackage}.*;
 import de.othsoft.codeGen.requirements.CmdData;
-import de.othsoft.codeGen.requirements.jdbc.JdbcCmdData;
-import de.othsoft.codeGen.requirements.jdbc.ConnectionFactory;
 import de.othsoft.codeGen.requirements.DaoException;
 import de.othsoft.codeGen.requirements.QueryRestr;
 import de.othsoft.codeGen.requirements.QuerySort;
 import de.othsoft.codeGen.requirements.UserData;
 
 import java.util.List;
-import java.sql.Connection;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public interface IDataFactory_${model.shortName} {
 <% model.entities.each { entity -> %>
-    ${entity.value.name} create_${entity.value.name}();
-    ${entity.value.name} byId_${entity.value.name}(UserData userData,CmdData cmdData,int id) throws DaoException;
-    List<${entity.value.name}> get_${entity.value.name}(UserData userData,CmdData cmdData,List<QueryRestr> restr,List<QuerySort> sort,int offset,int count) throws DaoException;
-    int count_${entity.value.name}(UserData userData,CmdData cmdData,List<QueryRestr> restr,List<QuerySort> sort) throws DaoException;
+    ${entity.value.name} create_${entity.value.name}(boolean changeble);
+    ${entity.value.name} byId_${entity.value.name}(boolean changeble,UserData userData,CmdData cmdData,int id) throws DaoException;
+    List<${entity.value.name}> get_${entity.value.name}(boolean changeble,UserData userData,CmdData cmdData,List<QueryRestr> restr,List<QuerySort> sort,int offset,int count) throws DaoException;
+    int count_${entity.value.name}(UserData userData,CmdData cmdData,List<QueryRestr> restr) throws DaoException;
 <% } %>
 
 <% model.entities*.value.attribs*.findAll { it.type == strListType }*.each { attrib -> %>
-    ${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()} create_${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()}();
-    ${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()} byId_${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()}(UserData userData,CmdData cmdData,int id) throws DaoException;
-    List<${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()}> get_${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()}(UserData userData,CmdData cmdData,List<QueryRestr> restr,List<QuerySort> sort,int offset,int count) throws DaoException;
-    int count_${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()}(UserData userData,CmdData cmdData,List<QueryRestr> restr,List<QuerySort> sort) throws DaoException;
+    ${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()} create_${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()}(boolean changeble);
+    ${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()} byId_${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()}(boolean changeble,UserData userData,CmdData cmdData,int id) throws DaoException;
+    List<${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()}> get_${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()}(boolean changeble,UserData userData,CmdData cmdData,List<QueryRestr> restr,List<QuerySort> sort,int offset,int count) throws DaoException;
+    int count_${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()}(UserData userData,CmdData cmdData,List<QueryRestr> restr) throws DaoException;
 <% } %>
 
 <% model.views.each { view -> %>
     ${view.value.name} create_${view.value.name}();
     ${view.value.name} byId_${view.value.name}(UserData userData,CmdData cmdData,int id) throws DaoException;
     List<${view.value.name}> get_${view.value.name}(UserData userData,CmdData cmdData,List<QueryRestr> restr,List<QuerySort> sort,int offset,int count) throws DaoException;
-    int count_${view.value.name}(UserData userData,CmdData cmdData,List<QueryRestr> restr,List<QuerySort> sort) throws DaoException;
+    int count_${view.value.name}(UserData userData,CmdData cmdData,List<QueryRestr> restr) throws DaoException;
 <% } %>
 
 <% model.m2nRelations.each { m2n -> %>

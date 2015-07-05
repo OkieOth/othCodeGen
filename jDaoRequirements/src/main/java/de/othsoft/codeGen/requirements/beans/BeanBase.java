@@ -17,7 +17,7 @@ package de.othsoft.codeGen.requirements.beans;
  *
  * @author eiko
  */
-public class BeanBase {
+public abstract class BeanBase {
     private boolean changed=false;
     
     public boolean hasChanged() {
@@ -30,5 +30,5 @@ public class BeanBase {
     
     public void resetChanged() {
         changed=false;
-    }
+    }    
 }

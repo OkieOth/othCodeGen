@@ -21,8 +21,32 @@ import de.othsoft.codeGen.requirements.UserData;
  *
  * @author eiko
  */
-public class UpdatableBean extends InsertableBean {
-    public void update(CmdData cmdData,UserData userData) throws DaoException {
-        // Dummy-Implementierung - wird in abgeleiteten Klassen überschrieben
+public abstract class UpdatableBean<T> extends InsertableBean {
+    protected T origState=null;
+    
+    protected boolean changeble=false;
+
+    public boolean isChangeble() {
+        return changeble;
+    }
+
+    public void setChangeble(boolean changeble) {
+        this.changeble = changeble;
+    }
+    
+    @Override
+    public void resetChanged() {
+        super.resetChanged();
+        origState=clone();
     }    
+
+    protected void resetChangedWithoutSaveOriginalState() {
+        super.resetChanged();
+    }    
+
+    public void update(CmdData cmdData,UserData userData) throws DaoException {
+        // dummy implementation ... saves generated code
+    }
+    
+    public abstract T clone();
 }
