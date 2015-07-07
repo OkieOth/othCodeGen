@@ -24,6 +24,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
@@ -37,20 +38,25 @@ public class SQLExecWrapper<T> extends SQLWrapperBase {
         super(log);
     }
         
-    public void insert(ISQLInsWrapperUser<T> wrapperUser, T data, ConnectionFactory connectionFactory,UserData userData,CmdData cmdData) throws DaoException {
+    public Integer insert(ISQLInsWrapperUser<T> wrapperUser, T data, ConnectionFactory connectionFactory,UserData userData,CmdData cmdData) throws DaoException {
         PreparedStatement ps=null;
+        ResultSet rs=null;
         Connection con = ((cmdData!=null) && (cmdData instanceof JdbcCmdData))? ((JdbcCmdData)cmdData).getCon() : connectionFactory.getCon();
         try {
             String sql = wrapperUser.getInsSql();
             log.info(sql);
-            ps=con.prepareStatement(sql);
+            ps=con.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
             wrapperUser.setInsValues(ps,data);
             ps.execute();
+            rs = ps.getGeneratedKeys();
+            rs.next();
+            return rs.getInt(1);
         }
         catch(SQLException e) {
             throw new DaoException(log,e);
         }
         finally {
+            ggfCloseResultSet(rs);
             ggfCloseStatement(ps);
             ggfCloseConnection(cmdData,con);
         }

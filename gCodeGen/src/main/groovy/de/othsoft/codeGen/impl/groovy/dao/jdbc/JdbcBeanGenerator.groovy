@@ -205,7 +205,7 @@ public class ${className} extends ${baseClassName} {
     <% } } %>
         // TODO resolve needed text references to their ids - refs with visKey
         SQLExecWrapper<${baseClassName}> wrapper = new SQLExecWrapper(log);
-        wrapper.insert(wrapperUser,this,connectionFactory,userData,cmdData);
+        this.id = wrapper.insert(wrapperUser,this,connectionFactory,userData,cmdData);
     }
 
     @Override
@@ -390,7 +390,7 @@ public class ${className} extends ${baseClassName} {
     public void insert(CmdData cmdData,UserData userData) throws DaoException {
         if (!changeble) throw new DaoException ("this object is not changeble");
         SQLExecWrapper<${baseClassName}> wrapper = new SQLExecWrapper(log);
-        wrapper.insert(wrapperUser,this,connectionFactory,userData,cmdData);
+        this.id = wrapper.insert(wrapperUser,this,connectionFactory,userData,cmdData);
     }
 
     @Override
