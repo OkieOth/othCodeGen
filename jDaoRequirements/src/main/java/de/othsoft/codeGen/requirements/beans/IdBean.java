@@ -18,7 +18,7 @@ package de.othsoft.codeGen.requirements.beans;
  * @author eiko
  */
 public class IdBean extends BeanBase {
-    private Integer id;
+    protected Integer id;
 
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id=id; }

@@ -47,7 +47,7 @@ class BeanGenerator extends JavaBeanGeneratorBase implements ICodeGenImpl {
         // TODO
     }
 
-    private void createListBeans(String destPath, String destPackage, DataModel model) {
+    protected void createListBeans(String destPath, String destPackage, DataModel model) {
         model.entities*.value.attribs*.findAll { it.type == AttribType.t_str_list }*.each { attrib ->
             def entityName = "${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()}"
             def descr = attrib.descr
@@ -55,7 +55,7 @@ class BeanGenerator extends JavaBeanGeneratorBase implements ICodeGenImpl {
         }
     }
     
-    private void createEntityBeans(String destPath, String destPackage, DataModel model) {
+    protected void createEntityBeans(String destPath, String destPackage, DataModel model) {
         model.entities*.each {
             def entityName=it.value.getNameWithFirstLetterUpper()
             def descr = it.value.descr
@@ -63,7 +63,7 @@ class BeanGenerator extends JavaBeanGeneratorBase implements ICodeGenImpl {
         }        
     }
 
-    private void createM2NBeans(String destPath, String destPackage, DataModel model) {
+    protected void createM2NBeans(String destPath, String destPackage, DataModel model) {
         model.m2nRelations*.each {
             def entityName=it.value.getNameWithFirstLetterUpper()
             def descr = it.value.descr
@@ -71,7 +71,7 @@ class BeanGenerator extends JavaBeanGeneratorBase implements ICodeGenImpl {
         }
     }
 
-    private void createViewBeans(String destPath, String destPackage, DataModel model) {
+    protected void createViewBeans(String destPath, String destPackage, DataModel model) {
         model.views*.each {
             def viewName=it.value.getNameWithFirstLetterUpper()
             def descr = it.value.descr
@@ -80,7 +80,7 @@ class BeanGenerator extends JavaBeanGeneratorBase implements ICodeGenImpl {
     }
 
 
-    private String addGenPackageName(String packageName) {
+    protected String addGenPackageName(String packageName) {
         if (!packageName)
             return 'beans'
         else 
@@ -122,17 +122,17 @@ public class ${className} extends UpdatableBean<${className}> implements Seriali
      * ${attrib.descr}
      */<% } %>
     <% if ( attrib.type == strListType ) { %>
-    private ${typeConvert(attrib.type)} ${attrib.name}Id;
-    private String ${attrib.name}IdTxt; <% } else { %> 
-    private ${typeConvert(attrib.type)} ${attrib.name}; 
+    protected ${typeConvert(attrib.type)} ${attrib.name}Id;
+    protected String ${attrib.name}IdTxt; <% } else { %> 
+    protected ${typeConvert(attrib.type)} ${attrib.name}; 
     <% } } %>
     <% aktElem.refs.each { ref -> if (ref.descr) { %>
     /**
      * ${ref.descr}
      */<% } %>
-    private Integer ${ref.getLowerCamelCaseName()};
+    protected Integer ${ref.getLowerCamelCaseName()};
     <% if (ref.entity.hasVisKey()) { %>
-    private String ${ref.getLowerCamelCaseName()}Txt;
+    protected String ${ref.getLowerCamelCaseName()}Txt;
     <% } } %>
 
     public ${className} () {
@@ -215,16 +215,16 @@ public class ${className} extends UpdatableBean<${className}> implements Seriali
     public final static String ID_REIHENF="${aktElem.id}.a4";
 
     /** Bezeichnung */
-    private String bez;
+    protected String bez;
 
     /** Langbezeichnung */
-    private String lang;
+    protected String lang;
 
     /** der Listeneintrag kann noch aktiv verwendet werden */
-    private Boolean aktiv;
+    protected Boolean aktiv;
 
     /** Reihenfolge in der die Elemente angezeigt werden sollen */
-    private Integer reihenf;
+    protected Integer reihenf;
 
     public ${className}() {
         super();
@@ -305,7 +305,7 @@ public class ${className} extends IdBean implements Serializable {
     /**
      * ${attrib.descr}
      */<%}%> 
-    private ${typeConvert(attrib.type)} ${attrib.name}; 
+    protected ${typeConvert(attrib.type)} ${attrib.name}; 
     <% } %>
 
     public ${className} () {
@@ -352,12 +352,12 @@ public class ${className} extends BeanBase implements Serializable {
     /**
      * ${aktElem.ref1.descr}
      */<%}%>
-    private Integer ${aktElem.ref1.getLowerCamelCaseName()};
+    protected Integer ${aktElem.ref1.getLowerCamelCaseName()};
     <%if (aktElem.ref2.descr) { %>
     /**
      * ${aktElem.ref2.descr}
      */<%}%>
-    private Integer ${aktElem.ref2.getLowerCamelCaseName()};
+    protected Integer ${aktElem.ref2.getLowerCamelCaseName()};
     
     public ${className}() {
         super();
