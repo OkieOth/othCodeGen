@@ -270,7 +270,19 @@ class Entity extends BaseModelEntry implements IRefCont {
     }
     
     boolean hasVisKey() {
-        return attribs.findAll {attrib -> attrib.visKey==true }.size()>0
+        def visKeyAttribs = attribs.findAll {attrib -> attrib.visKey==true }
+        def visKeyCount = visKeyAttribs.size();
+        if (visKeyCount==0) return false;
+        if (visKeyCount==1) return true;
+        throw new CheckModelException("entity '$name' has more than one visKay")
+    }
+    
+    Attrib getVisKey () {
+        def visKeyAttribs = attribs.findAll {attrib -> attrib.visKey==true }
+        def visKeyCount = visKeyAttribs.size();
+        if (visKeyCount==0) return null;
+        if (visKeyCount==1) return visKeyAttribs[0];
+        throw new CheckModelException("entity '$name' has more than one visKay")
     }
 }
 

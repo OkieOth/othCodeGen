@@ -34,6 +34,7 @@ import de.othsoft.codeGen.tests.models.TestModel_MissingEntityAttribName
 import de.othsoft.codeGen.tests.models.TestModel_MissingEntityName
 import de.othsoft.codeGen.tests.models.TestModel_RightListType
 import de.othsoft.codeGen.tests.models.TestModel_WrongListType
+import de.othsoft.codeGen.tests.models.TestVisKeyModel
 
 import de.othsoft.codeGen.types.CheckModelException
 
@@ -154,5 +155,33 @@ class DataModelBase {
     public void testModelWithRightListType() {
         TestModel_RightListType testModel=new TestModel_RightListType()
         assertEquals ('EMv1',testModel.shortName)
-    }    
+    }
+    
+    @Test
+    public void testGetVisKey() {
+        TestVisKeyModel testModel = new TestVisKeyModel()
+        Entity tab1 = testModel.entities['Tab1']
+        assertNotNull (tab1)
+        assertTrue(tab1.hasVisKey())
+        assertEquals('name',tab1.getVisKey().name)
+        
+        Entity tab2 = testModel.entities['Tab2']
+        assertNotNull (tab2)
+        assertTrue(tab2.hasVisKey())
+        assertEquals('text2',tab2.getVisKey().name)
+
+        Entity tab3 = testModel.entities['Tab3']
+        assertNotNull (tab3)
+        assertFalse(tab3.hasVisKey())
+        assertNull(tab3.getVisKey())
+
+        Entity tab4 = testModel.entities['Tab4']
+        assertNotNull (tab4)
+        try {
+            tab4.hasVisKey()
+            fail('no exception is thrown')
+        }
+        catch(CheckModelException e) {
+        }
+    }
 }
