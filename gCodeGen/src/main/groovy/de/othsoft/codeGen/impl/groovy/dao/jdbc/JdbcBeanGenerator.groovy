@@ -169,33 +169,62 @@ public class ${className} extends ${baseClassName} {
         def tmpClassName = "${className}".substring(5)+"_${attrib.getNameWithFirstLetterUpper()}"
         def tmpClass = "${tmpPackage}.${tmpClassName}"
        %>
-        private void init${attrib.getNameWithFirstLetterUpper()}IdWithTxt(CmdData cmdData,UserData userData,String origValue) throws DaoException {
-            if (origValue==null && ${attrib.getNameWithFirstLetterLower()}IdTxt == null) return;
-            if (origValue!=null && ${attrib.getNameWithFirstLetterLower()}IdTxt != null && origValue.equals(${attrib.getNameWithFirstLetterLower()}IdTxt)) return;
-            if (origValue!=null && ${attrib.getNameWithFirstLetterLower()}IdTxt == null) {
-                ${attrib.getNameWithFirstLetterLower()}Id = null; 
-                return;
-            }
-            SQLExecWrapper<${tmpClass}> wrapper = new SQLExecWrapper(log);
-            List<QueryRestr> restr = new ArrayList();
-            restr.add(new QueryRestr(${tmpClass}.ID_BEZ,RestrType.EQUAL,${attrib.getNameWithFirstLetterLower()}IdTxt));
-            List<${tmpClass}> refList = wrapper.get(Jdbc_${tmpClassName}.wrapperUser,connectionFactory,userData,cmdData,restr,null,0,0);
-            int refListSize = refList.size();
-            if (refListSize==0) {
-                Jdbc_${tmpClassName} newElem = new Jdbc_${tmpClassName}(connectionFactory,true);
-                newElem.setBez(${attrib.getNameWithFirstLetterLower()}IdTxt);
-                newElem.insert(cmdData, userData);
-                ${attrib.getNameWithFirstLetterLower()}Id = newElem.getId();
-            }
-            else {
-                ${attrib.getNameWithFirstLetterLower()}Id = refList.get(0).getId();
-                if (refListSize>1) {
-                    log.error("${className}.init${attrib.getNameWithFirstLetterUpper()}IdWithTxt - viskey not unique: "+${attrib.getNameWithFirstLetterLower()}IdTxt);
-                }
+    private void init${attrib.getNameWithFirstLetterUpper()}IdWithTxt(CmdData cmdData,UserData userData,String origValue) throws DaoException {
+        if (origValue==null && ${attrib.getNameWithFirstLetterLower()}IdTxt == null) return;
+        if (origValue!=null && ${attrib.getNameWithFirstLetterLower()}IdTxt != null && origValue.equals(${attrib.getNameWithFirstLetterLower()}IdTxt)) return;
+        if (origValue!=null && ${attrib.getNameWithFirstLetterLower()}IdTxt == null) {
+            ${attrib.getNameWithFirstLetterLower()}Id = null; 
+            return;
+        }
+        SQLExecWrapper<${tmpClass}> wrapper = new SQLExecWrapper(log);
+        List<QueryRestr> restr = new ArrayList();
+        restr.add(new QueryRestr(${tmpClass}.ID_BEZ,RestrType.EQUAL,${attrib.getNameWithFirstLetterLower()}IdTxt));
+        List<${tmpClass}> refList = wrapper.get(Jdbc_${tmpClassName}.wrapperUser,connectionFactory,userData,cmdData,restr,null,0,0);
+        int refListSize = refList.size();
+        if (refListSize==0) {
+            Jdbc_${tmpClassName} newElem = new Jdbc_${tmpClassName}(connectionFactory,true);
+            newElem.setBez(${attrib.getNameWithFirstLetterLower()}IdTxt);
+            newElem.insert(cmdData, userData);
+            ${attrib.getNameWithFirstLetterLower()}Id = newElem.getId();
+        }
+        else {
+            ${attrib.getNameWithFirstLetterLower()}Id = refList.get(0).getId();
+            if (refListSize>1) {
+                log.error("${className}.init${attrib.getNameWithFirstLetterUpper()}IdWithTxt - viskey not unique: "+${attrib.getNameWithFirstLetterLower()}IdTxt);
             }
         }
+    }
     <% } } %>
 
+    <% aktElem.refs.each { ref -> if (ref.entity.hasVisKey()) { 
+        def tmpPackage = "${baseClassName}".substring(0,"${baseClassName}".lastIndexOf('.'))
+        def tmpClassName = "${ref.entity.getNameWithFirstLetterUpper()}"
+        def tmpClass = "${tmpPackage}.${tmpClassName}"
+        def upperVisKeyCol = ref.entity.getVisKey().name.toUpperCase()
+    %>
+    private void init${ref.getUpperCamelCaseName()}WithTxt(CmdData cmdData,UserData userData,String origValue) throws DaoException {
+        if (origValue==null && ${ref.getLowerCamelCaseName()}Txt == null) return;
+        if (origValue!=null && ${ref.getLowerCamelCaseName()}Txt != null && origValue.equals(${ref.getLowerCamelCaseName()}Txt)) return;
+        if (origValue!=null && ${ref.getLowerCamelCaseName()}Txt == null) {
+            ${ref.getLowerCamelCaseName()} = null; 
+            return;
+        }
+        SQLExecWrapper<${tmpClass}> wrapper = new SQLExecWrapper(log);
+        List<QueryRestr> restr = new ArrayList();
+        restr.add(new QueryRestr(${tmpClass}.ID_${upperVisKeyCol},RestrType.EQUAL,${ref.getLowerCamelCaseName()}Txt));
+        List<${tmpClass}> refList = wrapper.get(Jdbc_${tmpClassName}.wrapperUser,connectionFactory,userData,cmdData,restr,null,0,0);
+        int refListSize = refList.size();
+        if (refListSize==0) {
+            ${ref.getLowerCamelCaseName()} = null;
+        }
+        else {
+            ${ref.getLowerCamelCaseName()} = refList.get(0).getId();
+            if (refListSize>1) {
+                log.error(getClass().getName()+".${ref.getLowerCamelCaseName()} - viskey not unique: "+${ref.getLowerCamelCaseName()}Txt);
+            }
+        }
+    }
+    <% } } %>
 
     @Override
     public void insert(CmdData cmdData,UserData userData) throws DaoException {
@@ -203,7 +232,9 @@ public class ${className} extends ${baseClassName} {
     <% aktElem.attribs.each { attrib -> if ( attrib.type == strListType ) { %>
         init${attrib.getNameWithFirstLetterUpper()}IdWithTxt(cmdData,userData,null);
     <% } } %>
-        // TODO resolve needed text references to their ids - refs with visKey
+    <% aktElem.refs.each { ref -> if (ref.entity.hasVisKey()) { %>
+        init${ref.getUpperCamelCaseName()}WithTxt(cmdData,userData,null);
+    <% } } %>
         SQLExecWrapper<${baseClassName}> wrapper = new SQLExecWrapper(log);
         this.id = wrapper.insert(wrapperUser,this,connectionFactory,userData,cmdData);
     }
@@ -222,7 +253,9 @@ public class ${className} extends ${baseClassName} {
     <% aktElem.attribs.each { attrib -> if ( attrib.type == strListType ) { %>
         init${attrib.getNameWithFirstLetterUpper()}IdWithTxt(cmdData,userData,origState.get${attrib.getNameWithFirstLetterUpper()}IdTxt());
     <% } } %>
-        // TODO resolve needed text references to their ids
+    <% aktElem.refs.each { ref -> if (ref.entity.hasVisKey()) { %>
+        init${ref.getUpperCamelCaseName()}WithTxt(cmdData,userData,origState.get${ref.getUpperCamelCaseName()}Txt());
+    <% } } %>
         SQLExecWrapper<${baseClassName}> wrapper = new SQLExecWrapper(log);
         wrapper.update(wrapperUser,this,connectionFactory,userData,cmdData);
     }
