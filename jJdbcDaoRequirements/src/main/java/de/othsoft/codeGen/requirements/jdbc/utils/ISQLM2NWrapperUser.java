@@ -13,9 +13,9 @@ specific language governing permissions and limitations under the License.
 
 package de.othsoft.codeGen.requirements.jdbc.utils;
 
-import de.othsoft.codeGen.requirements.DaoException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  *
@@ -27,7 +27,7 @@ public interface ISQLM2NWrapperUser<T> {
     String getSelectByIdsSql();
     String addCountToSql(String sql);
     String getInsSql();
-    void setInsValues(PreparedStatement ps,T data) throws DaoException;
+    void setInsValues(PreparedStatement ps,T data) throws SQLException;
     String getDelSql();
     T initFromResultSet(ResultSet rs);
 }

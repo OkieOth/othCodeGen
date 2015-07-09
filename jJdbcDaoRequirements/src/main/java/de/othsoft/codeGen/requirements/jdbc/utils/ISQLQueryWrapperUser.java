@@ -16,6 +16,7 @@ import de.othsoft.codeGen.requirements.DaoException;
 import de.othsoft.codeGen.requirements.QueryRestr;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -27,6 +28,6 @@ public interface ISQLQueryWrapperUser<T> {
     String appendFilterToSql(String sql,List<QueryRestr> restr) throws DaoException;
     String appendPagingToSql(String sql,int offset,int count);
     String addCountToSql(String sql);
-    void setFilterValues(PreparedStatement ps, List<QueryRestr> restr) throws DaoException;
+    void setFilterValues(PreparedStatement ps, List<QueryRestr> restr) throws SQLException;
     T initFromResultSet(ResultSet rs);
 }

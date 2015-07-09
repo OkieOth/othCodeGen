@@ -288,7 +288,7 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}>,
     }
 
     @Override
-    public void setFilterValues(PreparedStatement ps, List<QueryRestr> restr) throws DaoException {
+    public void setFilterValues(PreparedStatement ps, List<QueryRestr> restr) throws SQLException {
         // TODO
     }
 
@@ -303,8 +303,19 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}>,
     }
 
     @Override
-    public void setInsValues(PreparedStatement ps,${baseClassName} data) throws DaoException {
-        // TODO
+    public void setInsValues(PreparedStatement ps,${baseClassName} data) throws SQLException {
+        int i=1;
+    <% aktElem.attribs.each { attrib -> if ( attrib.type == strListType ) 
+    { %>    i++;
+        ps.setObject(i,data.get${attrib.getNameWithFirstLetterUpper()}Id());
+    <% } else 
+    { %>    i++;
+        ps.setObject(i,data.get${attrib.getNameWithFirstLetterUpper()}());
+    <% } } %>
+    <% aktElem.refs.each { ref -> 
+    %>    i++;
+        ps.setObject(i,data.get${ref.getUpperCamelCaseName()}());
+    <% } %>
     }
 
     @Override
@@ -313,7 +324,7 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}>,
     }
 
     @Override
-    public void setUpdValues(PreparedStatement ps,${baseClassName} data) throws DaoException {
+    public void setUpdValues(PreparedStatement ps,${baseClassName} data) throws SQLException {
         // TODO
     }
 
@@ -468,7 +479,7 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}>,
     }
 
     @Override
-    public void setFilterValues(PreparedStatement ps, List<QueryRestr> restr) throws DaoException {
+    public void setFilterValues(PreparedStatement ps, List<QueryRestr> restr) throws SQLException {
         // TODO
     }
     
@@ -483,7 +494,7 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}>,
     }
 
     @Override
-    public void setInsValues(PreparedStatement ps,${baseClassName} data) throws DaoException {
+    public void setInsValues(PreparedStatement ps,${baseClassName} data) throws SQLException {
         // TODO
     }
 
@@ -493,7 +504,7 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}>,
     }
 
     @Override
-    public void setUpdValues(PreparedStatement ps,${baseClassName} data) throws DaoException {
+    public void setUpdValues(PreparedStatement ps,${baseClassName} data) throws SQLException {
         // TODO
     }
 
@@ -594,7 +605,7 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}> {
     }
 
     @Override
-    public void setFilterValues(PreparedStatement ps, List<QueryRestr> restr) throws DaoException {
+    public void setFilterValues(PreparedStatement ps, List<QueryRestr> restr) throws SQLException {
         // TODO
     }
     
@@ -707,7 +718,7 @@ class ${className}_User implements ISQLM2NWrapperUser<${baseClassName}> {
     }
 
     @Override
-    public void setInsValues(PreparedStatement ps,${baseClassName} data) throws DaoException {
+    public void setInsValues(PreparedStatement ps,${baseClassName} data) throws SQLException {
         // TODO
     }
 
