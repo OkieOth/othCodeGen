@@ -21,7 +21,7 @@ import java.sql.SQLException;
  * @author eiko
  */
 public interface ISQLUpdWrapperUser<T> {
-    String getUpdSql();
+    String getUpdSql(T data);
     void setUpdValues(PreparedStatement ps,T data) throws SQLException;
     T create(ConnectionFactory connectionFactory,boolean changeble);
 }

@@ -29,5 +29,5 @@ public interface ISQLM2NWrapperUser<T> {
     String getInsSql();
     void setInsValues(PreparedStatement ps,T data) throws SQLException;
     String getDelSql();
-    T initFromResultSet(ResultSet rs);
+    T initFromResultSet(ResultSet rs) throws SQLException;
 }

@@ -96,7 +96,7 @@ class JdbcBeanGenerator extends JavaBeanGeneratorBase implements ICodeGenImpl {
         else 
             return "${packageName}.beans"
     }
-
+    
     def templateEntityBean='''
 package ${destPackage};
 
@@ -284,7 +284,7 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}>,
 
     @Override
     public String addCountToSql(String sql) {
-        return null; // TODO
+        return StringConsts.SQL_COUNT_PART_1+sql+StringConsts.SQL_COUNT_PART_2;
     }
 
     @Override
@@ -293,8 +293,27 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}>,
     }
 
     @Override
-    public ${baseClassName} initFromResultSet(ResultSet rs) {
-        return null; // TODO
+    public ${baseClassName} initFromResultSet(ResultSet rs) throws SQLException {
+        ${baseClassName} ret = new ${baseClassName}();        
+        int i=1;
+        ret.setId(rs.getInt(i));
+    <% aktElem.attribs.each { attrib -> if ( attrib.type == strListType ) 
+    { %>    i++;
+        ret.set${attrib.getNameWithFirstLetterUpper()}Id(rs.getInt(i));
+        i++;
+        ret.set${attrib.getNameWithFirstLetterUpper()}IdTxt(rs.getString(i));
+    <% } else 
+    { %>    i++;
+        ret.set${attrib.getNameWithFirstLetterUpper()}(rs.getObject(i,${typeConvert(attrib.type)}.class));
+    <% } } %>
+    <% aktElem.refs.each { ref -> 
+    %>    i++;
+        ret.set${ref.getUpperCamelCaseName()}(rs.getInt(i));\n\
+        <% if (ref.entity.hasVisKey())\n\
+        { %>i++;
+        ret.set${ref.getUpperCamelCaseName()}Txt(rs.getString(i));
+    <% } } %>
+        return ret;
     }
 
     @Override
@@ -304,7 +323,7 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}>,
 
     @Override
     public void setInsValues(PreparedStatement ps,${baseClassName} data) throws SQLException {
-        int i=1;
+        int i=0;
     <% aktElem.attribs.each { attrib -> if ( attrib.type == strListType ) 
     { %>    i++;
         ps.setObject(i,data.get${attrib.getNameWithFirstLetterUpper()}Id());
@@ -319,13 +338,53 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}>,
     }
 
     @Override
-    public String getUpdSql() {
-        return null; // TODO
+    public String getUpdSql(${baseClassName} data) {
+        String colPart=null;
+    <% aktElem.attribs.each { attrib -> if ( attrib.type == strListType ) 
+    { %>if (SQLExecWrapper.isChanged(data.getOrigState().get${attrib.getNameWithFirstLetterUpper()}Id(),data.get${attrib.getNameWithFirstLetterUpper()}Id())) {
+            if (colPart!=null) colPart+=",";
+            colPart+="${attrib.getNameWithFirstLetterLower()}Id=?";
+        }
+    <% } else 
+    { %>if (SQLExecWrapper.isChanged(data.getOrigState().get${attrib.getNameWithFirstLetterUpper()}(),data.get${attrib.getNameWithFirstLetterUpper()}())) {
+            if (colPart!=null) colPart+=",";
+            colPart+="${attrib.getNameWithFirstLetterLower()}=?";
+        }
+    <% } } %>
+    <% aktElem.refs.each { ref -> 
+    %>if (SQLExecWrapper.isChanged(data.getOrigState().get${ref.getUpperCamelCaseName()}(),data.get${ref.getUpperCamelCaseName()}())) {
+            if (colPart!=null) colPart+=",";
+            colPart+="${ref.getLowerCamelCaseName()}=?";
+        }
+    <% } %>
+
+        return UPDATE_SQL_BASE+colPart+StringConsts.WHERE_ID_SQL;
     }
 
     @Override
     public void setUpdValues(PreparedStatement ps,${baseClassName} data) throws SQLException {
-        // TODO
+        int i=0;
+    <% aktElem.attribs.each { attrib -> if ( attrib.type == strListType ) 
+    { %>    
+        if (SQLExecWrapper.isChanged(data.getOrigState().get${attrib.getNameWithFirstLetterUpper()}Id(),data.get${attrib.getNameWithFirstLetterUpper()}Id())) {
+            i++;
+            ps.setObject(i,data.get${attrib.getNameWithFirstLetterUpper()}Id());
+        }
+    <% } else 
+    { %>
+
+        if (SQLExecWrapper.isChanged(data.getOrigState().get${attrib.getNameWithFirstLetterUpper()}(),data.get${attrib.getNameWithFirstLetterUpper()}())) {
+            i++;
+            ps.setObject(i,data.get${attrib.getNameWithFirstLetterUpper()}());
+        }
+    <% } } %>
+    <% aktElem.refs.each { ref -> 
+    %>
+        if (SQLExecWrapper.isChanged(data.getOrigState().get${ref.getUpperCamelCaseName()}(),data.get${ref.getUpperCamelCaseName()}())) {
+            i++;
+            ps.setObject(i,data.get${ref.getUpperCamelCaseName()}());
+        }
+    <% } %>
     }
 
     @Override
@@ -355,10 +414,12 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}>,
     }
 
     static {
+        UPDATE_SQL_BASE="UPDATE ${model.shortName}_${baseClassName.substring(baseClassName.lastIndexOf('.')+1)} SET ";
         INSERT_SQL = "INSERT INTO ${model.shortName}_${baseClassName.substring(baseClassName.lastIndexOf('.')+1)} (" +
             getInsColumnList() + ") VALUES (" + getInsParameterStr() +")";
     }
 
+    private final static String UPDATE_SQL_BASE;
     private final static String INSERT_SQL;
     private final static String DEL_SQL="DELETE FROM ${model.shortName}_${baseClassName.substring(baseClassName.lastIndexOf('.')+1)} WHERE id=?";
 }
@@ -475,7 +536,7 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}>,
 
     @Override
     public String addCountToSql(String sql) {
-        return null; // TODO
+        return StringConsts.SQL_COUNT_PART_1+sql+StringConsts.SQL_COUNT_PART_2;
     }
 
     @Override
@@ -499,7 +560,7 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}>,
     }
 
     @Override
-    public String getUpdSql() {
+    public String getUpdSql(${baseClassName} data) {
         return null; // TODO
     }
 
@@ -601,7 +662,7 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}> {
 
     @Override
     public String addCountToSql(String sql) {
-        return null; // TODO
+        return StringConsts.SQL_COUNT_PART_1+sql+StringConsts.SQL_COUNT_PART_2;
     }
 
     @Override

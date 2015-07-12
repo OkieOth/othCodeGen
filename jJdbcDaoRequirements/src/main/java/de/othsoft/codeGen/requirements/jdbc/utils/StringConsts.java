@@ -18,4 +18,7 @@ package de.othsoft.codeGen.requirements.jdbc.utils;
  */
 public class StringConsts {
     public static final String ID_RESTR=" id=?";
+    public static final String WHERE_ID_SQL=" WHERE id=?";
+    public static final String SQL_COUNT_PART_1="SELECT count(*) AS c FROM (";
+    public static final String SQL_COUNT_PART_2=") c";
 }

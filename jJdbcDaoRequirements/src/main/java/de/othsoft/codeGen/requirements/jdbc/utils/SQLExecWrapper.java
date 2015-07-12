@@ -20,12 +20,14 @@ import de.othsoft.codeGen.requirements.QuerySort;
 import de.othsoft.codeGen.requirements.UserData;
 import de.othsoft.codeGen.requirements.jdbc.ConnectionFactory;
 import de.othsoft.codeGen.requirements.jdbc.JdbcCmdData;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import org.slf4j.Logger;
 
@@ -34,6 +36,48 @@ import org.slf4j.Logger;
  * @author eiko
  */
 public class SQLExecWrapper<T> extends SQLWrapperBase {
+    public static boolean isChanged(String oldValue,String newValue) {
+        if (oldValue==null && newValue!=null) return true;
+        if (oldValue!=null && newValue==null) return true;
+        if (oldValue==null && newValue==null) return false;
+        return oldValue.equals(newValue);
+    }
+
+    public static boolean isChanged(Integer oldValue,Integer newValue) {
+        if (oldValue==null && newValue!=null) return true;
+        if (oldValue!=null && newValue==null) return true;
+        if (oldValue==null && newValue==null) return false;
+        return oldValue.equals(newValue);
+    }
+
+    public static boolean isChanged(Double oldValue,Double newValue) {
+        if (oldValue==null && newValue!=null) return true;
+        if (oldValue!=null && newValue==null) return true;
+        if (oldValue==null && newValue==null) return false;
+        return oldValue.equals(newValue);
+    }
+
+    public static boolean isChanged(Date oldValue,Date newValue) {
+        if (oldValue==null && newValue!=null) return true;
+        if (oldValue!=null && newValue==null) return true;
+        if (oldValue==null && newValue==null) return false;
+        return oldValue.equals(newValue);
+    }
+
+    public static boolean isChanged(Boolean oldValue,Boolean newValue) {
+        if (oldValue==null && newValue!=null) return true;
+        if (oldValue!=null && newValue==null) return true;
+        if (oldValue==null && newValue==null) return false;
+        return oldValue.equals(newValue);
+    }
+
+    public static boolean isChanged(BigDecimal oldValue,BigDecimal newValue) {
+        if (oldValue==null && newValue!=null) return true;
+        if (oldValue!=null && newValue==null) return true;
+        if (oldValue==null && newValue==null) return false;
+        return oldValue.equals(newValue);
+    }
+
     public SQLExecWrapper (Logger log) {
         super(log);
     }
@@ -85,7 +129,7 @@ public class SQLExecWrapper<T> extends SQLWrapperBase {
         PreparedStatement ps=null;
         Connection con = ((cmdData!=null) && (cmdData instanceof JdbcCmdData))? ((JdbcCmdData)cmdData).getCon() : connectionFactory.getCon();
         try {
-            String sql = wrapperUser.getUpdSql();
+            String sql = wrapperUser.getUpdSql(data);
             log.info(sql);
             ps=con.prepareStatement(sql);
             wrapperUser.setUpdValues(ps,data);

@@ -29,5 +29,5 @@ public interface ISQLQueryWrapperUser<T> {
     String appendPagingToSql(String sql,int offset,int count);
     String addCountToSql(String sql);
     void setFilterValues(PreparedStatement ps, List<QueryRestr> restr) throws SQLException;
-    T initFromResultSet(ResultSet rs);
+    T initFromResultSet(ResultSet rs) throws SQLException;
 }
