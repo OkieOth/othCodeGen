@@ -108,8 +108,8 @@ class DataModel {
         if (entities."$name" || m2nRelations."$name" || views."$name")
             throw new CheckModelException("m2n name '$name' is not unique")
 
-        EntityReference r1 = new EntityReference(name:refName1.toLowerCase() + '_id',refName:refName1, id: "${id}.r1", since: since);
-        EntityReference r2 = new EntityReference(name:refName2.toLowerCase() + '_id',refName:refName2, id: "${id}.r2", since: since);
+        EntityReference r1 = new EntityReference(name:refName1.toLowerCase() + '_id',refName:refName1, id: "${id}_r1", since: since);
+        EntityReference r2 = new EntityReference(name:refName2.toLowerCase() + '_id',refName:refName2, id: "${id}_r2", since: since);
         M2NRelation newM2N = new M2NRelation( name:name, id:id , ref1:r1, ref2:r2, since:since )
         m2nRelations."$name" = newM2N
         newM2N
@@ -151,7 +151,7 @@ class DataModel {
         boolean visKey = params.visKey ? true : false
         boolean needed = params.needed ? true : false
         int since = params.since ? params.since : 1
-        String id = "${lastUsed.id}.a${lastUsed.attribCount() +1}"
+        String id = "${lastUsed.id}_a${lastUsed.attribCount() +1}"
         Attrib newAttrib = new Attrib ( name:name, id:id, type:type, visKey:visKey, since:since, parent:lastUsed, needed:needed )        
         lastUsed.attribs.add(newAttrib)
         newAttrib
@@ -168,7 +168,7 @@ class DataModel {
         String name = params.name ? params.name : refName.toLowerCase() + '_id'
         boolean needed = params.needed ? true : false
         int since = params.since ? params.since : 1
-        String id = "${lastUsed.id}.r${lastUsed.refCount() +1}"
+        String id = "${lastUsed.id}_r${lastUsed.refCount() +1}"
         EntityReference newRef = new EntityReference ( name:name, id:id, refName:refName, since:since, parent:lastUsed, needed:needed )        
         lastUsed.refs.add(newRef)
         newRef

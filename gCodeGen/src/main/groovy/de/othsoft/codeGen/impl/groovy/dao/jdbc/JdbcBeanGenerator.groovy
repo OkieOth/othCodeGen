@@ -267,7 +267,26 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}>,
         ISQLInsWrapperUser<${baseClassName}>,ISQLUpdWrapperUser<${baseClassName}>, ISQLDelWrapperUser {
     @Override
     public String getSelectBaseSql() {
-        return null; // TODO
+        String sql = StringConsts.SQL_SELECT_BASE + "${aktElem.id}.id AS ${aktElem.id}_a0";
+    <% aktElem.attribs.each { attrib -> if ( attrib.type == strListType ) { %>
+        sql += ",${aktElem.id}.${attrib.name}_id AS ${attrib.id}";
+        sql += ",${attrib.id}.bez AS ${attrib.id}Txt";
+    <% } else { %>
+        sql += ",${aktElem.id}.${attrib.name} AS ${attrib.id}";
+    <% } } %>
+    <% aktElem.refs.each { ref -> %>
+        sql += ",${aktElem.id}.${ref.name} AS ${ref.id}";
+    <% if (ref.entity.hasVisKey()) { %>
+        sql += ",${ref.id}.${ref.entity.getVisKey().name} AS ${ref.id}Txt";
+    <% } } %>
+        sql += " FROM ${model.shortName}_${aktElem.name} ${aktElem.id}"; 
+    <% aktElem.attribs.each { attrib -> if ( attrib.type == strListType ) { %>
+        sql += " LEFT OUTER JOIN ${model.shortName}_${aktElem.name}_${attrib.name} ${attrib.id} ON ${attrib.id}.id = ${aktElem.id}.${attrib.name}_id";
+    <% } } %>
+    <% aktElem.refs.each { ref -> if (ref.entity.hasVisKey()) { %>
+        sql += " LEFT OUTER JOIN ${model.shortName}_${ref.entity.name} ${ref.id} ON ${ref.id}.id = ${aktElem.id}.${ref.name}";
+    <% } } %>
+        return sql;
     }
     
     @Override
@@ -308,8 +327,8 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}>,
     <% } } %>
     <% aktElem.refs.each { ref -> 
     %>    i++;
-        ret.set${ref.getUpperCamelCaseName()}(rs.getInt(i));\n\
-        <% if (ref.entity.hasVisKey())\n\
+        ret.set${ref.getUpperCamelCaseName()}(rs.getInt(i));
+        <% if (ref.entity.hasVisKey())
         { %>i++;
         ret.set${ref.getUpperCamelCaseName()}Txt(rs.getString(i));
     <% } } %>

@@ -106,9 +106,9 @@ import de.othsoft.codeGen.requirements.beans.UpdatableBean;
  * $descr
  */<%}%>
 public class ${className} extends UpdatableBean<${className}> implements Serializable {
-    static final long serialVersionUID = ${model.version}L;
+    static final long serialVersionUID = ${model.version}L;\n\
 
-    public final static String ID_ID="${aktElem.id}.a0";
+    public final static String ID_ID="${aktElem.id}_a0";
     <% aktElem.attribs.each { attrib -> %>
     public final static String ID_${attrib.name.toUpperCase()}="${attrib.id}"; 
     <% } %>
@@ -208,11 +208,11 @@ import de.othsoft.codeGen.requirements.beans.UpdatableBean;
 public class ${className} extends UpdatableBean<${className}> implements Serializable {
     static final long serialVersionUID = ${model.version}L;
 
-    public final static String ID_ID="${aktElem.id}.a0";
-    public final static String ID_BEZ="${aktElem.id}.a1";
-    public final static String ID_LANG="${aktElem.id}.a2";
-    public final static String ID_AKTIV="${aktElem.id}.a3";
-    public final static String ID_REIHENF="${aktElem.id}.a4";
+    public final static String ID_ID="${aktElem.id}_a0";
+    public final static String ID_BEZ="${aktElem.id}_a1";
+    public final static String ID_LANG="${aktElem.id}_a2";
+    public final static String ID_AKTIV="${aktElem.id}_a3";
+    public final static String ID_REIHENF="${aktElem.id}_a4";
 
     /** Bezeichnung */
     protected String bez;
@@ -296,7 +296,7 @@ import de.othsoft.codeGen.requirements.beans.IdBean;
  */<%}%>
 public class ${className} extends IdBean implements Serializable {
     static final long serialVersionUID = ${model.version}L;
-    public final static String ID_ID="${aktElem.id}.a0";
+    public final static String ID_ID="${aktElem.id}_a0";
     <% aktElem.attribs.each { attrib -> %>
     public final static String ID_${attrib.name.toUpperCase()}="${attrib.id}"; 
     <% } %>
