@@ -34,25 +34,25 @@ public class SQLExecM2NWrapper<T> extends SQLWrapperBase {
         super(log);
     }
 
-    public List<T> byRef1(ISQLM2NWrapperUser<T> wrapperUser,ConnectionFactory connectionFactory,UserData userData,CmdData cmdData,int id) throws DaoException {
-        return byRef(true,wrapperUser,connectionFactory,userData,cmdData,id);
+    public List<T> byRef1(ISQLM2NWrapperUser<T> wrapperUser,IJdbcDataFactoryBase dataFactory,UserData userData,CmdData cmdData,int id) throws DaoException {
+        return byRef(true,wrapperUser,dataFactory,userData,cmdData,id);
     }
     
-    public List<T> byRef2(ISQLM2NWrapperUser<T> wrapperUser,ConnectionFactory connectionFactory,UserData userData,CmdData cmdData,int id) throws DaoException {
-        return byRef(false,wrapperUser,connectionFactory,userData,cmdData,id);
+    public List<T> byRef2(ISQLM2NWrapperUser<T> wrapperUser,IJdbcDataFactoryBase dataFactory,UserData userData,CmdData cmdData,int id) throws DaoException {
+        return byRef(false,wrapperUser,dataFactory,userData,cmdData,id);
     }
 
-    public int countByRef1(ISQLM2NWrapperUser<T> wrapperUser,ConnectionFactory connectionFactory,UserData userData,CmdData cmdData,int id) throws DaoException {
-        return countByRef(true,wrapperUser,connectionFactory,userData,cmdData,id);
+    public int countByRef1(ISQLM2NWrapperUser<T> wrapperUser,IJdbcDataFactoryBase dataFactory,UserData userData,CmdData cmdData,int id) throws DaoException {
+        return countByRef(true,wrapperUser,dataFactory,userData,cmdData,id);
     }
     
-    public int countByRef2(ISQLM2NWrapperUser<T> wrapperUser,ConnectionFactory connectionFactory,UserData userData,CmdData cmdData,int id) throws DaoException {
-        return countByRef(false,wrapperUser,connectionFactory,userData,cmdData,id);
+    public int countByRef2(ISQLM2NWrapperUser<T> wrapperUser,IJdbcDataFactoryBase dataFactory,UserData userData,CmdData cmdData,int id) throws DaoException {
+        return countByRef(false,wrapperUser,dataFactory,userData,cmdData,id);
     }
 
-    public void insert(ISQLM2NWrapperUser<T> wrapperUser, T data, ConnectionFactory connectionFactory,UserData userData,CmdData cmdData) throws DaoException {
+    public void insert(ISQLM2NWrapperUser<T> wrapperUser, T data, IJdbcDataFactoryBase dataFactory,UserData userData,CmdData cmdData) throws DaoException {
         PreparedStatement ps=null;
-        Connection con = ((cmdData!=null) && (cmdData instanceof JdbcCmdData))? ((JdbcCmdData)cmdData).getCon() : connectionFactory.getCon();
+        Connection con = ((cmdData!=null) && (cmdData instanceof JdbcCmdData))? ((JdbcCmdData)cmdData).getCon() : dataFactory.getConnectionFactory().getCon();
         try {
             String sql = wrapperUser.getInsSql();
             log.info(sql);
@@ -69,9 +69,9 @@ public class SQLExecM2NWrapper<T> extends SQLWrapperBase {
         }
     }
 
-    public void delete(ISQLM2NWrapperUser wrapperUser, int refId1,int refId2, ConnectionFactory connectionFactory,UserData userData,CmdData cmdData) throws DaoException {
+    public void delete(ISQLM2NWrapperUser wrapperUser, int refId1,int refId2, IJdbcDataFactoryBase dataFactory,UserData userData,CmdData cmdData) throws DaoException {
         PreparedStatement ps=null;
-        Connection con = ((cmdData!=null) && (cmdData instanceof JdbcCmdData))? ((JdbcCmdData)cmdData).getCon() : connectionFactory.getCon();
+        Connection con = ((cmdData!=null) && (cmdData instanceof JdbcCmdData))? ((JdbcCmdData)cmdData).getCon() : dataFactory.getConnectionFactory().getCon();
         try {
             String sql = wrapperUser.getDelSql();
             log.info(sql);
@@ -89,10 +89,10 @@ public class SQLExecM2NWrapper<T> extends SQLWrapperBase {
         }
     }
 
-    public T byIds(ISQLM2NWrapperUser<T> wrapperUser,ConnectionFactory connectionFactory,UserData userData,CmdData cmdData,int refId1,int refId2) throws DaoException {
+    public T byIds(ISQLM2NWrapperUser<T> wrapperUser,IJdbcDataFactoryBase dataFactory,UserData userData,CmdData cmdData,int refId1,int refId2) throws DaoException {
         PreparedStatement ps=null;
         ResultSet rs=null;
-        Connection con = ((cmdData!=null) && (cmdData instanceof JdbcCmdData))? ((JdbcCmdData)cmdData).getCon() : connectionFactory.getCon();            
+        Connection con = ((cmdData!=null) && (cmdData instanceof JdbcCmdData))? ((JdbcCmdData)cmdData).getCon() : dataFactory.getConnectionFactory().getCon();            
         try {
             String sql = wrapperUser.getSelectByIdsSql();
             sql+=StringConsts.ID_RESTR;
@@ -118,10 +118,10 @@ public class SQLExecM2NWrapper<T> extends SQLWrapperBase {
         }
     }    
     
-    private List<T> byRef(boolean ref1,ISQLM2NWrapperUser<T> wrapperUser,ConnectionFactory connectionFactory,UserData userData,CmdData cmdData,int id) throws DaoException {
+    private List<T> byRef(boolean ref1,ISQLM2NWrapperUser<T> wrapperUser,IJdbcDataFactoryBase dataFactory,UserData userData,CmdData cmdData,int id) throws DaoException {
         PreparedStatement ps=null;
         ResultSet rs=null;
-        Connection con = ((cmdData!=null) && (cmdData instanceof JdbcCmdData))? ((JdbcCmdData)cmdData).getCon() : connectionFactory.getCon();            
+        Connection con = ((cmdData!=null) && (cmdData instanceof JdbcCmdData))? ((JdbcCmdData)cmdData).getCon() : dataFactory.getConnectionFactory().getCon();            
         try {
             String sql = ref1 ? wrapperUser.getSelectSqlRef1() : wrapperUser.getSelectSqlRef2();
             log.info(sql);
@@ -146,10 +146,10 @@ public class SQLExecM2NWrapper<T> extends SQLWrapperBase {
         }
     }
 
-    private int countByRef(boolean ref1,ISQLM2NWrapperUser<T> wrapperUser,ConnectionFactory connectionFactory,UserData userData,CmdData cmdData,int id) throws DaoException {
+    private int countByRef(boolean ref1,ISQLM2NWrapperUser<T> wrapperUser,IJdbcDataFactoryBase dataFactory,UserData userData,CmdData cmdData,int id) throws DaoException {
         PreparedStatement ps=null;
         ResultSet rs=null;
-        Connection con = ((cmdData!=null) && (cmdData instanceof JdbcCmdData))? ((JdbcCmdData)cmdData).getCon() : connectionFactory.getCon();            
+        Connection con = ((cmdData!=null) && (cmdData instanceof JdbcCmdData))? ((JdbcCmdData)cmdData).getCon() : dataFactory.getConnectionFactory().getCon();            
         try {
             String sql = ref1 ? wrapperUser.getSelectSqlRef1() : wrapperUser.getSelectSqlRef2();
             sql=wrapperUser.addCountToSql(sql);

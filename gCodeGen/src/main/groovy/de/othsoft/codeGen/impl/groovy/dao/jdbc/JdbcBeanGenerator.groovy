@@ -128,29 +128,28 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import de.othsoft.codeGen.requirements.jdbc.utils.IJdbcDataFactoryBase;
 
 public class ${className} extends ${baseClassName} {
-    ConnectionFactory connectionFactory;
+    protected IJdbcDataFactoryBase dataFactory;
     private static final Logger log = LoggerFactory.getLogger(${className}.class);
-
-    public ${className} (ConnectionFactory connectionFactory,boolean changeble) {
+    public ${className} (IJdbcDataFactoryBase dataFactory,boolean changeble) {
         super();
         this.changeble = changeble;
-        this.connectionFactory = connectionFactory;
+        this.dataFactory = dataFactory;
     }
 
-    public static ${baseClassName} byId(ConnectionFactory connectionFactory,boolean changeble,UserData userData,CmdData cmdData,int id) throws DaoException {
+    public static ${baseClassName} byId(IJdbcDataFactoryBase dataFactory,boolean changeble,UserData userData,CmdData cmdData,int id) throws DaoException {
         SQLExecWrapper<${baseClassName}> wrapper = new SQLExecWrapper(log);
-        ${baseClassName} ret = wrapper.byId(wrapperUser,connectionFactory,userData,cmdData,id);
+        ${baseClassName} ret = wrapper.byId(wrapperUser,dataFactory,userData,cmdData,id);
         if (ret!=null && changeble)
             ret.setChangeble(changeble);
         return ret;
     }
 
-    public static List<${baseClassName}> get(ConnectionFactory connectionFactory,boolean changeble,UserData userData,CmdData cmdData,List<QueryRestr> restr,List<QuerySort> sort,int offset,int count) throws DaoException {
+    public static List<${baseClassName}> get(IJdbcDataFactoryBase dataFactory,boolean changeble,UserData userData,CmdData cmdData,List<QueryRestr> restr,List<QuerySort> sort,int offset,int count) throws DaoException {
         SQLExecWrapper<${baseClassName}> wrapper = new SQLExecWrapper(log);
-        List<${baseClassName}> retList = wrapper.get(wrapperUser,connectionFactory,userData,cmdData,restr,sort,offset,count);
+        List<${baseClassName}> retList = wrapper.get(wrapperUser,dataFactory,userData,cmdData,restr,sort,offset,count);
         if (changeble) {
             for (${baseClassName} ret : retList) {
                 ret.setChangeble(changeble);
@@ -159,9 +158,9 @@ public class ${className} extends ${baseClassName} {
         return retList;
     }
 
-    public static int count(ConnectionFactory connectionFactory,UserData userData,CmdData cmdData,List<QueryRestr> restr) throws DaoException {
+    public static int count(IJdbcDataFactoryBase dataFactory,UserData userData,CmdData cmdData,List<QueryRestr> restr) throws DaoException {
         SQLExecWrapper<${baseClassName}> wrapper = new SQLExecWrapper(log);
-        return wrapper.count(wrapperUser,connectionFactory,userData,cmdData,restr);
+        return wrapper.count(wrapperUser,dataFactory,userData,cmdData,restr);
     }
 
     <% aktElem.attribs.each { attrib -> if ( attrib.type == strListType ) { 
@@ -179,10 +178,10 @@ public class ${className} extends ${baseClassName} {
         SQLExecWrapper<${tmpClass}> wrapper = new SQLExecWrapper(log);
         List<QueryRestr> restr = new ArrayList();
         restr.add(new QueryRestr(${tmpClass}.ID_BEZ,RestrType.EQUAL,${attrib.getNameWithFirstLetterLower()}IdTxt));
-        List<${tmpClass}> refList = wrapper.get(Jdbc_${tmpClassName}.wrapperUser,connectionFactory,userData,cmdData,restr,null,0,0);
+        List<${tmpClass}> refList = wrapper.get(Jdbc_${tmpClassName}.wrapperUser,dataFactory,userData,cmdData,restr,null,0,0);
         int refListSize = refList.size();
         if (refListSize==0) {
-            Jdbc_${tmpClassName} newElem = new Jdbc_${tmpClassName}(connectionFactory,true);
+            Jdbc_${tmpClassName} newElem = new Jdbc_${tmpClassName}(dataFactory,true);
             newElem.setBez(${attrib.getNameWithFirstLetterLower()}IdTxt);
             newElem.insert(cmdData, userData);
             ${attrib.getNameWithFirstLetterLower()}Id = newElem.getId();
@@ -212,7 +211,7 @@ public class ${className} extends ${baseClassName} {
         SQLExecWrapper<${tmpClass}> wrapper = new SQLExecWrapper(log);
         List<QueryRestr> restr = new ArrayList();
         restr.add(new QueryRestr(${tmpClass}.ID_${upperVisKeyCol},RestrType.EQUAL,${ref.getLowerCamelCaseName()}Txt));
-        List<${tmpClass}> refList = wrapper.get(Jdbc_${tmpClassName}.wrapperUser,connectionFactory,userData,cmdData,restr,null,0,0);
+        List<${tmpClass}> refList = wrapper.get(Jdbc_${tmpClassName}.wrapperUser,dataFactory,userData,cmdData,restr,null,0,0);
         int refListSize = refList.size();
         if (refListSize==0) {
             ${ref.getLowerCamelCaseName()} = null;
@@ -225,7 +224,6 @@ public class ${className} extends ${baseClassName} {
         }
     }
     <% } } %>
-
     @Override
     public void insert(CmdData cmdData,UserData userData) throws DaoException {
         if (!changeble) throw new DaoException ("this object is not changeble");
@@ -236,14 +234,14 @@ public class ${className} extends ${baseClassName} {
         init${ref.getUpperCamelCaseName()}WithTxt(cmdData,userData,null);
     <% } } %>
         SQLExecWrapper<${baseClassName}> wrapper = new SQLExecWrapper(log);
-        this.id = wrapper.insert(wrapperUser,this,connectionFactory,userData,cmdData);
+        this.id = wrapper.insert(wrapperUser,this,dataFactory,userData,cmdData);
     }
 
     @Override
     public void delete(CmdData cmdData,UserData userData) throws DaoException {
         if (!changeble) throw new DaoException ("this object is not changeble");
         SQLExecWrapper<${baseClassName}> wrapper = new SQLExecWrapper(log);
-        wrapper.delete(wrapperUser,getId(),connectionFactory,userData,cmdData);
+        wrapper.delete(wrapperUser,getId(),dataFactory,userData,cmdData);
     }
 
     @Override
@@ -257,7 +255,7 @@ public class ${className} extends ${baseClassName} {
         init${ref.getUpperCamelCaseName()}WithTxt(cmdData,userData,origState.get${ref.getUpperCamelCaseName()}Txt());
     <% } } %>
         SQLExecWrapper<${baseClassName}> wrapper = new SQLExecWrapper(log);
-        wrapper.update(wrapperUser,this,connectionFactory,userData,cmdData);
+        wrapper.update(wrapperUser,this,dataFactory,userData,cmdData);
     }
 
     public final static ${className}_User wrapperUser = new ${className}_User();
@@ -267,43 +265,59 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}>,
         ISQLInsWrapperUser<${baseClassName}>,ISQLUpdWrapperUser<${baseClassName}>, ISQLDelWrapperUser {
     @Override
     public String getSelectBaseSql() {
-        String sql = StringConsts.SQL_SELECT_BASE + "${aktElem.id}.id AS ${aktElem.id}_a0";
-    <% aktElem.attribs.each { attrib -> if ( attrib.type == strListType ) { %>
-        sql += ",${aktElem.id}.${attrib.name}_id AS ${attrib.id}";
+        String sql = "SELECT ${aktElem.id}.id AS ${aktElem.id}_a0";
+    <% aktElem.attribs.each { attrib -> if ( attrib.type == strListType ) { 
+    %>    sql += ",${aktElem.id}.${attrib.name}_id AS ${attrib.id}";
         sql += ",${attrib.id}.bez AS ${attrib.id}Txt";
-    <% } else { %>
-        sql += ",${aktElem.id}.${attrib.name} AS ${attrib.id}";
+    <% } else {
+    %>    sql += ",${aktElem.id}.${attrib.name} AS ${attrib.id}";
     <% } } %>
-    <% aktElem.refs.each { ref -> %>
-        sql += ",${aktElem.id}.${ref.name} AS ${ref.id}";
-    <% if (ref.entity.hasVisKey()) { %>
-        sql += ",${ref.id}.${ref.entity.getVisKey().name} AS ${ref.id}Txt";
+    <% aktElem.refs.each { ref ->
+    %>    sql += ",${aktElem.id}.${ref.name} AS ${ref.id}";
+    <% if (ref.entity.hasVisKey()) {
+    %>    sql += ",${ref.id}.${ref.entity.getVisKey().name} AS ${ref.id}Txt";
+    <% } }
+    %>    sql += " FROM ${model.shortName}_${aktElem.name} ${aktElem.id}"; 
+    <% aktElem.attribs.each { attrib -> if ( attrib.type == strListType ) {
+    %>    sql += " LEFT OUTER JOIN ${model.shortName}_${aktElem.name}_${attrib.name} ${attrib.id} ON ${attrib.id}.id = ${aktElem.id}.${attrib.name}_id";
     <% } } %>
-        sql += " FROM ${model.shortName}_${aktElem.name} ${aktElem.id}"; 
-    <% aktElem.attribs.each { attrib -> if ( attrib.type == strListType ) { %>
-        sql += " LEFT OUTER JOIN ${model.shortName}_${aktElem.name}_${attrib.name} ${attrib.id} ON ${attrib.id}.id = ${aktElem.id}.${attrib.name}_id";
-    <% } } %>
-    <% aktElem.refs.each { ref -> if (ref.entity.hasVisKey()) { %>
-        sql += " LEFT OUTER JOIN ${model.shortName}_${ref.entity.name} ${ref.id} ON ${ref.id}.id = ${aktElem.id}.${ref.name}";
+    <% aktElem.refs.each { ref -> if (ref.entity.hasVisKey()) {
+    %>    sql += " LEFT OUTER JOIN ${model.shortName}_${ref.entity.name} ${ref.id} ON ${ref.id}.id = ${aktElem.id}.${ref.name}";
     <% } } %>
         return sql;
     }
     
     @Override
     public String appendFilterToSql(String sql,List<QueryRestr> restr) throws DaoException {
-        return null; // TODO
-    }
-
-    @Override
-    public String appendPagingToSql(String sql,int offset,int count) {
-        if (offset==0 && count==0)
-            return sql;
-        return null; // TODO
-    }
-
-    @Override
-    public String addCountToSql(String sql) {
-        return StringConsts.SQL_COUNT_PART_1+sql+StringConsts.SQL_COUNT_PART_2;
+        boolean bFirst=true;
+        for (QueryRestr r:restr) {
+            if (bFirst) {
+                sql+=StringConsts.WHERE_SQL;
+                bFirst=false;
+            }
+            else {
+                sql+=StringConsts.AND_SQL;
+            }
+            switch(r.getId()) {
+    <% aktElem.attribs.each { attrib -> if ( attrib.type == strListType ) 
+    { %>        case "${attrib.id}":\n\
+                sql += "${attrib.id}.bez=?";
+                break;
+    <% } else 
+    { %>        case "${attrib.id}":
+                sql += "${attrib.parent.id}.${attrib.name}=?";
+                break;
+    <% } } %>
+    <% aktElem.refs.each { ref -> 
+    %>        case "${ref.id}":
+                sql += "${ref.parent.id}.${ref.name}=?";
+                break;
+    <% } %>
+            default:
+                throw new DaoException("${className}_User.appendFilterToSql - unknown filter id: "+r.getId());
+            }
+        }
+        return sql;
     }
 
     @Override
@@ -360,18 +374,18 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}>,
     public String getUpdSql(${baseClassName} data) {
         String colPart=null;
     <% aktElem.attribs.each { attrib -> if ( attrib.type == strListType ) 
-    { %>if (SQLExecWrapper.isChanged(data.getOrigState().get${attrib.getNameWithFirstLetterUpper()}Id(),data.get${attrib.getNameWithFirstLetterUpper()}Id())) {
+    { %>    if (SQLExecWrapper.isChanged(data.getOrigState().get${attrib.getNameWithFirstLetterUpper()}Id(),data.get${attrib.getNameWithFirstLetterUpper()}Id())) {
             if (colPart!=null) colPart+=",";
             colPart+="${attrib.getNameWithFirstLetterLower()}Id=?";
         }
     <% } else 
-    { %>if (SQLExecWrapper.isChanged(data.getOrigState().get${attrib.getNameWithFirstLetterUpper()}(),data.get${attrib.getNameWithFirstLetterUpper()}())) {
+    { %>    if (SQLExecWrapper.isChanged(data.getOrigState().get${attrib.getNameWithFirstLetterUpper()}(),data.get${attrib.getNameWithFirstLetterUpper()}())) {
             if (colPart!=null) colPart+=",";
             colPart+="${attrib.getNameWithFirstLetterLower()}=?";
         }
     <% } } %>
     <% aktElem.refs.each { ref -> 
-    %>if (SQLExecWrapper.isChanged(data.getOrigState().get${ref.getUpperCamelCaseName()}(),data.get${ref.getUpperCamelCaseName()}())) {
+    %>    if (SQLExecWrapper.isChanged(data.getOrigState().get${ref.getUpperCamelCaseName()}(),data.get${ref.getUpperCamelCaseName()}())) {
             if (colPart!=null) colPart+=",";
             colPart+="${ref.getLowerCamelCaseName()}=?";
         }
@@ -384,22 +398,18 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}>,
     public void setUpdValues(PreparedStatement ps,${baseClassName} data) throws SQLException {
         int i=0;
     <% aktElem.attribs.each { attrib -> if ( attrib.type == strListType ) 
-    { %>    
-        if (SQLExecWrapper.isChanged(data.getOrigState().get${attrib.getNameWithFirstLetterUpper()}Id(),data.get${attrib.getNameWithFirstLetterUpper()}Id())) {
+    { %>    if (SQLExecWrapper.isChanged(data.getOrigState().get${attrib.getNameWithFirstLetterUpper()}Id(),data.get${attrib.getNameWithFirstLetterUpper()}Id())) {
             i++;
             ps.setObject(i,data.get${attrib.getNameWithFirstLetterUpper()}Id());
         }
     <% } else 
-    { %>
-
-        if (SQLExecWrapper.isChanged(data.getOrigState().get${attrib.getNameWithFirstLetterUpper()}(),data.get${attrib.getNameWithFirstLetterUpper()}())) {
+    { %>    if (SQLExecWrapper.isChanged(data.getOrigState().get${attrib.getNameWithFirstLetterUpper()}(),data.get${attrib.getNameWithFirstLetterUpper()}())) {
             i++;
             ps.setObject(i,data.get${attrib.getNameWithFirstLetterUpper()}());
         }
     <% } } %>
     <% aktElem.refs.each { ref -> 
-    %>
-        if (SQLExecWrapper.isChanged(data.getOrigState().get${ref.getUpperCamelCaseName()}(),data.get${ref.getUpperCamelCaseName()}())) {
+    %>    if (SQLExecWrapper.isChanged(data.getOrigState().get${ref.getUpperCamelCaseName()}(),data.get${ref.getUpperCamelCaseName()}())) {
             i++;
             ps.setObject(i,data.get${ref.getUpperCamelCaseName()}());
         }
@@ -428,8 +438,8 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}>,
     }
 
     @Override
-    public ${className} create(ConnectionFactory connectionFactory,boolean changeble) {
-        return new ${className}(connectionFactory,changeble);
+    public ${className} create(IJdbcDataFactoryBase dataFactory,boolean changeble) {
+        return new ${className}(dataFactory,changeble);
     }
 
     static {
@@ -474,29 +484,30 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import de.othsoft.codeGen.requirements.jdbc.utils.IJdbcDataFactoryBase;
 
 
 public class ${className} extends ${baseClassName} {
-    ConnectionFactory connectionFactory;
+    protected IJdbcDataFactoryBase dataFactory;
     private static final Logger log = LoggerFactory.getLogger(${className}.class);
 
-    public ${className} (ConnectionFactory connectionFactory,boolean changeble) {
+    public ${className} (IJdbcDataFactoryBase dataFactory,boolean changeble) {
         super();
         this.changeble = changeble;
-        this.connectionFactory = connectionFactory;
+        this.dataFactory = dataFactory;
     }
 
-    public static ${baseClassName} byId(ConnectionFactory connectionFactory,boolean changeble,UserData userData,CmdData cmdData,int id) throws DaoException {
+    public static ${baseClassName} byId(IJdbcDataFactoryBase dataFactory,boolean changeble,UserData userData,CmdData cmdData,int id) throws DaoException {
         SQLExecWrapper<${baseClassName}> wrapper = new SQLExecWrapper(log);
-        ${baseClassName} ret = wrapper.byId(wrapperUser,connectionFactory,userData,cmdData,id);
+        ${baseClassName} ret = wrapper.byId(wrapperUser,dataFactory,userData,cmdData,id);
         if (ret!=null && changeble)
             ret.setChangeble(changeble);
         return ret;
     }
 
-    public static List<${baseClassName}> get(ConnectionFactory connectionFactory,boolean changeble,UserData userData,CmdData cmdData,List<QueryRestr> restr,List<QuerySort> sort,int offset,int count) throws DaoException {
+    public static List<${baseClassName}> get(IJdbcDataFactoryBase dataFactory,boolean changeble,UserData userData,CmdData cmdData,List<QueryRestr> restr,List<QuerySort> sort,int offset,int count) throws DaoException {
         SQLExecWrapper<${baseClassName}> wrapper = new SQLExecWrapper(log);
-        List<${baseClassName}> retList = wrapper.get(wrapperUser,connectionFactory,userData,cmdData,restr,sort,offset,count);
+        List<${baseClassName}> retList = wrapper.get(wrapperUser,dataFactory,userData,cmdData,restr,sort,offset,count);
         if (changeble) {
             for (${baseClassName} ret : retList) {
                 ret.setChangeble(changeble);
@@ -505,30 +516,30 @@ public class ${className} extends ${baseClassName} {
         return retList;
     }
 
-    public static int count(ConnectionFactory connectionFactory,UserData userData,CmdData cmdData,List<QueryRestr> restr) throws DaoException {
+    public static int count(IJdbcDataFactoryBase dataFactory,UserData userData,CmdData cmdData,List<QueryRestr> restr) throws DaoException {
         SQLExecWrapper<${baseClassName}> wrapper = new SQLExecWrapper(log);
-        return wrapper.count(wrapperUser,connectionFactory,userData,cmdData,restr);
+        return wrapper.count(wrapperUser,dataFactory,userData,cmdData,restr);
     }
 
     @Override
     public void insert(CmdData cmdData,UserData userData) throws DaoException {
         if (!changeble) throw new DaoException ("this object is not changeble");
         SQLExecWrapper<${baseClassName}> wrapper = new SQLExecWrapper(log);
-        this.id = wrapper.insert(wrapperUser,this,connectionFactory,userData,cmdData);
+        this.id = wrapper.insert(wrapperUser,this,dataFactory,userData,cmdData);
     }
 
     @Override
     public void delete(CmdData cmdData,UserData userData) throws DaoException {
         if (!changeble) throw new DaoException ("this object is not changeble");
         SQLExecWrapper<${baseClassName}> wrapper = new SQLExecWrapper(log);
-        wrapper.delete(wrapperUser,getId(),connectionFactory,userData,cmdData);
+        wrapper.delete(wrapperUser,getId(),dataFactory,userData,cmdData);
     }
 
     @Override
     public void update(CmdData cmdData,UserData userData) throws DaoException {
         if (!changeble) throw new DaoException ("this object is not changeble");
         SQLExecWrapper<${baseClassName}> wrapper = new SQLExecWrapper(log);
-        wrapper.update(wrapperUser,this,connectionFactory,userData,cmdData);
+        wrapper.update(wrapperUser,this,dataFactory,userData,cmdData);
     }
 
     public final static ${className}_User wrapperUser = new ${className}_User();
@@ -544,18 +555,6 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}>,
     @Override
     public String appendFilterToSql(String sql,List<QueryRestr> restr) throws DaoException {
         return null; // TODO
-    }
-
-    @Override
-    public String appendPagingToSql(String sql,int offset,int count) {
-        if (offset==0 && count==0)
-            return sql;
-        return null; // TODO
-    }
-
-    @Override
-    public String addCountToSql(String sql) {
-        return StringConsts.SQL_COUNT_PART_1+sql+StringConsts.SQL_COUNT_PART_2;
     }
 
     @Override
@@ -589,8 +588,8 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}>,
     }
 
     @Override
-    public ${className} create(ConnectionFactory connectionFactory,boolean changeble) {
-        return new ${className}(connectionFactory,changeble);
+    public ${className} create(IJdbcDataFactoryBase dataFactory,boolean changeble) {
+        return new ${className}(dataFactory,changeble);
     }
 
     @Override
@@ -632,30 +631,31 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import de.othsoft.codeGen.requirements.jdbc.utils.IJdbcDataFactoryBase;
 
 
 public class ${className} extends ${baseClassName} {
-    ConnectionFactory connectionFactory;
+    protected IJdbcDataFactoryBase dataFactory;
     private static final Logger log = LoggerFactory.getLogger(${className}.class);
 
-    public ${className} (ConnectionFactory connectionFactory) {
+    public ${className} (IJdbcDataFactoryBase dataFactory) {
         super();
-        this.connectionFactory = connectionFactory;
+        this.dataFactory = dataFactory;
     }
 
-    public static ${baseClassName} byId(ConnectionFactory connectionFactory,UserData userData,CmdData cmdData,int id) throws DaoException {
+    public static ${baseClassName} byId(IJdbcDataFactoryBase dataFactory,UserData userData,CmdData cmdData,int id) throws DaoException {
         SQLExecWrapper<${baseClassName}> wrapper = new SQLExecWrapper(log);
-        return wrapper.byId(wrapperUser,connectionFactory,userData,cmdData,id);
+        return wrapper.byId(wrapperUser,dataFactory,userData,cmdData,id);
     }
 
-    public static List<${baseClassName}> get(ConnectionFactory connectionFactory,UserData userData,CmdData cmdData,List<QueryRestr> restr,List<QuerySort> sort,int offset,int count) throws DaoException {
+    public static List<${baseClassName}> get(IJdbcDataFactoryBase dataFactory,UserData userData,CmdData cmdData,List<QueryRestr> restr,List<QuerySort> sort,int offset,int count) throws DaoException {
         SQLExecWrapper<${baseClassName}> wrapper = new SQLExecWrapper(log);
-        return wrapper.get(wrapperUser,connectionFactory,userData,cmdData,restr,sort,offset,count);
+        return wrapper.get(wrapperUser,dataFactory,userData,cmdData,restr,sort,offset,count);
     }
 
-    public static int count(ConnectionFactory connectionFactory,UserData userData,CmdData cmdData,List<QueryRestr> restr) throws DaoException {
+    public static int count(IJdbcDataFactoryBase dataFactory,UserData userData,CmdData cmdData,List<QueryRestr> restr) throws DaoException {
         SQLExecWrapper<${baseClassName}> wrapper = new SQLExecWrapper(log);
-        return wrapper.count(wrapperUser,connectionFactory,userData,cmdData,restr);
+        return wrapper.count(wrapperUser,dataFactory,userData,cmdData,restr);
     }
 
     private final static ${className}_User wrapperUser = new ${className}_User();
@@ -670,18 +670,6 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}> {
     @Override
     public String appendFilterToSql(String sql,List<QueryRestr> restr) throws DaoException {
         return null; // TODO
-    }
-
-    @Override
-    public String appendPagingToSql(String sql,int offset,int count) {
-        if (offset==0 && count==0)
-            return sql;
-        return null; // TODO
-    }
-
-    @Override
-    public String addCountToSql(String sql) {
-        return StringConsts.SQL_COUNT_PART_1+sql+StringConsts.SQL_COUNT_PART_2;
     }
 
     @Override
@@ -721,51 +709,52 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import de.othsoft.codeGen.requirements.jdbc.utils.IJdbcDataFactoryBase;
 
 
 public class ${className} extends ${baseClassName} {
-    ConnectionFactory connectionFactory;
+    protected IJdbcDataFactoryBase dataFactory;
     private static final Logger log = LoggerFactory.getLogger(${className}.class);
 
-    public ${className} (ConnectionFactory connectionFactory) {
+    public ${className} (IJdbcDataFactoryBase dataFactory) {
         super();
-        this.connectionFactory = connectionFactory;
+        this.dataFactory = dataFactory;
     }
 
-    public static List<${baseClassName}> by${aktElem.ref1.refName}(ConnectionFactory connectionFactory,UserData userData,CmdData cmdData,int id) throws DaoException {
+    public static List<${baseClassName}> by${aktElem.ref1.refName}(IJdbcDataFactoryBase dataFactory,UserData userData,CmdData cmdData,int id) throws DaoException {
         SQLExecM2NWrapper<${baseClassName}> wrapper = new SQLExecM2NWrapper(log);
-        return wrapper.byRef1(wrapperUser,connectionFactory,userData,cmdData,id);
+        return wrapper.byRef1(wrapperUser,dataFactory,userData,cmdData,id);
     }
 
-    public static int countBy${aktElem.ref1.refName}(ConnectionFactory connectionFactory,UserData userData,CmdData cmdData,int id) throws DaoException {
+    public static int countBy${aktElem.ref1.refName}(IJdbcDataFactoryBase dataFactory,UserData userData,CmdData cmdData,int id) throws DaoException {
         SQLExecM2NWrapper<${baseClassName}> wrapper = new SQLExecM2NWrapper(log);
-        return wrapper.countByRef1(wrapperUser,connectionFactory,userData,cmdData,id);
+        return wrapper.countByRef1(wrapperUser,dataFactory,userData,cmdData,id);
     }
-    public static List<${baseClassName}> by${aktElem.ref2.refName}(ConnectionFactory connectionFactory,UserData userData,CmdData cmdData,int id) throws DaoException {
+    public static List<${baseClassName}> by${aktElem.ref2.refName}(IJdbcDataFactoryBase dataFactory,UserData userData,CmdData cmdData,int id) throws DaoException {
         SQLExecM2NWrapper<${baseClassName}> wrapper = new SQLExecM2NWrapper(log);
-        return wrapper.byRef2(wrapperUser,connectionFactory,userData,cmdData,id);
-    }
-
-    public static int countBy${aktElem.ref2.refName}(ConnectionFactory connectionFactory,UserData userData,CmdData cmdData,int id) throws DaoException {
-        SQLExecM2NWrapper<${baseClassName}> wrapper = new SQLExecM2NWrapper(log);
-        return wrapper.countByRef1(wrapperUser,connectionFactory,userData,cmdData,id);
+        return wrapper.byRef2(wrapperUser,dataFactory,userData,cmdData,id);
     }
 
-    public static ${baseClassName} byIds(ConnectionFactory connectionFactory,UserData userData,CmdData cmdData,int id${aktElem.ref1.refName},int id${aktElem.ref2.refName}) throws DaoException {
+    public static int countBy${aktElem.ref2.refName}(IJdbcDataFactoryBase dataFactory,UserData userData,CmdData cmdData,int id) throws DaoException {
         SQLExecM2NWrapper<${baseClassName}> wrapper = new SQLExecM2NWrapper(log);
-        return wrapper.byIds(wrapperUser,connectionFactory,userData,cmdData,id${aktElem.ref1.refName},id${aktElem.ref2.refName});
+        return wrapper.countByRef1(wrapperUser,dataFactory,userData,cmdData,id);
+    }
+
+    public static ${baseClassName} byIds(IJdbcDataFactoryBase dataFactory,UserData userData,CmdData cmdData,int id${aktElem.ref1.refName},int id${aktElem.ref2.refName}) throws DaoException {
+        SQLExecM2NWrapper<${baseClassName}> wrapper = new SQLExecM2NWrapper(log);
+        return wrapper.byIds(wrapperUser,dataFactory,userData,cmdData,id${aktElem.ref1.refName},id${aktElem.ref2.refName});
     }
 
     @Override
     public void insert(CmdData cmdData,UserData userData) throws DaoException {
         SQLExecM2NWrapper<${baseClassName}> wrapper = new SQLExecM2NWrapper(log);
-        wrapper.insert(wrapperUser,this,connectionFactory,userData,cmdData);
+        wrapper.insert(wrapperUser,this,dataFactory,userData,cmdData);
     }
 
     @Override
     public void delete(CmdData cmdData,UserData userData) throws DaoException {
         SQLExecM2NWrapper<${baseClassName}> wrapper = new SQLExecM2NWrapper(log);
-        wrapper.delete(wrapperUser,get${aktElem.ref1.getUpperCamelCaseName()}(),get${aktElem.ref2.getUpperCamelCaseName()}(),connectionFactory,userData,cmdData);
+        wrapper.delete(wrapperUser,get${aktElem.ref1.getUpperCamelCaseName()}(),get${aktElem.ref2.getUpperCamelCaseName()}(),dataFactory,userData,cmdData);
     }    
 
     private final static ${className}_User wrapperUser = new ${className}_User();
@@ -786,10 +775,10 @@ class ${className}_User implements ISQLM2NWrapperUser<${baseClassName}> {
     public String getSelectByIdsSql() {
         return null; // TODO
     }
-
+    
     @Override
     public String addCountToSql(String sql) {
-        return null; // TODO
+        return sql; // TODO
     }
 
     @Override

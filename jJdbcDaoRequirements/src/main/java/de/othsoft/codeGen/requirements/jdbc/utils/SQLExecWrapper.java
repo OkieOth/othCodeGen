@@ -18,7 +18,6 @@ import de.othsoft.codeGen.requirements.DaoException;
 import de.othsoft.codeGen.requirements.QueryRestr;
 import de.othsoft.codeGen.requirements.QuerySort;
 import de.othsoft.codeGen.requirements.UserData;
-import de.othsoft.codeGen.requirements.jdbc.ConnectionFactory;
 import de.othsoft.codeGen.requirements.jdbc.JdbcCmdData;
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -82,10 +81,10 @@ public class SQLExecWrapper<T> extends SQLWrapperBase {
         super(log);
     }
         
-    public Integer insert(ISQLInsWrapperUser<T> wrapperUser, T data, ConnectionFactory connectionFactory,UserData userData,CmdData cmdData) throws DaoException {
+    public Integer insert(ISQLInsWrapperUser<T> wrapperUser, T data, IJdbcDataFactoryBase dataFactory,UserData userData,CmdData cmdData) throws DaoException {
         PreparedStatement ps=null;
         ResultSet rs=null;
-        Connection con = ((cmdData!=null) && (cmdData instanceof JdbcCmdData))? ((JdbcCmdData)cmdData).getCon() : connectionFactory.getCon();
+        Connection con = ((cmdData!=null) && (cmdData instanceof JdbcCmdData))? ((JdbcCmdData)cmdData).getCon() : dataFactory.getConnectionFactory().getCon();
         try {
             String sql = wrapperUser.getInsSql();
             log.info(sql);
@@ -106,9 +105,9 @@ public class SQLExecWrapper<T> extends SQLWrapperBase {
         }
     }
 
-    public void delete(ISQLDelWrapperUser wrapperUser, int id, ConnectionFactory connectionFactory,UserData userData,CmdData cmdData) throws DaoException {
+    public void delete(ISQLDelWrapperUser wrapperUser, int id, IJdbcDataFactoryBase dataFactory,UserData userData,CmdData cmdData) throws DaoException {
         PreparedStatement ps=null;
-        Connection con = ((cmdData!=null) && (cmdData instanceof JdbcCmdData))? ((JdbcCmdData)cmdData).getCon() : connectionFactory.getCon();
+        Connection con = ((cmdData!=null) && (cmdData instanceof JdbcCmdData))? ((JdbcCmdData)cmdData).getCon() : dataFactory.getConnectionFactory().getCon();
         try {
             String sql = wrapperUser.getDelSql();
             log.info(sql);
@@ -125,9 +124,9 @@ public class SQLExecWrapper<T> extends SQLWrapperBase {
         }
     }
 
-    public void update(ISQLUpdWrapperUser<T> wrapperUser, T data, ConnectionFactory connectionFactory,UserData userData,CmdData cmdData) throws DaoException {
+    public void update(ISQLUpdWrapperUser<T> wrapperUser, T data, IJdbcDataFactoryBase dataFactory,UserData userData,CmdData cmdData) throws DaoException {
         PreparedStatement ps=null;
-        Connection con = ((cmdData!=null) && (cmdData instanceof JdbcCmdData))? ((JdbcCmdData)cmdData).getCon() : connectionFactory.getCon();
+        Connection con = ((cmdData!=null) && (cmdData instanceof JdbcCmdData))? ((JdbcCmdData)cmdData).getCon() : dataFactory.getConnectionFactory().getCon();
         try {
             String sql = wrapperUser.getUpdSql(data);
             log.info(sql);
@@ -145,14 +144,14 @@ public class SQLExecWrapper<T> extends SQLWrapperBase {
     }
 
     
-    public int count(ISQLQueryWrapperUser<T> wrapperUser,ConnectionFactory connectionFactory,UserData userData,CmdData cmdData,List<QueryRestr> restr) throws DaoException {
+    public int count(ISQLQueryWrapperUser<T> wrapperUser,IJdbcDataFactoryBase dataFactory,UserData userData,CmdData cmdData,List<QueryRestr> restr) throws DaoException {
         PreparedStatement ps=null;
         ResultSet rs=null;
-        Connection con = ((cmdData!=null) && (cmdData instanceof JdbcCmdData))? ((JdbcCmdData)cmdData).getCon() : connectionFactory.getCon();            
+        Connection con = ((cmdData!=null) && (cmdData instanceof JdbcCmdData))? ((JdbcCmdData)cmdData).getCon() : dataFactory.getConnectionFactory().getCon();            
         try {
             String sql = wrapperUser.getSelectBaseSql();
             sql=wrapperUser.appendFilterToSql(sql, restr);
-            sql=wrapperUser.addCountToSql(sql);
+            sql=addCountToSql(sql);
             log.info(sql);
             ps=con.prepareStatement(sql);
             wrapperUser.setFilterValues(ps,restr);
@@ -171,15 +170,17 @@ public class SQLExecWrapper<T> extends SQLWrapperBase {
     }
 
     
-    public List<T> get(ISQLQueryWrapperUser<T> wrapperUser,ConnectionFactory connectionFactory,UserData userData,CmdData cmdData,List<QueryRestr> restr,List<QuerySort> sort,int offset,int count)
+    public List<T> get(ISQLQueryWrapperUser<T> wrapperUser,IJdbcDataFactoryBase dataFactory,UserData userData,CmdData cmdData,List<QueryRestr> restr,List<QuerySort> sort,int offset,int count)
             throws DaoException {
         PreparedStatement ps=null;
         ResultSet rs=null;
-        Connection con = ((cmdData!=null) && (cmdData instanceof JdbcCmdData))? ((JdbcCmdData)cmdData).getCon() : connectionFactory.getCon();            
+        Connection con = ((cmdData!=null) && (cmdData instanceof JdbcCmdData))? ((JdbcCmdData)cmdData).getCon() : dataFactory.getConnectionFactory().getCon();            
         try {
             String sql = wrapperUser.getSelectBaseSql();
             sql=wrapperUser.appendFilterToSql(sql, restr);
-            sql=wrapperUser.appendPagingToSql(sql,offset,count);
+            if (offset==0 && count==0)
+                // this code depends from used database, so I link to a special implementation
+                sql=dataFactory.getSetPagingImpl().appendPagingToSql(sql,offset,count);
             log.info(sql);
             ps=con.prepareStatement(sql);
             wrapperUser.setFilterValues(ps,restr);
@@ -201,10 +202,10 @@ public class SQLExecWrapper<T> extends SQLWrapperBase {
     }
 
     
-    public T byId(ISQLQueryWrapperUser<T> wrapperUser,ConnectionFactory connectionFactory,UserData userData,CmdData cmdData,int id) throws DaoException {
+    public T byId(ISQLQueryWrapperUser<T> wrapperUser,IJdbcDataFactoryBase dataFactory,UserData userData,CmdData cmdData,int id) throws DaoException {
         PreparedStatement ps=null;
         ResultSet rs=null;
-        Connection con = ((cmdData!=null) && (cmdData instanceof JdbcCmdData))? ((JdbcCmdData)cmdData).getCon() : connectionFactory.getCon();            
+        Connection con = ((cmdData!=null) && (cmdData instanceof JdbcCmdData))? ((JdbcCmdData)cmdData).getCon() : dataFactory.getConnectionFactory().getCon();            
         try {
             String sql = wrapperUser.getSelectBaseSql();
             sql+=StringConsts.ID_RESTR;
@@ -228,5 +229,4 @@ public class SQLExecWrapper<T> extends SQLWrapperBase {
             ggfCloseConnection(cmdData,con);
         }
     }
-
 }

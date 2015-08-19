@@ -12,20 +12,10 @@ specific language governing permissions and limitations under the License.
 */
 package de.othsoft.codeGen.requirements.jdbc.utils;
 
-import de.othsoft.codeGen.requirements.DaoException;
-import de.othsoft.codeGen.requirements.QueryRestr;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
-
 /**
  *
  * @author eiko
  */
-public interface ISQLQueryWrapperUser<T> {
-    String getSelectBaseSql();
-    String appendFilterToSql(String sql,List<QueryRestr> restr) throws DaoException;
-    void setFilterValues(PreparedStatement ps, List<QueryRestr> restr) throws SQLException;
-    T initFromResultSet(ResultSet rs) throws SQLException;
+public interface ISetPagingImpl {
+    String appendPagingToSql(String sql,int offset,int count);
 }

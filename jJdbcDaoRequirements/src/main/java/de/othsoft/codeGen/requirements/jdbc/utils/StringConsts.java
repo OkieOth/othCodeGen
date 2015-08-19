@@ -20,6 +20,7 @@ public class StringConsts {
     public static final String ID_RESTR=" id=?";
     public static final String WHERE_ID_SQL=" WHERE id=?";
     public static final String WHERE_SQL=" WHERE ";
+    public static final String AND_SQL=" AND ";
     public static final String SQL_COUNT_PART_1="SELECT count(*) AS c FROM (";
     public static final String SQL_COUNT_PART_2=") c";
     public static final String SQL_SELECT_BASE="SELECT ";

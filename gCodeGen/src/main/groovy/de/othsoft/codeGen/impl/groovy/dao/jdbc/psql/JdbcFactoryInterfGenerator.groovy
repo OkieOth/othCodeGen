@@ -73,7 +73,6 @@ class JdbcFactoryInterfGenerator implements ICodeGenImpl {
 
 import de.othsoft.codeGen.requirements.CmdData;
 import de.othsoft.codeGen.requirements.DaoException;
-
 import java.util.List;
 
 public interface IJdbcDataFactory_${model.shortName} extends IDataFactory_${model.shortName} {

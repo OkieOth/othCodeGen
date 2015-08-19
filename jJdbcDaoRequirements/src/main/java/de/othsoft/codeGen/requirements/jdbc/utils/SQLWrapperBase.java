@@ -13,6 +13,7 @@ specific language governing permissions and limitations under the License.
 package de.othsoft.codeGen.requirements.jdbc.utils;
 
 import de.othsoft.codeGen.requirements.CmdData;
+import de.othsoft.codeGen.requirements.QueryRestr;
 import de.othsoft.codeGen.requirements.jdbc.JdbcCmdData;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -60,4 +61,82 @@ public class SQLWrapperBase {
             }
         }
     }    
+    protected String addCountToSql(String sql) {
+        return StringConsts.SQL_COUNT_PART_1+sql+StringConsts.SQL_COUNT_PART_2;
+    }
+    
+    protected String addFilter2Sql(String colName, QueryRestr r, String sql) {
+        StringBuilder sb;
+        switch(r.getType()) {
+            case EQUAL:
+                sb = new StringBuilder(colName);
+                sb.append(SQL_STR_EQUAL);
+                sb.append(SQL_STR_FRAGEZ);
+                break;
+            case NULL:
+                sb = new StringBuilder(colName);
+                sb.append(SQL_STR_NULL);
+                break;
+            case LARGER:
+                sb = new StringBuilder(colName);
+                sb.append(SQL_STR_LARGER);
+                sb.append(SQL_STR_FRAGEZ);
+                break;
+            case SMALLER:
+                break;
+            case LARGEREQUAL:
+                break;
+            case SMALLEREQUAL:
+                break;
+            case LIKE:
+                break;
+            case IN:
+                break;
+            case LARGER_AND_SMALLEREQUAL:
+                break;
+            case LARGEREQUAL_AND_SMALLER:
+                break;
+            case NOT_EQUAL:
+                break;
+            case NOT_NULL:
+                break;
+            case NOT_LIKE:
+                break;
+            case NOT_IN:
+                break;
+            case NOT_LARGER_AND_SMALLEREQUAL:
+                break;
+            case NOT_LARGEREQUAL_AND_SMALLER:
+                break;
+            case VALUE_OR_NULL:
+                break;
+            case RAW:
+                break;
+            default:
+                log.error("unknown restriction type",r.getType());
+        }
+        
+    }
+
+    private final static String SQL_STR_EQUAL = " = ";
+    private final static String SQL_STR_NULL = " IS NULL";
+    private final static String SQL_STR_LARGER = " > ";
+    private final static String SQL_STR_SMALLER = " < ";
+    private final static String SQL_STR_LARGEREQUAL = " >= ";
+    private final static String SQL_STR_SMALLEREQUAL = " <= ";
+    private final static String SQL_STR_LIKE = " LIKE ";
+    private final static String SQL_STR_IN = " IN (";
+    private final static String SQL_STR_NOT_EQUAL = " <> ";
+    private final static String SQL_STR_NOT_NULL = " IS NOT NULL ";
+    private final static String SQL_STR_NOT_LIKE = " NOT LIKE ";
+    private final static String SQL_STR_NOT_IN = " NOT IN (";
+/*
+    private final static String SQL_STR_LARGER_AND_SMALLEREQUAL;
+    private final static String SQL_STR_LARGEREQUAL_AND_SMALLER;
+    private final static String SQL_STR_NOT_LARGER_AND_SMALLEREQUAL;
+    private final static String SQL_STR_NOT_LARGEREQUAL_AND_SMALLER;
+    private final static String SQL_STR_VALUE_OR_NULL;
+*/
+    private final static String SQL_STR_FRAGEZ = "?";
+    private final static String SQL_STR_KLAMMER_ZU = ")";
 }
