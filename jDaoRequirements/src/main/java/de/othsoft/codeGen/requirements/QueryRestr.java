@@ -21,48 +21,27 @@ import java.util.Date;
  *
  * @author eiko
  */
-public class QueryRestr {
+public class QueryRestr<T> {
     String id;
     RestrType type;
-    List filterValues;
+    List<T> filterValues;
     String rawSql;
 
     public QueryRestr() {
     }
 
-    public QueryRestr(String id, RestrType type, List filterValues) {
+    public QueryRestr(String id, RestrType type, List<T> filterValues) {
         this.id = id;
         this.type = type;
         this.filterValues = filterValues;
     }
 
-    public QueryRestr(String id, RestrType type,Date filterValue) {
+    public QueryRestr(String id, RestrType type,T filterValue) {
         this.id = id;
         this.type = type;
         this.filterValues = new ArrayList();
         this.filterValues.add(filterValue);        
-    }
-    
-    public QueryRestr(String id, RestrType type,Integer filterValue) {
-        this.id = id;
-        this.type = type;
-        this.filterValues = new ArrayList();
-        this.filterValues.add(filterValue);        
-    }
-    
-    public QueryRestr(String id, RestrType type,Long filterValue) {
-        this.id = id;
-        this.type = type;
-        this.filterValues = new ArrayList();
-        this.filterValues.add(filterValue);        
-    }
-    
-    public QueryRestr(String id, RestrType type,String filterValue) {
-        this.id = id;
-        this.type = type;
-        this.filterValues = new ArrayList();
-        this.filterValues.add(filterValue);        
-    }
+    }    
 
     public QueryRestr(String id, RestrType type,String rawSql, List rawValues) {
         this.id = id;

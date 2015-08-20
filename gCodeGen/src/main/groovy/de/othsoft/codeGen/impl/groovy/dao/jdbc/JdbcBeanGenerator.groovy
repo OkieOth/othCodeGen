@@ -129,6 +129,7 @@ import java.sql.ResultSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import de.othsoft.codeGen.requirements.jdbc.utils.IJdbcDataFactoryBase;
+import static de.othsoft.codeGen.requirements.jdbc.utils.SQLWrapperBase.addFilter2Sql;
 
 public class ${className} extends ${baseClassName} {
     protected IJdbcDataFactoryBase dataFactory;
@@ -300,17 +301,17 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}>,
             }
             switch(r.getId()) {
     <% aktElem.attribs.each { attrib -> if ( attrib.type == strListType ) 
-    { %>        case "${attrib.id}":\n\
-                sql += "${attrib.id}.bez=?";
+    { %>        case "${attrib.id}":
+                addFilter2Sql("${attrib.id}.bez",r,sql);
                 break;
     <% } else 
     { %>        case "${attrib.id}":
-                sql += "${attrib.parent.id}.${attrib.name}=?";
+                addFilter2Sql("${attrib.parent.id}.${attrib.name}",r,sql);
                 break;
     <% } } %>
     <% aktElem.refs.each { ref -> 
     %>        case "${ref.id}":
-                sql += "${ref.parent.id}.${ref.name}=?";
+                addFilter2Sql("${ref.parent.id}.${ref.name}",r,sql);
                 break;
     <% } %>
             default:
