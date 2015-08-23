@@ -322,11 +322,6 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}>,
     }
 
     @Override
-    public void setFilterValues(PreparedStatement ps, List<QueryRestr> restr) throws SQLException {
-        // TODO
-    }
-
-    @Override
     public ${baseClassName} initFromResultSet(ResultSet rs) throws SQLException {
         ${baseClassName} ret = new ${baseClassName}();        
         int i=1;
@@ -559,11 +554,6 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}>,
     }
 
     @Override
-    public void setFilterValues(PreparedStatement ps, List<QueryRestr> restr) throws SQLException {
-        // TODO
-    }
-    
-    @Override
     public ${baseClassName} initFromResultSet(ResultSet rs) {
         return null; // TODO
     }
@@ -673,11 +663,6 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}> {
         return null; // TODO
     }
 
-    @Override
-    public void setFilterValues(PreparedStatement ps, List<QueryRestr> restr) throws SQLException {
-        // TODO
-    }
-    
     @Override
     public ${baseClassName} initFromResultSet(ResultSet rs) {
         return null; // TODO

@@ -154,7 +154,7 @@ public class SQLExecWrapper<T> extends SQLWrapperBase {
             sql=addCountToSql(sql);
             log.info(sql);
             ps=con.prepareStatement(sql);
-            wrapperUser.setFilterValues(ps,restr);
+            dataFactory.setFilterValues(ps,restr);
             rs = ps.executeQuery();
             rs.next();
             return rs.getInt(1);
@@ -183,7 +183,7 @@ public class SQLExecWrapper<T> extends SQLWrapperBase {
                 sql=dataFactory.getSetPagingImpl().appendPagingToSql(sql,offset,count);
             log.info(sql);
             ps=con.prepareStatement(sql);
-            wrapperUser.setFilterValues(ps,restr);
+            dataFactory.setFilterValues(ps,restr);
             rs = ps.executeQuery();
             List<T> ret = new ArrayList();
             while (rs.next()) {

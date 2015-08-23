@@ -85,8 +85,11 @@ import de.othsoft.codeGen.requirements.QueryRestr;
 import de.othsoft.codeGen.requirements.QuerySort;
 import de.othsoft.codeGen.requirements.UserData;
 import de.othsoft.codeGen.requirements.jdbc.utils.ISetPagingImpl;
+import de.othsoft.codeGen.requirements.jdbc.utils.ISetFilterValuesImpl;
 import de.othsoft.codeGen.requirements.jdbc.utils.IJdbcDataFactoryBase;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 import java.sql.Connection;
 import org.slf4j.Logger;
@@ -202,7 +205,13 @@ public class DataFactory_${model.shortName} implements IJdbcDataFactory_${model.
         return ${model.version};
     }
 
-
+    @Override
+    public void setFilterValues(PreparedStatement ps, List<QueryRestr> restr) throws SQLException, DaoException {
+        setFilterValuesImpl.setFilterValues(ps,restr);
+    }
+    
+    public ISetFilterValuesImpl getSetFilterValuesImpl() { return setFilterValuesImpl; }
+    public void setSetFilterValuesImpl(ISetFilterValuesImpl setFilterValuesImpl) { this.setFilterValuesImpl = setFilterValuesImpl; }
 
     public void setConnectionFactory (ConnectionFactory connectionFactory) { this.connectionFactory = connectionFactory; }
     public ConnectionFactory getConnectionFactory () { return this.connectionFactory; }
@@ -210,6 +219,7 @@ public class DataFactory_${model.shortName} implements IJdbcDataFactory_${model.
     public void setSetPagingImpl(ISetPagingImpl setPagingImpl) { this.setPagingImpl = setPagingImpl; }
     public ISetPagingImpl getSetPagingImpl() { return this.setPagingImpl; }
 
+    private ISetFilterValuesImpl setFilterValuesImpl;
     private ISetPagingImpl setPagingImpl;
     private ConnectionFactory connectionFactory;
     private static final Logger log = LoggerFactory.getLogger(DataFactory_${model.shortName}.class);

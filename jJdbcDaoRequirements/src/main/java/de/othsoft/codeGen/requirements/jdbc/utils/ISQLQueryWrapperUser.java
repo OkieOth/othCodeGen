@@ -26,6 +26,5 @@ import java.util.List;
 public interface ISQLQueryWrapperUser<T> {
     String getSelectBaseSql();
     String appendFilterToSql(String sql,List<QueryRestr> restr) throws DaoException;
-    void setFilterValues(PreparedStatement ps, List<QueryRestr> restr) throws SQLException;
     T initFromResultSet(ResultSet rs) throws SQLException;
 }

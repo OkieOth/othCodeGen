@@ -203,13 +203,6 @@ public class SQLWrapperBase {
     private final static String SQL_STR_NOT_NULL = " IS NOT NULL ";
     private final static String SQL_STR_NOT_LIKE = " NOT LIKE ";
     private final static String SQL_STR_NOT_IN = " NOT IN (";
-/*
-    private final static String SQL_STR_LARGER_AND_SMALLEREQUAL;
-    private final static String SQL_STR_LARGEREQUAL_AND_SMALLER;
-    private final static String SQL_STR_NOT_LARGER_AND_SMALLEREQUAL;
-    private final static String SQL_STR_NOT_LARGEREQUAL_AND_SMALLER;
-    private final static String SQL_STR_VALUE_OR_NULL;
-*/
     private final static String SQL_STR_FRAGEZ = "?";
     private final static String SQL_STR_KLAMMER_ZU = ")";
     private final static String SQL_STR_NOT_KLAMMER_AUF = " NOT (";

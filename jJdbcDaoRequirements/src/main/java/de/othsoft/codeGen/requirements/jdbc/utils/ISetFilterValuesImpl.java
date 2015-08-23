@@ -14,7 +14,6 @@ package de.othsoft.codeGen.requirements.jdbc.utils;
 
 import de.othsoft.codeGen.requirements.DaoException;
 import de.othsoft.codeGen.requirements.QueryRestr;
-import de.othsoft.codeGen.requirements.jdbc.ConnectionFactory;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
@@ -23,8 +22,6 @@ import java.util.List;
  *
  * @author eiko
  */
-public interface IJdbcDataFactoryBase {
-    ConnectionFactory getConnectionFactory ();
-    ISetPagingImpl getSetPagingImpl();     
-    void setFilterValues(PreparedStatement ps, List<QueryRestr> restr) throws SQLException, DaoException;   
+public interface ISetFilterValuesImpl {
+    void setFilterValues(PreparedStatement ps, List<QueryRestr> restr) throws SQLException, DaoException;    
 }
