@@ -27,9 +27,7 @@ import groovy.text.SimpleTemplateEngine
  * @author eiko
  */
 class JdbcBeanGenerator extends JavaBeanGeneratorBase implements ICodeGenImpl {
-    void genCode(DataModel model,Map params) {
-        String packageName=addGenPackageName(params.packageName)
-        String baseClassPackage=basePackageName(params.packageName)
+    private String getDestPath(Map params,String packageName) {
         String destPathRoot=params.destPathRoot
         if (!destPathRoot.endsWith(File.separator))
             destPathRoot+=File.separator
@@ -38,13 +36,35 @@ class JdbcBeanGenerator extends JavaBeanGeneratorBase implements ICodeGenImpl {
         if (!destPath.endsWith(File.separator))
         destPath+=File.separator
         FileHelper.createDirIfNotExists(destPath)
+        return destPath;
+    }
+
+    void genCode(DataModel model,Map params) {
+        String packageName=addGenPackageName(params.packageName)
+        String baseClassPackage=basePackageName(params.packageName)
+        String destPath = getDestPath (params,packageName)
         createListBeans(destPath, packageName, model,baseClassPackage)
         createEntityBeans(destPath, packageName, model,baseClassPackage)
         createM2NBeans(destPath, packageName, model,baseClassPackage)
         createViewBeans(destPath, packageName, model,baseClassPackage)
     }
     void genTestCode(DataModel model,Map params) {
-        // TODO
+        String packageName=addGenPackageName(params.packageName)
+        String testPackageName=addGenPackageName(params.packageName)+".tests"
+        String destPath = getDestPath (params,testPackageName)
+        def className = "Test_JdbcBeans_IT"
+        def engine = new SimpleTemplateEngine()
+        def template = engine.createTemplate(jdbcBeans_IT)
+        def daten = [
+            packageName:packageName,
+            testPackageName:testPackageName,
+            model:model,
+            strListType:AttribType.t_str_list,
+            className:className]
+        def ergebnis = template.make(daten)
+
+        File file=new File("${destPath}${className}.java")        
+        file.write(ergebnis.toString())
     }
 
     private void createListBeans(String destPath, String destPackage, DataModel model,String baseClassPackage) {
@@ -96,6 +116,54 @@ class JdbcBeanGenerator extends JavaBeanGeneratorBase implements ICodeGenImpl {
         else 
             return "${packageName}.beans"
     }
+
+    def jdbcBeans_IT = '''
+package ${testPackageName};
+
+/*
+ * This file is generated. If you change something in this file, the changes are gone away after the next running of the
+ * generator.
+ * Generator: de.othsoft.codeGen.impl.groovy.dao.jdbc.JdbcBeanGenerator
+ */
+
+import org.junit.Test;
+import org.junit.Assert;
+
+public class ${className} {
+<% model.entities.each { entity -> %>
+    @Test
+    public void test_${entity.value.name}() {
+        ${packageName}.Jdbc_${entity.value.name} x = new ${packageName}.Jdbc_${entity.value.name} (null,true);
+        Assert.assertNotNull(x);
+    }
+<% } %>
+
+<% model.entities*.value.attribs*.findAll { it.type == strListType }*.each { attrib -> %>
+    @Test
+    public void test_${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()} () {
+        ${packageName}.Jdbc_${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()} x = new ${packageName}.Jdbc_${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()} (null,true);
+        Assert.assertNotNull(x);
+    }
+<% } %>
+
+<% model.views.each { view -> %>
+    @Test
+    public void test_${view.value.name}() {
+        ${packageName}.Jdbc_${view.value.name} x = new ${packageName}.Jdbc_${view.value.name} (null);
+        Assert.assertNotNull(x);
+    }
+<% } %>
+
+<% model.m2nRelations.each { m2n -> %>
+    @Test
+    public void test_${m2n.value.name}() {
+        ${packageName}.Jdbc_${m2n.value.name} x = new ${packageName}.Jdbc_${m2n.value.name} (null);
+        Assert.assertNotNull(x);
+    }
+<% } %>
+}
+'''
+
     
     def templateEntityBean='''
 package ${destPackage};

@@ -34,5 +34,6 @@ class JdbcCheckDbGenerator_Test {
             destPathRoot:'src/generated/java',
             testPathRoot:'src/generated/test']
         generator.genCode(model,params)
+        generator.genTestCode(model,params)
     }
 }

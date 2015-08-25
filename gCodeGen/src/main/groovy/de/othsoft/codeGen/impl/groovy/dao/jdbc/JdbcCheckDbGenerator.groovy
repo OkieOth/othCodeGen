@@ -58,9 +58,9 @@ class JdbcCheckDbGenerator implements ICodeGenImpl {
         return destPath;
     }
 
-    void genCodeCheckDb (DataModel model,Map params) {        
+    void genCodeCheckDb (DataModel model,Map params) {  
         String packageName=addGenPackageName(params.packageName)
-        String destPath = getDestPath (params,packageName);
+        String destPath = getDestPath (params,packageName)
         
         def className = "DbCheck_${model.shortName}"
         def engine = new SimpleTemplateEngine()
@@ -77,7 +77,20 @@ class JdbcCheckDbGenerator implements ICodeGenImpl {
     }
 
     void genTestCode(DataModel model,Map params) {
-        // TODO
+        def checkClassWithPackage = addGenPackageName(params.packageName)+".DbCheck_${model.shortName}"
+        String packageName=addGenPackageName(params.packageName)+".tests"
+        String destPath = getDestPath (params,packageName)
+        def className = "Test_DbCheck_${model.shortName}_IT"
+        def engine = new SimpleTemplateEngine()
+        def template = engine.createTemplate(checkDbTemplate_IT)
+        def daten = [
+            checkClassWithPackage:checkClassWithPackage,
+            packageName:packageName,
+           className:className]
+        def ergebnis = template.make(daten)
+
+        File file=new File("${destPath}${className}.java")        
+        file.write(ergebnis.toString())
     }
     
     private String addGenPackageName(String packageName) {
@@ -87,6 +100,30 @@ class JdbcCheckDbGenerator implements ICodeGenImpl {
             return "${packageName}.dao.jdbc.dbcheck"
     }
 
+    def checkDbTemplate_IT = '''
+package ${packageName};
+
+/*
+ * This file is generated. If you change something in this file, the changes are gone away after the next running of the
+ * generator.
+ * Generator: de.othsoft.codeGen.impl.groovy.dao.jdbc.JdbcCheckDbGenerator
+ */
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.Assert;
+
+public class ${className} {
+    @Before
+    public void setUp() {
+    }
+
+    @Test
+    public void doTestCheck() {\n\
+        ${checkClassWithPackage} dbCheck = new ${checkClassWithPackage}();
+        Assert.assertNotNull(dbCheck);
+   }}
+'''
     
     def checkDbTemplate='''
 package ${packageName};
