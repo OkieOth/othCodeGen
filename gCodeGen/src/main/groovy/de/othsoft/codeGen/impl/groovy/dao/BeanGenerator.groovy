@@ -27,8 +27,7 @@ import groovy.text.SimpleTemplateEngine
  * To see how it works take a look at the test class @see de.othsoft.codeGen.tests.generators.BeanGenerator_Test
  */
 class BeanGenerator extends JavaBeanGeneratorBase implements ICodeGenImpl {
-    void genCode(DataModel model,Map params) {            
-        String packageName=addGenPackageName(params.packageName)
+    private String getDestPath(Map params,String packageName) {
         String destPathRoot=params.destPathRoot
         if (!destPathRoot.endsWith(File.separator))
             destPathRoot+=File.separator
@@ -37,6 +36,12 @@ class BeanGenerator extends JavaBeanGeneratorBase implements ICodeGenImpl {
         if (!destPath.endsWith(File.separator))
         destPath+=File.separator
         FileHelper.createDirIfNotExists(destPath)
+        return destPath;
+    }
+
+    void genCode(DataModel model,Map params) {            
+        String packageName=addGenPackageName(params.packageName)
+        String destPath = getDestPath (params,packageName)
         createListBeans(destPath, packageName, model)
         createEntityBeans(destPath, packageName, model)
         createM2NBeans(destPath, packageName, model)
@@ -44,7 +49,22 @@ class BeanGenerator extends JavaBeanGeneratorBase implements ICodeGenImpl {
     }
     
     void genTestCode(DataModel model,Map params) {
-        // TODO
+        String packageName=addGenPackageName(params.packageName)
+        String testPackageName=addGenPackageName(params.packageName)+".tests"
+        String destPath = getDestPath (params,testPackageName)
+        def className = "Test_Beans_IT"
+        def engine = new SimpleTemplateEngine()
+        def template = engine.createTemplate(beans_IT)
+        def daten = [
+            packageName:packageName,
+            testPackageName:testPackageName,
+            model:model,
+            strListType:AttribType.t_str_list,
+            className:className]
+        def ergebnis = template.make(daten)
+
+        File file=new File("${destPath}${className}.java")        
+        file.write(ergebnis.toString())
     }
 
     protected void createListBeans(String destPath, String destPackage, DataModel model) {
@@ -87,7 +107,53 @@ class BeanGenerator extends JavaBeanGeneratorBase implements ICodeGenImpl {
             return "${packageName}.beans"
     }
     
-     
+    def beans_IT = '''
+package ${testPackageName};
+
+/*
+ * This file is generated. If you change something in this file, the changes are gone away after the next running of the
+ * generator.
+ * Generator: de.othsoft.codeGen.impl.groovy.dao.jdbc.JdbcBeanGenerator
+ */
+
+import org.junit.Test;
+import org.junit.Assert;
+
+public class ${className} {
+<% model.entities.each { entity -> %>
+    @Test
+    public void test_${entity.value.name}() {
+        ${packageName}.${entity.value.name} x = new ${packageName}.${entity.value.name} ();
+        Assert.assertNotNull(x);
+    }
+<% } %>
+
+<% model.entities*.value.attribs*.findAll { it.type == strListType }*.each { attrib -> %>
+    @Test
+    public void test_${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()} () {
+        ${packageName}.${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()} x = new ${packageName}.${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()} ();
+        Assert.assertNotNull(x);
+    }
+<% } %>
+
+<% model.views.each { view -> %>
+    @Test
+    public void test_${view.value.name}() {
+        ${packageName}.${view.value.name} x = new ${packageName}.${view.value.name} ();
+        Assert.assertNotNull(x);
+    }
+<% } %>
+
+<% model.m2nRelations.each { m2n -> %>
+    @Test
+    public void test_${m2n.value.name}() {
+        ${packageName}.${m2n.value.name} x = new ${packageName}.${m2n.value.name} ();
+        Assert.assertNotNull(x);
+    }
+<% } %>
+}
+'''
+
         
     def templateEntityBean='''
 package ${destPackage};

@@ -18,7 +18,7 @@ import org.junit.AfterClass
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Test
-import static org.junit.Assert.*
+import org.junit.Assert
 import de.othsoft.codeGen.tests.models.ResManModel_v1
 import de.othsoft.codeGen.tests.models.ResManModel_v2
 import de.othsoft.codeGen.impl.groovy.sql.psql.CreateDatabaseSqlGenerator
@@ -28,19 +28,45 @@ import de.othsoft.codeGen.impl.groovy.sql.psql.CreateDatabaseSqlGenerator
  * @author hulk
  */
 class CreateDatabasePsqlGen_Test {
+    private static void checkAndIfExistsDelete(String path) {
+        File f = new File(path)
+        if (f.exists())
+            f.delete()
+    }
+    
+    @BeforeClass
+    public static void beforeClass() {
+        checkAndIfExistsDelete('src/generated/resources/sql/psql/v1/createDb.sql')
+        checkAndIfExistsDelete('src/generated/resources/sql/psql/v1')
+        checkAndIfExistsDelete('src/generated/resources/sql/psql/v2/updates/upd_2.sql')
+        checkAndIfExistsDelete('src/generated/resources/sql/psql/v2/updates')
+        checkAndIfExistsDelete('src/generated/resources/sql/psql/v2/createDb.sql')
+        checkAndIfExistsDelete('src/generated/resources/sql/psql/v2')
+    }
+      
     @Test
     public void test_v1() {
+        Assert.assertFalse(new File('src/generated/resources/sql/psql/v1/createDb.sql').exists())
+        Assert.assertFalse(new File('src/generated/resources/sql/psql/v1/updates').exists())
         def model = new ResManModel_v1()
         def generator = new CreateDatabaseSqlGenerator()
-        def params = [destPathRoot:'src/test/generated/resources/sql/psql/v1']
+        def params = [destPathRoot:'src/generated/resources/sql/psql/v1']
         generator.genCode(model,params)
+        File f = new File('.')
+        String s = f.canonicalPath
+        Assert.assertTrue(new File('src/generated/resources/sql/psql/v1/createDb.sql').exists())
+        Assert.assertFalse(new File('src/generated/resources/sql/psql/v1/updates').exists())
     }
 
     @Test
     public void test_v2() {
+        Assert.assertFalse(new File('src/generated/resources/sql/psql/v2/createDb.sql').exists())
+        Assert.assertFalse(new File('src/generated/resources/sql/psql/v2/updates').exists())
         def model = new ResManModel_v2()
         def generator = new CreateDatabaseSqlGenerator()
         def params = [destPathRoot:'src/generated/resources/sql/psql/v2']
         generator.genCode(model,params)
+        Assert.assertTrue(new File('src/generated/resources/sql/psql/v2/createDb.sql').exists())
+        Assert.assertTrue(new File('src/generated/resources/sql/psql/v2/updates/upd_2.sql').exists())
     }
 }
