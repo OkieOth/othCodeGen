@@ -43,6 +43,16 @@ class CreateDatabasePsqlGen_Test {
         checkAndIfExistsDelete('src/generated/resources/sql/psql/v2/createDb.sql')
         checkAndIfExistsDelete('src/generated/resources/sql/psql/v2')
     }
+    
+    @Before
+    public void beforeTest() {
+        // Testdatenbank erstellen
+    }
+    
+    @After
+    public void afterTest() {
+        // Testdatenbank löschen
+    }
       
     @Test
     public void test_v1() {
