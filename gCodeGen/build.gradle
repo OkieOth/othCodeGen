@@ -1,6 +1,7 @@
 apply plugin: 'java'
 //apply plugin: 'application'
 apply plugin: 'groovy'
+apply plugin: 'maven-publish'
 
 sourceCompatibility = '1.7'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
@@ -8,42 +9,29 @@ sourceCompatibility = '1.7'
 project.group = 'de.othsoft.codeGen'
 project.version = '0.1-SNAPSHOT'
 
-
-// NetBeans will automatically add "run" and "debug" tasks relying on the
-// "mainClass" property. You may however define the property prior executing
-// tasks by passing a "-PmainClass=<QUALIFIED_CLASS_NAME>" argument.
-//
-// Note however, that you may define your own "run" and "debug" task if you
-// prefer. In this case NetBeans will not add these tasks but you may rely on
-// your own implementation.
-/*    print 'Beende Integrationstests'
-
-if (!hasProperty('mainClass')) {
-    ext.mainClass = 'de.othsoft.codeGen.dummy.Dummy'
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
 }
-*/
 
-// to use enter: gradle upload
-uploadArchives {
+publishing {
     repositories {
-	flatDir {
-		dirs "${System.getenv('HOME')}/myGradleRepos/${project.group}/${project.name}"
-	}
+        maven {
+            url "${System.getenv('HOME')}/myMavenRepos"
+        }
     }
 }
 
 repositories {
-    ivy {
-        url "file://${System.getenv('HOME')}/myGradleRepos"
-        layout "pattern", {
-            artifact "[organisation]/[artifact]/[artifact]-[revision].[ext]"
-        }
+    maven {
+        url "${System.getenv('HOME')}/myMavenRepos"
     }
     mavenCentral()
-    // You may define additional repositories, or even remove "mavenCentral()".
-    // Read more about repositories here:
-    //   http://www.gradle.org/docs/current/userguide/dependency_management.html#sec:repositories
 }
+
 
 configurations {
     integrationTestCompile.extendsFrom testCompile
@@ -68,10 +56,7 @@ dependencies {
     compile 'org.codehaus.groovy:groovy-all:2.4.3'
     testCompile 'org.codehaus.groovy:groovy-all:2.4.3'
     testCompile group: 'junit', name: 'junit', version: '4.10'
-    integrationTestCompile 'org.slf4j:slf4j-api:1.7.5'
-    integrationTestCompile 'ch.qos.logback:logback-classic:1.0.9'
-    integrationTestCompile 'de.othsoft.codeGen:jDaoRequirements:0.1-SNAPSHOT'
-    integrationTestCompile 'de.othsoft.codeGen:jJdbcDaoRequirements:0.1-SNAPSHOT'
+    integrationTestCompile 'de.othsoft.codeGen:jJdbcDaoRequirements:0.1'
 }
 
 
