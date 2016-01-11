@@ -3,6 +3,9 @@ apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'maven-publish'
 
+def vagrantMachineName='ubuntu_psql'
+
+
 sourceCompatibility = '1.7'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
@@ -32,6 +35,15 @@ repositories {
     mavenCentral()
 }
 
+dependencies {
+    compile 'org.codehaus.groovy:groovy-all:2.4.5'
+    testCompile 'org.codehaus.groovy:groovy-all:2.4.5'
+    testCompile group: 'junit', name: 'junit', version: '4.10'
+    testCompile 'de.othsoft.codeGen:jJdbcDaoRequirements:0.1'
+    testCompile 'postgresql:postgresql:9.1-901-1.jdbc4'
+    // testCompile 'org.postgresql:postgresql:9.3-1100-jdbc41'
+}
+
 
 configurations {
     integrationTestCompile.extendsFrom testCompile
@@ -46,31 +58,30 @@ sourceSets {
             srcDir file('src/generated/java')
             srcDir file('src/integration_test/java')
         }
-        /* not needed this time
+        groovy {
+            compileClasspath += main.output + test.output
+            runtimeClasspath += main.output + test.output
+            srcDir file('src/integration_test/groovy')
+        }
+   /* not needed this time
         resources.srcDir file('src/integration-test/resources')
         */
     }
 }
-
-dependencies {
-    compile 'org.codehaus.groovy:groovy-all:2.4.3'
-    testCompile 'org.codehaus.groovy:groovy-all:2.4.3'
-    testCompile group: 'junit', name: 'junit', version: '4.10'
-    integrationTestCompile 'de.othsoft.codeGen:jJdbcDaoRequirements:0.1'
-}
-
 
 task integrationTest(type: Test) {
     doFirst {
         // that's the place to start the test vagrant machine        
         println "project base directory: ${project.rootDir}/src/test/vagrant/ubuntu_psql"
         println 'before integration tests - ' + new Date().getTime()
-        def sout = new StringBuffer()
-        def serr = new StringBuffer()
-        def proc = "${project.rootDir}/src/test/scripts/startVagrant.sh".execute()
-        proc.consumeProcessOutput(sout,serr)
-        proc.waitForOrKill(20000)
-        println "out: $sout \n err: $serr"
+        "${project.rootDir}/src/test/scripts/startVagrant.sh".execute().in.eachLine {
+            println it
+        }
+        println 'vm started'
+        println 'retrieve the ip address of the vm'
+       "${project.rootDir}/src/test/scripts/print_vm_address.sh".execute().in.eachLine {
+            println it
+        }
     }
     
     doLast {
@@ -87,6 +98,21 @@ task integrationTest(type: Test) {
     classpath = sourceSets.integrationTest.runtimeClasspath
     outputs.upToDateWhen { false }
 }
+
+task copyGeneratedResources {
+//    outputs.files file("${project.rootDir}/src/generated/resources/sql")
+    println "copy generated resources from '${project.rootDir}/src/generated/resources/sql' to '${project.rootDir}/src/test/vagrant/${vagrantMachineName}/tmp'"
+    inputs.dir "${project.rootDir}/src/generated/resources/sql"
+    outputs.dir "${project.rootDir}/src/test/vagrant/${vagrantMachineName}/tmp"
+    doLast {
+        copy {
+            from "${project.rootDir}/src/generated/resources/sql"
+            into "${project.rootDir}/src/test/vagrant/${vagrantMachineName}/tmp"
+        }    
+    }
+}
+
+integrationTest.dependsOn copyGeneratedResources
 
 check.dependsOn integrationTest
 integrationTest.mustRunAfter test

@@ -227,16 +227,16 @@ CREATE TABLE IF NOT EXISTS ${model.shortName}_${m2n.value.name} (
  */
 <%}%>
 /*
-CREATE OR REPLACE VIEW ${model.shortName}_${view.value.name} AS 
-SELECT
-    id
+ * CREATE OR REPLACE VIEW ${model.shortName}_${view.value.name} AS 
+ * SELECT
+ *  id ???
 <% view.value.attribs.each { attrib ->%>
-    ,${attrib.name} ???
+ *   ,${attrib.name} ???
 <% } %>
-FROM
-    ??
-;
-*/
+ * FROM
+ *   ??
+ *;
+ */
 <% } %>
    '''
 }
