@@ -23,6 +23,11 @@ import static org.junit.Assert.*
 class Test_CreatePsqlDb {
     private static String vmIp = null;
 
+    def dbUser = 'vagrant'
+    def dbPwd = 'vagrant444'
+    def driverClass = 'org.postgresql.Driver'
+    def testDb = 'g_codegen_v1'
+
     @BeforeClass
     public static void setUpClass() {
         println 'try to retrieve ip address of vm'
@@ -72,16 +77,12 @@ class Test_CreatePsqlDb {
                         aktCmd = line                        
                     }
                     else {
-                        aktCmd += ''
-                        if (line.endsWith(';')) {
-                            // ';' must be trimmed
-                            line = line.substring(0,line.length()-1)
-                            aktCmd += line
-                            sqlStatements.add aktCmd
-                        }
-                        else {
-                            aktCmd += line
-                        }
+                        aktCmd += ' '
+                        aktCmd += line
+                    }
+                    if (line.endsWith(';')) {
+                        // ';' must be trimmed
+                        sqlStatements.add aktCmd.substring(0,aktCmd.length()-1)
                     }
                 }
             }
@@ -137,28 +138,58 @@ class Test_CreatePsqlDb {
             if ( sql != null )
                 sql.close();
         }
-    }
+    }    
 
     @Test
-    void testVersion1 () {
-        println 'test for createdb version 1'
+    void test() {
         assertTrue vmIp!=null
-        List sqlCmds = readSqlStatementsFromFile('src/generated/resources/sql/psql/v1/createDb.sql')
-        // try to delete test database
-        def dbUser = 'vagrant'
-        def dbPwd = 'vagrant444'
-        def driverClass = 'org.postgresql.Driver'
-        def testDb = 'g_codegen_v1'
         if (doesDbExist(dbUser,dbPwd,testDb,driverClass))
             dropDb(dbUser,dbPwd,testDb,driverClass)
         createDb (dbUser,dbPwd,testDb,driverClass)
-
+        testVersion1()
+        testVersion2()
+    }
+    void testVersion1 () {
+        println 'test for createdb version 1'
+        List sqlCmds = readSqlStatementsFromFile('src/generated/resources/sql/psql/v1/createDb.sql')
         def sqlTestDb = groovy.sql.Sql.newInstance("jdbc:postgresql://$vmIp/$testDb",dbUser,dbPwd,driverClass)
-        println 'run generated sql statements v1 ...'
-        for (sqlCmd in sqlCmds) {
-            println "run: $sqlCmd" 
-            sqlTestDb.execute sqlCmd
+        try {
+            println 'run generated sql statements v1 ...'
+            for (sqlCmd in sqlCmds) {
+                println "run: $sqlCmd" 
+                sqlTestDb.execute sqlCmd
+            }
+            def rowCount = 0;
+            sqlTestDb.eachRow('SELECT versionsnummer FROM rman_version') {
+                rowCount++;
+                assertEquals ('wrong database version',1,it.versionsnummer)
+            }
+            assertTrue rowCount==1
+        }
+        finally {
+            sqlTestDb.close()
         }
     }
-    
+
+    void testVersion2 () {
+        println 'test for createdb version 2'
+        List sqlCmds = readSqlStatementsFromFile('src/generated/resources/sql/psql/v2/updates/upd_2.sql')
+        def sqlTestDb = groovy.sql.Sql.newInstance("jdbc:postgresql://$vmIp/$testDb",dbUser,dbPwd,driverClass)
+        try {
+            println 'run generated sql statements update v2 ...'
+            for (sqlCmd in sqlCmds) {
+                println "run: $sqlCmd" 
+                sqlTestDb.execute sqlCmd
+            }
+            def rowCount = 0;
+            sqlTestDb.eachRow('SELECT versionsnummer FROM rman_version') {
+                rowCount++;
+                assertEquals ('wrong database version',2,it.versionsnummer)
+            }
+            assertTrue rowCount==1
+        }
+        finally {
+            sqlTestDb.close()
+        }
+    }
 }
