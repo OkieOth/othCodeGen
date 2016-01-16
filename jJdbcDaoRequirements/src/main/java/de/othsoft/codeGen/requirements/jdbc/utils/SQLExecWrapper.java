@@ -208,7 +208,8 @@ public class SQLExecWrapper<T> extends SQLWrapperBase {
         Connection con = ((cmdData!=null) && (cmdData instanceof JdbcCmdData))? ((JdbcCmdData)cmdData).getCon() : dataFactory.getConnectionFactory().getCon();            
         try {
             String sql = wrapperUser.getSelectBaseSql();
-            sql+=StringConsts.ID_RESTR;
+            sql+=StringConsts.WHERE_SQL;
+            sql+=wrapperUser.getIdRestr();
             log.info(sql);
             ps=con.prepareStatement(sql);
             ps.setInt(1, id);

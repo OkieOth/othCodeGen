@@ -10,11 +10,17 @@ Unless required by applicable law or agreed to in writing, software distributed 
 "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations under the License.
 */
-package de.othsoft.codeGen.tests.integration
+package de.othsoft.codeGen.test.integration
 
 import org.junit.BeforeClass
 import org.junit.Test
 import static org.junit.Assert.*
+import de.gCodeGen.test.dao.jdbc.DataFactory_rman
+import de.othsoft.codeGen.requirements.jdbc.ConnectionFactory
+import de.othsoft.codeGen.requirements.jdbc.utils.ISetPagingImpl
+import de.othsoft.codeGen.requirements.jdbc.utils.impl.Psql_SetPagingImpl
+import de.othsoft.codeGen.requirements.jdbc.utils.impl.SimpleSetFilterValuesImpl
+import de.othsoft.codeGen.test.integration.gererated.InsertTestData
 
 /**
  *
@@ -124,6 +130,15 @@ class Test_CreatePsqlDb {
         }
     }
 
+    private ConnectionFactory createConnectionFactory(def dbUser, def dbPwd, String conStr) {
+        ConnectionFactory connectionFactory = new ConnectionFactory();
+        connectionFactory.setConStr(conStr)
+        connectionFactory.setUserStr(dbUser)
+        connectionFactory.setPwdStr(dbPwd)
+        connectionFactory.setTestStr('select versionsnummer from rman_version')
+        return connectionFactory;
+    }
+    
     private boolean createDb(def dbUser, def dbPwd, String dbName,def driverClass) {
         def sql = null
         try {
@@ -141,14 +156,21 @@ class Test_CreatePsqlDb {
     }    
 
     @Test
-    void test() {
+    public void test() {
         assertTrue vmIp!=null
         if (doesDbExist(dbUser,dbPwd,testDb,driverClass))
             dropDb(dbUser,dbPwd,testDb,driverClass)
         createDb (dbUser,dbPwd,testDb,driverClass)
         testVersion1()
         testVersion2()
+        DataFactory_rman dataFactory = new DataFactory_rman()
+        dataFactory.setConnectionFactory(createConnectionFactory (dbUser,dbPwd,"jdbc:postgresql://$vmIp/$testDb"))
+        dataFactory.setSetPagingImpl(new Psql_SetPagingImpl())
+        dataFactory.setSetFilterValuesImpl(new SimpleSetFilterValuesImpl())
+        InsertTestData insertTestData = new InsertTestData()
+        insertTestData.dummy(dataFactory)
     }
+    
     void testVersion1 () {
         println 'test for createdb version 1'
         List sqlCmds = readSqlStatementsFromFile('src/generated/resources/sql/psql/v1/createDb.sql')

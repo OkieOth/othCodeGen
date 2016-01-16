@@ -9,23 +9,23 @@ you may not use this file except in compliance with the License.  You may obtain
 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an
 "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations under the License.
-*/
-package de.othsoft.codeGen.requirements.jdbc.utils;
+ */
+package de.othsoft.gCodeGen;
 
-import de.othsoft.codeGen.requirements.DaoException;
-import de.othsoft.codeGen.requirements.QueryRestr;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  *
  * @author eiko
  */
-public interface ISQLQueryWrapperUser<T> {
-    String getSelectBaseSql();
-    String getIdRestr();
-    String appendFilterToSql(String sql,List<QueryRestr> restr) throws DaoException;
-    T initFromResultSet(ResultSet rs) throws SQLException;
+public class Test_JavaTest {
+    
+    public Test_JavaTest() {
+    }
+
+    @Test
+    public void hello() {
+        System.out.println("hello from java integration test");
+    }
 }

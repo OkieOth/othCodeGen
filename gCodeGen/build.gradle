@@ -52,16 +52,16 @@ configurations {
 
 sourceSets {
     integrationTest {
+        groovy {
+            compileClasspath += main.output + test.output
+            runtimeClasspath += main.output + test.output
+            srcDir file('src/integration_test/groovy')
+        }
         java {
             compileClasspath += main.output + test.output
             runtimeClasspath += main.output + test.output
             srcDir file('src/generated/java')
             srcDir file('src/integration_test/java')
-        }
-        groovy {
-            compileClasspath += main.output + test.output
-            runtimeClasspath += main.output + test.output
-            srcDir file('src/integration_test/groovy')
         }
    /* not needed this time
         resources.srcDir file('src/integration-test/resources')

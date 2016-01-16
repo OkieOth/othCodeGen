@@ -67,7 +67,7 @@ public class SQLWrapperBase {
     }
     
     public static String addFilter2Sql(String colNameWithAlias, QueryRestr r, String sql) throws DaoException {
-        StringBuilder sb = new StringBuilder(colNameWithAlias);
+        StringBuilder sb = new StringBuilder();
         switch(r.getType()) {
             case EQUAL:
                 sb.append(colNameWithAlias);
@@ -188,7 +188,7 @@ public class SQLWrapperBase {
             default:
                 throw new DaoException("unknown restriction type"+r.getType());
         }
-        return sb.length()==0 ? sql + sb.toString() : sql;
+        return sb.length()>0 ? sql + sb.toString() : sql;
     }
 
     private final static String SQL_STR_EQUAL = " = ";

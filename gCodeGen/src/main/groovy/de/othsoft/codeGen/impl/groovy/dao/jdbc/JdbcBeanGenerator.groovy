@@ -27,6 +27,34 @@ import groovy.text.SimpleTemplateEngine
  * @author eiko
  */
 class JdbcBeanGenerator extends JavaBeanGeneratorBase implements ICodeGenImpl {
+    def newTypeConvert = { type ->
+            switch (type) {
+            case AttribType.t_int : return 'Int'
+            case AttribType.t_long : return 'Long'
+            case AttribType.t_string : return 'String'
+            case AttribType.t_key : return 'Int'
+            case AttribType.t_boolean : return 'Boolean'
+            case AttribType.t_date : return 'Date'
+            case AttribType.t_timestamp : return 'Timestamp'
+            case AttribType.t_geo : return '???'
+            case AttribType.t_money : return 'BigDecimal'
+            case AttribType.t_meters : return 'Double'
+            case AttribType.t_milimeters : return 'Double'
+            case AttribType.t_kilometers : return 'Double'
+            case AttribType.t_kmh : return 'Double'
+            case AttribType.t_prozent : return 'Double'
+            case AttribType.t_hour : return 'Int'
+            case AttribType.t_min : return 'Int'
+            case AttribType.t_sec : return 'Int'
+            case AttribType.t_time : return '???'
+            case AttribType.t_volt : return 'Double'
+            case AttribType.t_float : return 'Double'
+            case AttribType.t_str_list : return 'Int'
+            default:
+                return '???'
+            }
+    }
+
     private String getDestPath(Map params,String packageName) {
         String destPathRoot=params.destPathRoot
         if (!destPathRoot.endsWith(File.separator))
@@ -77,6 +105,7 @@ class JdbcBeanGenerator extends JavaBeanGeneratorBase implements ICodeGenImpl {
     }
     
     private void createEntityBeans(String destPath, String destPackage, DataModel model,String baseClassPackage) {
+        typeConvert = newTypeConvert
         model.entities*.each {
             def entityName=it.value.getNameWithFirstLetterUpper()
             def descr = it.value.descr
@@ -179,18 +208,15 @@ import de.othsoft.codeGen.requirements.jdbc.utils.ISQLInsWrapperUser;
 import de.othsoft.codeGen.requirements.jdbc.utils.ISQLUpdWrapperUser;
 import de.othsoft.codeGen.requirements.jdbc.utils.ISQLDelWrapperUser;
 import de.othsoft.codeGen.requirements.jdbc.utils.SQLExecWrapper;
-import de.othsoft.codeGen.requirements.jdbc.ConnectionFactory;
 import de.othsoft.codeGen.requirements.DaoException;
 import de.othsoft.codeGen.requirements.QueryRestr;
 import de.othsoft.codeGen.requirements.QuerySort;
 import de.othsoft.codeGen.requirements.CmdData;
-import de.othsoft.codeGen.requirements.jdbc.JdbcCmdData;
 import de.othsoft.codeGen.requirements.UserData;
 import de.othsoft.codeGen.requirements.jdbc.utils.StringConsts;
 import de.othsoft.codeGen.requirements.RestrType;
 import java.util.List;
 import java.util.ArrayList;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -354,6 +380,11 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}>,
     %>    sql += " LEFT OUTER JOIN ${model.shortName}_${ref.entity.name} ${ref.id} ON ${ref.id}.id = ${aktElem.id}.${ref.name}";
     <% } } %>
         return sql;
+    }\n\
+
+    @Override
+    public String getIdRestr() {
+        return " ${aktElem.id}.id=?";
     }
     
     @Override
@@ -370,16 +401,16 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}>,
             switch(r.getId()) {
     <% aktElem.attribs.each { attrib -> if ( attrib.type == strListType ) 
     { %>        case "${attrib.id}":
-                addFilter2Sql("${attrib.id}.bez",r,sql);
+                sql = addFilter2Sql("${attrib.id}.bez",r,sql);
                 break;
     <% } else 
     { %>        case "${attrib.id}":
-                addFilter2Sql("${attrib.parent.id}.${attrib.name}",r,sql);
+                sql = addFilter2Sql("${attrib.parent.id}.${attrib.name}",r,sql);
                 break;
     <% } } %>
     <% aktElem.refs.each { ref -> 
     %>        case "${ref.id}":
-                addFilter2Sql("${ref.parent.id}.${ref.name}",r,sql);
+                sql = addFilter2Sql("${ref.parent.id}.${ref.name}",r,sql);
                 break;
     <% } %>
             default:
@@ -401,7 +432,7 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}>,
         ret.set${attrib.getNameWithFirstLetterUpper()}IdTxt(rs.getString(i));
     <% } else 
     { %>    i++;
-        ret.set${attrib.getNameWithFirstLetterUpper()}(rs.getObject(i,${typeConvert(attrib.type)}.class));
+        ret.set${attrib.getNameWithFirstLetterUpper()}(rs.get${typeConvert(attrib.type)}(i));
     <% } } %>
     <% aktElem.refs.each { ref -> 
     %>    i++;
@@ -532,23 +563,20 @@ import de.othsoft.codeGen.requirements.jdbc.utils.ISQLInsWrapperUser;
 import de.othsoft.codeGen.requirements.jdbc.utils.ISQLUpdWrapperUser;
 import de.othsoft.codeGen.requirements.jdbc.utils.ISQLDelWrapperUser;
 import de.othsoft.codeGen.requirements.jdbc.utils.SQLExecWrapper;
-import de.othsoft.codeGen.requirements.jdbc.ConnectionFactory;
 import de.othsoft.codeGen.requirements.DaoException;
 import de.othsoft.codeGen.requirements.QueryRestr;
 import de.othsoft.codeGen.requirements.QuerySort;
 import de.othsoft.codeGen.requirements.UserData;
 import de.othsoft.codeGen.requirements.CmdData;
-import de.othsoft.codeGen.requirements.jdbc.JdbcCmdData;
 import de.othsoft.codeGen.requirements.jdbc.utils.StringConsts;
 import java.util.List;
-import java.util.ArrayList;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import de.othsoft.codeGen.requirements.jdbc.utils.IJdbcDataFactoryBase;
+import static de.othsoft.codeGen.requirements.jdbc.utils.SQLWrapperBase.addFilter2Sql;
 
 
 public class ${className} extends ${baseClassName} {
@@ -613,37 +641,110 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}>,
         ISQLInsWrapperUser<${baseClassName}>,ISQLUpdWrapperUser<${baseClassName}>, ISQLDelWrapperUser {
     @Override
     public String getSelectBaseSql() {
-        return null; // TODO
+        return QUERY_SQL;
     }
     
     @Override
     public String appendFilterToSql(String sql,List<QueryRestr> restr) throws DaoException {
-        return null; // TODO
+        boolean bFirst=true;
+        for (QueryRestr r:restr) {
+            if (bFirst) {
+                sql+=StringConsts.WHERE_SQL;
+                bFirst=false;
+            }
+            else {
+                sql+=StringConsts.AND_SQL;
+            }
+            switch(r.getId()) {
+            case ${baseClassName}.ID_BEZ:
+                sql = addFilter2Sql("bez",r,sql);
+                break;
+            case ${baseClassName}.ID_LANG:
+                sql = addFilter2Sql("lang",r,sql);
+                break;
+            case ${baseClassName}.ID_AKTIV:
+                sql = addFilter2Sql("aktiv",r,sql);
+                break;
+            case ${baseClassName}.ID_REIHENF:
+                sql = addFilter2Sql("reihenf",r,sql);
+                break;
+            default:
+                throw new DaoException("${className}_User.appendFilterToSql - unknown filter id: "+r.getId());
+            }
+        }
+        return sql;
     }
 
     @Override
-    public ${baseClassName} initFromResultSet(ResultSet rs) {
-        return null; // TODO
+    public String getIdRestr() {
+        return " id=?";
+    }
+
+    @Override
+    public ${baseClassName} initFromResultSet(ResultSet rs) throws SQLException {
+        ${baseClassName} ret = new ${baseClassName}();
+        ret.setId(rs.getInt(1));
+        ret.setBez(rs.getString(2));
+        ret.setLang(rs.getString(3));
+        ret.setAktiv(rs.getBoolean(4));
+        ret.setReihenf(rs.getInt(5));
+        return ret;
     }
 
     @Override
     public String getInsSql() {
-        return null;
+        return INSERT_SQL;
     }
 
     @Override
     public void setInsValues(PreparedStatement ps,${baseClassName} data) throws SQLException {
-        // TODO
+        ps.setObject(1,data.getBez());
+        ps.setObject(2,data.getLang());
+        ps.setObject(3,data.getAktiv());
+        ps.setObject(4,data.getReihenf());
     }
 
     @Override
     public String getUpdSql(${baseClassName} data) {
-        return null; // TODO
+        String colPart=null;
+        if (SQLExecWrapper.isChanged(data.getOrigState().getBez(),data.getBez())) {
+            if (colPart!=null) colPart+=",";
+            colPart+="bez=?";
+        }
+        if (SQLExecWrapper.isChanged(data.getOrigState().getLang(),data.getLang())) {
+            if (colPart!=null) colPart+=",";
+            colPart+="lang=?";
+        }
+        if (SQLExecWrapper.isChanged(data.getOrigState().getAktiv(),data.getAktiv())) {
+            if (colPart!=null) colPart+=",";
+            colPart+="aktiv=?";
+        }
+        if (SQLExecWrapper.isChanged(data.getOrigState().getReihenf(),data.getReihenf())) {
+            if (colPart!=null) colPart+=",";
+            colPart+="reihenf=?";
+        }
+        return UPDATE_SQL_BASE+colPart+StringConsts.WHERE_ID_SQL;
     }
 
     @Override
     public void setUpdValues(PreparedStatement ps,${baseClassName} data) throws SQLException {
-        // TODO
+        int i=0;
+        if (SQLExecWrapper.isChanged(data.getOrigState().getBez(),data.getBez())) {
+            i++;
+            ps.setObject(i,data.getBez());
+        }
+        if (SQLExecWrapper.isChanged(data.getOrigState().getLang(),data.getLang())) {
+            i++;
+            ps.setObject(i,data.getLang());
+        }
+        if (SQLExecWrapper.isChanged(data.getOrigState().getAktiv(),data.getAktiv())) {
+            i++;
+            ps.setObject(i,data.getAktiv());
+        }
+        if (SQLExecWrapper.isChanged(data.getOrigState().getReihenf(),data.getReihenf())) {
+            i++;
+            ps.setObject(i,data.getReihenf());
+        }
     }
 
     @Override
@@ -656,7 +757,10 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}>,
         return DEL_SQL;
     }
 
-    private final static String DEL_SQL="DELETE FROM ${model.shortName}_${baseClassName.substring(baseClassName.lastIndexOf('.')+1)} WHERE id=?";
+    private final static String UPDATE_SQL_BASE="UPDATE ${model.shortName}_${baseClassName.substring(baseClassName.lastIndexOf('.')+1)} SET ";
+    private final static String INSERT_SQL = "INSERT INTO ${model.shortName}_${baseClassName.substring(baseClassName.lastIndexOf('.')+1)} (bez, lang, aktiv, reihenf) VALUES (?,?,?,?)";
+    private final static String QUERY_SQL = "SELECT id, bez, lang, aktiv, reihenf FROM ${model.shortName}_${baseClassName.substring(baseClassName.lastIndexOf('.')+1)}";
+    private final static String DEL_SQL = "DELETE FROM ${model.shortName}_${baseClassName.substring(baseClassName.lastIndexOf('.')+1)} WHERE id=?";
 }
 '''    
 
@@ -725,7 +829,12 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}> {
     public String getSelectBaseSql() {
         return null; // TODO
     }
-    
+
+    @Override
+    public String getIdRestr() {
+        return " id=?";
+    }
+
     @Override
     public String appendFilterToSql(String sql,List<QueryRestr> restr) throws DaoException {
         return null; // TODO
@@ -857,5 +966,3 @@ class ${className}_User implements ISQLM2NWrapperUser<${baseClassName}> {
 }
 '''    
 }
-
-
