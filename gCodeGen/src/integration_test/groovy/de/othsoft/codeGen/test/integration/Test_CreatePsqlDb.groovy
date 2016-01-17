@@ -20,7 +20,7 @@ import de.othsoft.codeGen.requirements.jdbc.ConnectionFactory
 import de.othsoft.codeGen.requirements.jdbc.utils.ISetPagingImpl
 import de.othsoft.codeGen.requirements.jdbc.utils.impl.Psql_SetPagingImpl
 import de.othsoft.codeGen.requirements.jdbc.utils.impl.SimpleSetFilterValuesImpl
-import de.othsoft.codeGen.test.integration.gererated.InsertTestData
+import de.othsoft.codeGen.test.integration.generated.InsertTestData
 
 /**
  *

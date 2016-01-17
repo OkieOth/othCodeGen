@@ -236,7 +236,7 @@ public class ${className} extends ${baseClassName} {
 
     public static ${baseClassName} byId(IJdbcDataFactoryBase dataFactory,boolean changeble,UserData userData,CmdData cmdData,int id) throws DaoException {
         SQLExecWrapper<${baseClassName}> wrapper = new SQLExecWrapper(log);
-        ${baseClassName} ret = wrapper.byId(wrapperUser,dataFactory,userData,cmdData,id);
+        ${baseClassName} ret = wrapper.byId(wrapperUser,dataFactory,changeble,userData,cmdData,id);
         if (ret!=null && changeble)
             ret.setChangeble(changeble);
         return ret;
@@ -244,7 +244,7 @@ public class ${className} extends ${baseClassName} {
 
     public static List<${baseClassName}> get(IJdbcDataFactoryBase dataFactory,boolean changeble,UserData userData,CmdData cmdData,List<QueryRestr> restr,List<QuerySort> sort,int offset,int count) throws DaoException {
         SQLExecWrapper<${baseClassName}> wrapper = new SQLExecWrapper(log);
-        List<${baseClassName}> retList = wrapper.get(wrapperUser,dataFactory,userData,cmdData,restr,sort,offset,count);
+        List<${baseClassName}> retList = wrapper.get(wrapperUser,dataFactory,changeble,userData,cmdData,restr,sort,offset,count);
         if (changeble) {
             for (${baseClassName} ret : retList) {
                 ret.setChangeble(changeble);
@@ -273,7 +273,7 @@ public class ${className} extends ${baseClassName} {
         SQLExecWrapper<${tmpClass}> wrapper = new SQLExecWrapper(log);
         List<QueryRestr> restr = new ArrayList();
         restr.add(new QueryRestr(${tmpClass}.ID_BEZ,RestrType.EQUAL,${attrib.getNameWithFirstLetterLower()}IdTxt));
-        List<${tmpClass}> refList = wrapper.get(Jdbc_${tmpClassName}.wrapperUser,dataFactory,userData,cmdData,restr,null,0,0);
+        List<${tmpClass}> refList = wrapper.get(Jdbc_${tmpClassName}.wrapperUser,dataFactory,changeble,userData,cmdData,restr,null,0,0);
         int refListSize = refList.size();
         if (refListSize==0) {
             Jdbc_${tmpClassName} newElem = new Jdbc_${tmpClassName}(dataFactory,true);
@@ -306,7 +306,7 @@ public class ${className} extends ${baseClassName} {
         SQLExecWrapper<${tmpClass}> wrapper = new SQLExecWrapper(log);
         List<QueryRestr> restr = new ArrayList();
         restr.add(new QueryRestr(${tmpClass}.ID_${upperVisKeyCol},RestrType.EQUAL,${ref.getLowerCamelCaseName()}Txt));
-        List<${tmpClass}> refList = wrapper.get(Jdbc_${tmpClassName}.wrapperUser,dataFactory,userData,cmdData,restr,null,0,0);
+        List<${tmpClass}> refList = wrapper.get(Jdbc_${tmpClassName}.wrapperUser,dataFactory,changeble,userData,cmdData,restr,null,0,0);
         int refListSize = refList.size();
         if (refListSize==0) {
             ${ref.getLowerCamelCaseName()} = null;
@@ -421,8 +421,8 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}>,
     }
 
     @Override
-    public ${baseClassName} initFromResultSet(ResultSet rs) throws SQLException {
-        ${baseClassName} ret = new ${baseClassName}();        
+    public ${baseClassName} initFromResultSet(IJdbcDataFactoryBase dataFactory,boolean changeble,ResultSet rs) throws SQLException {
+        ${className} ret = new ${className}(dataFactory,changeble);
         int i=1;
         ret.setId(rs.getInt(i));
     <% aktElem.attribs.each { attrib -> if ( attrib.type == strListType ) 
@@ -591,7 +591,7 @@ public class ${className} extends ${baseClassName} {
 
     public static ${baseClassName} byId(IJdbcDataFactoryBase dataFactory,boolean changeble,UserData userData,CmdData cmdData,int id) throws DaoException {
         SQLExecWrapper<${baseClassName}> wrapper = new SQLExecWrapper(log);
-        ${baseClassName} ret = wrapper.byId(wrapperUser,dataFactory,userData,cmdData,id);
+        ${baseClassName} ret = wrapper.byId(wrapperUser,dataFactory,changeble,userData,cmdData,id);
         if (ret!=null && changeble)
             ret.setChangeble(changeble);
         return ret;
@@ -599,7 +599,7 @@ public class ${className} extends ${baseClassName} {
 
     public static List<${baseClassName}> get(IJdbcDataFactoryBase dataFactory,boolean changeble,UserData userData,CmdData cmdData,List<QueryRestr> restr,List<QuerySort> sort,int offset,int count) throws DaoException {
         SQLExecWrapper<${baseClassName}> wrapper = new SQLExecWrapper(log);
-        List<${baseClassName}> retList = wrapper.get(wrapperUser,dataFactory,userData,cmdData,restr,sort,offset,count);
+        List<${baseClassName}> retList = wrapper.get(wrapperUser,dataFactory,changeble,userData,cmdData,restr,sort,offset,count);
         if (changeble) {
             for (${baseClassName} ret : retList) {
                 ret.setChangeble(changeble);
@@ -681,8 +681,8 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}>,
     }
 
     @Override
-    public ${baseClassName} initFromResultSet(ResultSet rs) throws SQLException {
-        ${baseClassName} ret = new ${baseClassName}();
+    public ${baseClassName} initFromResultSet(IJdbcDataFactoryBase dataFactory,boolean changeble,ResultSet rs) throws SQLException {
+        ${className} ret = new ${className}(dataFactory,changeble);
         ret.setId(rs.getInt(1));
         ret.setBez(rs.getString(2));
         ret.setLang(rs.getString(3));
@@ -808,12 +808,12 @@ public class ${className} extends ${baseClassName} {
 
     public static ${baseClassName} byId(IJdbcDataFactoryBase dataFactory,UserData userData,CmdData cmdData,int id) throws DaoException {
         SQLExecWrapper<${baseClassName}> wrapper = new SQLExecWrapper(log);
-        return wrapper.byId(wrapperUser,dataFactory,userData,cmdData,id);
+        return wrapper.byId(wrapperUser,dataFactory,false,userData,cmdData,id);
     }
 
     public static List<${baseClassName}> get(IJdbcDataFactoryBase dataFactory,UserData userData,CmdData cmdData,List<QueryRestr> restr,List<QuerySort> sort,int offset,int count) throws DaoException {
         SQLExecWrapper<${baseClassName}> wrapper = new SQLExecWrapper(log);
-        return wrapper.get(wrapperUser,dataFactory,userData,cmdData,restr,sort,offset,count);
+        return wrapper.get(wrapperUser,dataFactory,false,userData,cmdData,restr,sort,offset,count);
     }
 
     public static int count(IJdbcDataFactoryBase dataFactory,UserData userData,CmdData cmdData,List<QueryRestr> restr) throws DaoException {
@@ -841,7 +841,7 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}> {
     }
 
     @Override
-    public ${baseClassName} initFromResultSet(ResultSet rs) {
+    public ${baseClassName} initFromResultSet(IJdbcDataFactoryBase dataFactory,boolean changeble,ResultSet rs) {
         return null; // TODO
     }
 }

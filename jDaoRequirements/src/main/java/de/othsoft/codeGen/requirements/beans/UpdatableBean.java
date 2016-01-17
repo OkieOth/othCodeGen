@@ -51,6 +51,7 @@ public abstract class UpdatableBean<T> extends InsertableBean {
 
     public void update(CmdData cmdData, UserData userData) throws DaoException {
         // dummy implementation ... saves generated code
+        System.out.println("call dummy update implementation");
     }
     
     public T getOrigState() {

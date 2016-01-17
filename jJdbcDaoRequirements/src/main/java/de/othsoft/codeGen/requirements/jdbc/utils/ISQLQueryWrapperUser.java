@@ -27,5 +27,5 @@ public interface ISQLQueryWrapperUser<T> {
     String getSelectBaseSql();
     String getIdRestr();
     String appendFilterToSql(String sql,List<QueryRestr> restr) throws DaoException;
-    T initFromResultSet(ResultSet rs) throws SQLException;
+    T initFromResultSet(IJdbcDataFactoryBase dataFactory,boolean changeble,ResultSet rs) throws SQLException;
 }
