@@ -29,10 +29,10 @@ class JavaBeanGeneratorBase {
         case AttribType.t_string : return 'String'
         case AttribType.t_key : return 'Integer'
         case AttribType.t_boolean : return 'Boolean'
-        case AttribType.t_date : return 'java.util.Date'
-        case AttribType.t_timestamp : return 'java.util.Date'
+        case AttribType.t_date : return 'Date'
+        case AttribType.t_timestamp : return 'Date'
         case AttribType.t_geo : return '???'
-        case AttribType.t_money : return 'java.math.BigDecimal'
+        case AttribType.t_money : return 'BigDecimal'
         case AttribType.t_meters : return 'Double'
         case AttribType.t_milimeters : return 'Double'
         case AttribType.t_kilometers : return 'Double'
@@ -49,7 +49,8 @@ class JavaBeanGeneratorBase {
             return '???'
         }
     }
-    
+
+
     String removeEmptyLines (String genResult) {
         String s=genResult.replaceAll(/s*\n/,'\n')
         return s.replaceAll(/;\s*\n/,';\n')

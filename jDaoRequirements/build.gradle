@@ -13,6 +13,7 @@ specific language governing permissions and limitations under the License.
 
 apply plugin: 'java'
 apply plugin: 'maven-publish'
+apply plugin: 'groovy'
 
 sourceCompatibility = '1.7'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
@@ -20,11 +21,19 @@ sourceCompatibility = '1.7'
 project.group = 'de.othsoft.codeGen'
 project.version = '0.1'
 
+task testJar(type: Jar) {
+  baseName = project.name + '-tests'
+  from sourceSets.test.output
+}
 
 publishing {
     publications {
         mavenJava(MavenPublication) {
             from components.java
+            
+            artifact testJar {
+                classifier "test"
+            }
         }
     }
 }
@@ -49,5 +58,6 @@ dependencies {
     compile 'org.slf4j:slf4j-api:1.7.5'
     compile 'ch.qos.logback:logback-classic:1.0.9'
     testCompile group: 'junit', name: 'junit', version: '4.10'
+    testCompile 'org.codehaus.groovy:groovy-all:2.4.5'
 }
 
