@@ -43,7 +43,7 @@ class TestDataHelper {
             c = Math.abs(c);
         int charBaseLen = charBase.size();
         if (c>=charBaseLen)
-        c = charBaseLen % c;
+        c = c % charBaseLen;
         return charBase[c];
     }
     
@@ -123,11 +123,11 @@ class TestDataHelper {
     }
 
     // t_string,
-    String getStr(boolean needed) {
+    String getString(boolean needed) {
         if (needed || shouldSetValue()) {
-            int len = random.getInt();
+            int len = random.nextInt();
             if (len<0)
-                len = Math.abs(i)
+                len = Math.abs(len)
             if (len > defaultMaxStringLength)
             len = len % defaultMaxStringLength;
             if (len==0) return null;
@@ -141,11 +141,11 @@ class TestDataHelper {
             return null;
     }
 
-    String getStr(int minLen,int maxLen,boolean needed) {
+    String getString(int minLen,int maxLen,boolean needed) {
         if (needed || shouldSetValue()) {
-            int len = random.getInt();
+            int len = random.nextInt();
             if (len<0)
-                len = Math.abs(i)
+                len = Math.abs(len)
             if (len < minLen || len > maxLen) {
                 len = minLen + (len % (maxLen - minLen));
             }
@@ -161,7 +161,7 @@ class TestDataHelper {
     }
 
     
-    String getStrFromList(List<String> elems,boolean needed) {
+    String getStringFromList(List<String> elems,boolean needed) {
         if (elems==null) return null;
         if (needed || shouldSetValue()) {
             int size = elems.size();
@@ -204,7 +204,7 @@ class TestDataHelper {
     }
 
     Date getDate(boolean needed) {
-        Date d = getTimestampFromList(needed);
+        Date d = getTimestamp(needed);
         if (d!=null) {
             d = d.clearTime()
         }
@@ -213,6 +213,14 @@ class TestDataHelper {
     
     Date getDateFromList(List<Date> elems,boolean needed) {
         Date d = getTimestampFromList(elems,needed);
+        if (d!=null) {
+            d = d.clearTime()
+        }
+        return d;
+    }
+
+    Date getDateFromList(List<String> elems,boolean needed,DateFormat f) {
+        Date d = getTimestampFromList(elems,needed,f);
         if (d!=null) {
             d = d.clearTime()
         }
@@ -297,6 +305,20 @@ class TestDataHelper {
                 i = Math.abs(i);
             i = i % size;
             return elems[i];
+        }
+        else
+            return null;
+    }
+
+    Date getTimestampFromList(List<String> elems,boolean needed,DateFormat df) {
+        if (elems==null) return null;
+        if (needed || shouldSetValue()) {
+            int size = elems.size();
+            int i = random.nextInt();
+            if (i<0)
+                i = Math.abs(i);
+            i = i % size;
+            return df.parse(elems[i]);
         }
         else
             return null;
