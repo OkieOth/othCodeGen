@@ -22,10 +22,12 @@ import de.othsoft.codeGen.types.AttribType
  */
 class ResManModel_v2 extends DataModel {
     ResManModel_v2 () {
-        // Der Name des Modell ergibt sich aus dem Namen der Klasse
         version=2
         shortName='rman'
-        
+
+        /**
+         * with this you can save type declarations for standard names in the model
+         */
         defaultTypes=[
                 'name' : AttribType.t_string,
                 'bemerkung' : AttribType.t_string,
@@ -39,6 +41,9 @@ class ResManModel_v2 extends DataModel {
                 'prozent' : AttribType.t_prozent
                 ]
         
+        /**
+         * entity definition, contains of attributes an two references to other entities
+         */
         entity ( name:'Termin').
                 descr = 'Alle gespeicherten Termine'
             attrib ( name:'von', type:AttribType.t_timestamp )

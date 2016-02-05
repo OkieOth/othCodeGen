@@ -70,7 +70,7 @@ class JdbcCreateDbGenerator implements ICodeGenImpl {
     }
     
     void genTestCode(DataModel model,Map params) {
-        // TODO
+        // not needed this time
     }
 
     void genCodeCreateExtraInterf(DataModel model,Map params) {

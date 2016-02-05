@@ -369,7 +369,7 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}>,
     %>    sql += " LEFT OUTER JOIN ${model.shortName}_${ref.entity.name} ${ref.id} ON ${ref.id}.id = ${aktElem.id}.${ref.name}";
     <% } } %>
         return sql;
-    }\n\
+    }
 
     @Override
     public String getIdRestr() {
@@ -773,6 +773,7 @@ import java.sql.ResultSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import de.othsoft.codeGen.requirements.jdbc.utils.IJdbcDataFactoryBase;
+import static de.othsoft.codeGen.requirements.jdbc.utils.SQLWrapperBase.addFilter2Sql;
 
 
 public class ${className} extends ${baseClassName} {
@@ -805,7 +806,12 @@ public class ${className} extends ${baseClassName} {
 class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}> {
     @Override
     public String getSelectBaseSql() {
-        return null; // TODO
+        String sql = "SELECT ${aktElem.id}.id AS ${aktElem.id}_a0";
+    <% aktElem.attribs.each { attrib -> 
+    %>    sql += ",${aktElem.id}.${attrib.name} AS ${attrib.id}";
+    <% }
+    %>    sql += " FROM ${model.shortName}_${aktElem.name} ${aktElem.id}"; 
+        return sql;
     }
 
     @Override
@@ -815,12 +821,38 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}> {
 
     @Override
     public String appendFilterToSql(String sql,List<QueryRestr> restr) throws DaoException {
-        return null; // TODO
+        boolean bFirst=true;
+        for (QueryRestr r:restr) {
+            if (bFirst) {
+                sql+=StringConsts.WHERE_SQL;
+                bFirst=false;
+            }
+            else {
+                sql+=StringConsts.AND_SQL;
+            }
+            switch(r.getId()) {
+    <% aktElem.attribs.each { attrib -> 
+    %>        case "${attrib.id}":
+                sql = addFilter2Sql("${attrib.parent.id}.${attrib.name}",r,sql);
+                break;
+    <% } %>
+            default:
+                throw new DaoException("${className}_User.appendFilterToSql - unknown filter id: "+r.getId());
+            }
+        }
+        return sql;
     }
 
     @Override
-    public ${baseClassName} initFromResultSet(IJdbcDataFactoryBase dataFactory,ResultSet rs) {
-        return null; // TODO
+    public ${baseClassName} initFromResultSet(IJdbcDataFactoryBase dataFactory,ResultSet rs) throws SQLException {
+        ${className} ret = new ${className}(dataFactory);
+        int i=1;
+        ret.setId(rs.getInt(i));
+    <% aktElem.attribs.each { attrib -> 
+    %>    i++;
+        ret.set${attrib.getNameWithFirstLetterUpper()}(rs.get${typeConvert(attrib.type)}(i));
+    <% } %>
+        return ret;
     }
 }
 '''    
