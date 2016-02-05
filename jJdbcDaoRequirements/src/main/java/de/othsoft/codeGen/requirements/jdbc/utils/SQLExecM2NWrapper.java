@@ -104,7 +104,7 @@ public class SQLExecM2NWrapper<T> extends SQLWrapperBase {
                 log.debug("refId1="+refId1+", refId2="+refId2);
             rs = ps.executeQuery();
             if (rs.next()) {
-                return wrapperUser.initFromResultSet(rs);
+                return wrapperUser.initFromResultSet(dataFactory,rs);
             }            
             return null;
         }
@@ -132,7 +132,7 @@ public class SQLExecM2NWrapper<T> extends SQLWrapperBase {
             rs = ps.executeQuery();
             List<T> ret = new ArrayList();
             while (rs.next()) {
-                ret.add(wrapperUser.initFromResultSet(rs));
+                ret.add(wrapperUser.initFromResultSet(dataFactory,rs));
             }
             return ret;
         }
@@ -152,7 +152,7 @@ public class SQLExecM2NWrapper<T> extends SQLWrapperBase {
         Connection con = ((cmdData!=null) && (cmdData instanceof JdbcCmdData))? ((JdbcCmdData)cmdData).getCon() : dataFactory.getConnectionFactory().getCon();            
         try {
             String sql = ref1 ? wrapperUser.getSelectSqlRef1() : wrapperUser.getSelectSqlRef2();
-            sql=wrapperUser.addCountToSql(sql);
+            sql=addCountToSql(sql);
             log.info(sql);
             ps=con.prepareStatement(sql);
             ps.setInt(1, id);

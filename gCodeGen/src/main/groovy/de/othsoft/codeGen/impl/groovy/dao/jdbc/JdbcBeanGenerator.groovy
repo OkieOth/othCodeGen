@@ -936,43 +936,47 @@ public class ${className} extends ${baseClassName} {
 class ${className}_User implements ISQLM2NWrapperUser<${baseClassName}> {
     @Override
     public String getSelectSqlRef1() {
-        return null; // TODO
+        return SELECT_REF1_SQL;
     }
 
     @Override
     public String getSelectSqlRef2() {
-        return null; // TODO
+        return SELECT_REF2_SQL;
     }
 
     @Override
     public String getSelectByIdsSql() {
-        return null; // TODO
+        return SELECT_SQL;
     }
     
     @Override
-    public String addCountToSql(String sql) {
-        return sql; // TODO
-    }
-
-    @Override
     public String getInsSql() {
-        return null; // TODO
+        return INSERT_SQL;
     }
 
     @Override
     public void setInsValues(PreparedStatement ps,${baseClassName} data) throws SQLException {
-        // TODO
+        ps.setObject(1,data.get${aktElem.ref1.getUpperCamelCaseName()}());
+        ps.setObject(2,data.get${aktElem.ref2.getUpperCamelCaseName()}());
     }
 
     @Override
     public String getDelSql() {
-        return null; // TODO
+        return DELETE_SQL;
     }
 
     @Override
-    public ${baseClassName} initFromResultSet(ResultSet rs) {
-        return null; // TODO
+    public ${baseClassName} initFromResultSet(IJdbcDataFactoryBase dataFactory,ResultSet rs) throws SQLException {
+        ${className} ret = new ${className}(dataFactory);
+        ret.set${aktElem.ref1.getUpperCamelCaseName()}(rs.getInt(1));
+        ret.set${aktElem.ref2.getUpperCamelCaseName()}(rs.getInt(2));
     }
+
+    private final static String DELETE_SQL="DELETE FROM ${model.shortName}_${aktElem.name} WHERE ${aktElem.ref1.name}=? AND ${aktElem.ref2.name}=?";
+    private final static String INSERT_SQL="INSERT INTO ${model.shortName}_${aktElem.name} (${aktElem.ref1.name},${aktElem.ref2.name}) VALUES (?,?)";
+    private final static String SELECT_REF1_SQL="SELECT ${aktElem.ref1.name} AS ${aktElem.ref1.id}, ${aktElem.ref2.name} AS ${aktElem.ref2.id} FROM ${model.shortName}_${aktElem.name} WHERE ${aktElem.ref1.name}=?";
+    private final static String SELECT_REF2_SQL="SELECT ${aktElem.ref2.name} AS ${aktElem.ref2.id}, ${aktElem.ref2.name} AS ${aktElem.ref2.id} FROM ${model.shortName}_${aktElem.name} WHERE ${aktElem.ref2.name}=?";
+    private final static String SELECT_SQL="SELECT ${aktElem.ref2.name} AS ${aktElem.ref2.id}, ${aktElem.ref2.name} AS ${aktElem.ref2.id} FROM ${model.shortName}_${aktElem.name} WHERE ${aktElem.ref2.name}=? AND ${aktElem.ref1.name}=?";
 }
 '''    
 }

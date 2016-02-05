@@ -25,9 +25,8 @@ public interface ISQLM2NWrapperUser<T> {
     String getSelectSqlRef1();
     String getSelectSqlRef2();
     String getSelectByIdsSql();
-    String addCountToSql(String sql);
     String getInsSql();
     void setInsValues(PreparedStatement ps,T data) throws SQLException;
     String getDelSql();
-    T initFromResultSet(ResultSet rs) throws SQLException;
+    T initFromResultSet(IJdbcDataFactoryBase dataFactory,ResultSet rs) throws SQLException;
 }
