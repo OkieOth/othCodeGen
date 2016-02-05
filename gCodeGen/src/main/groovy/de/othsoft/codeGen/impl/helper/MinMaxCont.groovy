@@ -4,35 +4,30 @@ See the NOTICE file distributed with this work for additional information regard
 The ASF licenses this file to you under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License.  You may obtain a copy of the License at
 
-  http://www.apache.org/licenses/LICENSE-2.0
+http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an
 "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations under the License.
-*/
+ */
 
-package de.othsoft.codeGen.tests.generators
 
-import org.junit.After
-import org.junit.AfterClass
-import org.junit.Before
-import org.junit.BeforeClass
-import org.junit.Test
-import static org.junit.Assert.*
-import de.othsoft.codeGen.tests.models.ResManModel_v2
+package de.othsoft.codeGen.impl.helper
 
 /**
  *
- * @author hulk
+ * @author eiko
  */
-class TestDataGenerator_Test {
-    @Test
-    public void first() {
-        def model = new ResManModel_v2()
-        def generator = new de.othsoft.codeGen.impl.groovy.dao.jdbc.test.TestDataGenerator()
-        def params = [packageName:'de.gCodeGen.test',
-            destPathRoot:'src/generated/java',
-            testPathRoot:'src/generated/test']
-        generator.genTestCode(model,params)
+public class MinMaxCont {
+    int min
+    int max
+    
+    void setMin(int min) {
+        this.min = min
+    }
+    
+    void setMax(int max) {
+        this.max = max
     }
 }
+

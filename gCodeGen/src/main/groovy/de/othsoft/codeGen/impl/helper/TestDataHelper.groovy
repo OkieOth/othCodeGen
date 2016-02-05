@@ -22,7 +22,7 @@ import java.math.RoundingMode
  *
  * @author eiko
  */
-class TestDataHelper {
+class TestDataHelper implements ITestDataHelper {
     public def charBase = ['a','b','c','d','e','f','g',' ','h','i','j','k','l',' ','m','n','o','p','q','r','s',' ','t','u','v','w','x','y',' ','z','ä','ö','ü',' ','ß',
                             'A','B','C','D','E','F','G',' ','H','I','J','K','K',' ','M','N','O','P','Q','R','S',' ','T','U','V','W','X','Y',' ','Z','Ä','Ö','Ü',' '];
     private Random random = new Random();
@@ -30,13 +30,30 @@ class TestDataHelper {
     int defaultMaxStringLength=255;
     long defaultMaxDateDiff=10000;
     
+    private int entityRowCount=1000;
+    
+    void setEntityRowCount(int c) {
+        this.entityRowCount = c;
+    }
+    
+    int getEntityRowCount(String entityName) {
+        // TODO
+        return this.entityRowCount;
+    }
+    
+    void initWithTestData(Object o,String entityName,String attribName) {
+        // TODO - initialize the attrib given with 'attribName' of Object o with
+        // a random value
+    }
+
+    
     /**
      * is separated to override it
      */
     protected boolean shouldSetValue() {
         random.nextBoolean()
     }
-    
+        
     protected char getRandomChar(int i) {
         int c = random.nextInt();
         if (c<0)
@@ -459,4 +476,3 @@ class TestDataHelper {
             return null;
     }
 }
-

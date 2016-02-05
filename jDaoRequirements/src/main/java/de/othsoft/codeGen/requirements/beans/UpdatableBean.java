@@ -29,16 +29,6 @@ public abstract class UpdatableBean<T> extends InsertableBean {
 
     protected T origState = null;
 
-    protected boolean changeble = false;
-
-    public boolean isChangeble() {
-        return changeble;
-    }
-
-    public void setChangeble(boolean changeble) {
-        this.changeble = changeble;
-    }
-
     @Override
     public void resetChanged() {
         super.resetChanged();

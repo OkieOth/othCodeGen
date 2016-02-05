@@ -170,7 +170,7 @@ public class SQLExecWrapper<T> extends SQLWrapperBase {
     }
 
     
-    public List<T> get(ISQLQueryWrapperUser<T> wrapperUser,IJdbcDataFactoryBase dataFactory,boolean changeble,UserData userData,CmdData cmdData,List<QueryRestr> restr,List<QuerySort> sort,int offset,int count)
+    public List<T> get(ISQLQueryWrapperUser<T> wrapperUser,IJdbcDataFactoryBase dataFactory,UserData userData,CmdData cmdData,List<QueryRestr> restr,List<QuerySort> sort,int offset,int count)
             throws DaoException {
         PreparedStatement ps=null;
         ResultSet rs=null;
@@ -187,7 +187,7 @@ public class SQLExecWrapper<T> extends SQLWrapperBase {
             rs = ps.executeQuery();
             List<T> ret = new ArrayList();
             while (rs.next()) {
-                ret.add(wrapperUser.initFromResultSet(dataFactory,changeble,rs));
+                ret.add(wrapperUser.initFromResultSet(dataFactory,rs));
             }
             return ret;
         }
@@ -202,7 +202,7 @@ public class SQLExecWrapper<T> extends SQLWrapperBase {
     }
 
     
-    public T byId(ISQLQueryWrapperUser<T> wrapperUser,IJdbcDataFactoryBase dataFactory,boolean changeble,UserData userData,CmdData cmdData,int id) throws DaoException {
+    public T byId(ISQLQueryWrapperUser<T> wrapperUser,IJdbcDataFactoryBase dataFactory,UserData userData,CmdData cmdData,int id) throws DaoException {
         PreparedStatement ps=null;
         ResultSet rs=null;
         Connection con = ((cmdData!=null) && (cmdData instanceof JdbcCmdData))? ((JdbcCmdData)cmdData).getCon() : dataFactory.getConnectionFactory().getCon();            
@@ -217,7 +217,7 @@ public class SQLExecWrapper<T> extends SQLWrapperBase {
                 log.debug("id="+id);
             rs = ps.executeQuery();
             if (rs.next())
-                return wrapperUser.initFromResultSet(dataFactory,changeble,rs);
+                return wrapperUser.initFromResultSet(dataFactory,rs);
             else
                 return null;
         }

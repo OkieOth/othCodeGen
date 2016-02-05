@@ -23,5 +23,5 @@ import java.sql.SQLException;
 public interface ISQLUpdWrapperUser<T> {
     String getUpdSql(T data);
     void setUpdValues(PreparedStatement ps,T data) throws SQLException;
-    T create(IJdbcDataFactoryBase dataFactory,boolean changeble);
+    T create(IJdbcDataFactoryBase dataFactory);
 }

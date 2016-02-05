@@ -84,16 +84,16 @@ import java.util.List;
 
 public interface IDataFactory_${model.shortName} {
 <% model.entities.each { entity -> %>
-    ${entity.value.name} create_${entity.value.name}(boolean changeble);
-    ${entity.value.name} byId_${entity.value.name}(boolean changeble,UserData userData,CmdData cmdData,int id) throws DaoException;
-    List<${entity.value.name}> get_${entity.value.name}(boolean changeble,UserData userData,CmdData cmdData,List<QueryRestr> restr,List<QuerySort> sort,int offset,int count) throws DaoException;
+    ${entity.value.name} create_${entity.value.name}();
+    ${entity.value.name} byId_${entity.value.name}(UserData userData,CmdData cmdData,int id) throws DaoException;
+    List<${entity.value.name}> get_${entity.value.name}(UserData userData,CmdData cmdData,List<QueryRestr> restr,List<QuerySort> sort,int offset,int count) throws DaoException;
     int count_${entity.value.name}(UserData userData,CmdData cmdData,List<QueryRestr> restr) throws DaoException;
 <% } %>
 
 <% model.entities*.value.attribs*.findAll { it.type == strListType }*.each { attrib -> %>
-    ${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()} create_${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()}(boolean changeble);
-    ${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()} byId_${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()}(boolean changeble,UserData userData,CmdData cmdData,int id) throws DaoException;
-    List<${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()}> get_${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()}(boolean changeble,UserData userData,CmdData cmdData,List<QueryRestr> restr,List<QuerySort> sort,int offset,int count) throws DaoException;
+    ${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()} create_${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()}();
+    ${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()} byId_${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()}(UserData userData,CmdData cmdData,int id) throws DaoException;
+    List<${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()}> get_${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()}(UserData userData,CmdData cmdData,List<QueryRestr> restr,List<QuerySort> sort,int offset,int count) throws DaoException;
     int count_${attrib.parent.getNameWithFirstLetterUpper()}_${attrib.getNameWithFirstLetterUpper()}(UserData userData,CmdData cmdData,List<QueryRestr> restr) throws DaoException;
 <% } %>
 
@@ -105,12 +105,12 @@ public interface IDataFactory_${model.shortName} {
 <% } %>
 
 <% model.m2nRelations.each { m2n -> %>
-    public ${m2n.value.name} create${m2n.value.name}();
-    public List<${m2n.value.name}> get_${m2n.value.name}_by${m2n.value.ref1.refName}(UserData userData,CmdData cmdData,int refId) throws DaoException;
-    public int count_${m2n.value.name}_by${m2n.value.ref1.refName}(UserData userData,CmdData cmdData,int refId) throws DaoException;
-    public List<${m2n.value.name}> get_${m2n.value.name}_by${m2n.value.ref2.refName}(UserData userData,CmdData cmdData,int refId) throws DaoException;
-    public int count_${m2n.value.name}_by${m2n.value.ref2.refName}(UserData userData,CmdData cmdData,int refId) throws DaoException;
-    public ${m2n.value.name} byIds_${m2n.value.name}(UserData userData,CmdData cmdData,int id${m2n.value.ref1.refName},int id${m2n.value.ref2.refName}) throws DaoException;
+    ${m2n.value.name} create_${m2n.value.name}();
+    List<${m2n.value.name}> get_${m2n.value.name}_by${m2n.value.ref1.refName}(UserData userData,CmdData cmdData,int refId) throws DaoException;
+    int count_${m2n.value.name}_by${m2n.value.ref1.refName}(UserData userData,CmdData cmdData,int refId) throws DaoException;
+    List<${m2n.value.name}> get_${m2n.value.name}_by${m2n.value.ref2.refName}(UserData userData,CmdData cmdData,int refId) throws DaoException;
+    int count_${m2n.value.name}_by${m2n.value.ref2.refName}(UserData userData,CmdData cmdData,int refId) throws DaoException;
+    ${m2n.value.name} byIds_${m2n.value.name}(UserData userData,CmdData cmdData,int id${m2n.value.ref1.refName},int id${m2n.value.ref2.refName}) throws DaoException;
 <% } %>
 
     public int getVersion();
