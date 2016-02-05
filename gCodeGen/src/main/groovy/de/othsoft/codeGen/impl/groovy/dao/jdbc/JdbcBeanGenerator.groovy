@@ -969,7 +969,8 @@ class ${className}_User implements ISQLM2NWrapperUser<${baseClassName}> {
     public ${baseClassName} initFromResultSet(IJdbcDataFactoryBase dataFactory,ResultSet rs) throws SQLException {
         ${className} ret = new ${className}(dataFactory);
         ret.set${aktElem.ref1.getUpperCamelCaseName()}(rs.getInt(1));
-        ret.set${aktElem.ref2.getUpperCamelCaseName()}(rs.getInt(2));
+        ret.set${aktElem.ref2.getUpperCamelCaseName()}(rs.getInt(2));\n\
+        return ret;
     }
 
     private final static String DELETE_SQL="DELETE FROM ${model.shortName}_${aktElem.name} WHERE ${aktElem.ref1.name}=? AND ${aktElem.ref2.name}=?";
