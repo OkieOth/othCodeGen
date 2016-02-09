@@ -135,7 +135,7 @@ class TestDataHelper implements ITestDataHelper {
         setRestr(entityName,attribName,r);
     }
 
-    void setMoneyRestr (String entityName,String attribName,List<String> elems) {
+    void setMoneyStrListRestr (String entityName,String attribName,List<String> elems) {
         Restr_Money_List_Str r = new Restr_Money_List_Str(elems);
         setRestr(entityName,attribName,r);
     }
