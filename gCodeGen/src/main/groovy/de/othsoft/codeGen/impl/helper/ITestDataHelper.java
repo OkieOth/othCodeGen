@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
+import de.othsoft.codeGen.requirements.DaoException;
 
 /**
  * defines the functions needed for the generation of test code
@@ -27,7 +28,7 @@ public interface ITestDataHelper {
      * @param entityName
      * @return 
      */
-    int getEntityRowCount(String entityName);
+    int getRowCount(String entityName);
     
     
     /**
@@ -36,7 +37,7 @@ public interface ITestDataHelper {
      * @param entityName
      * @param attribName
      */
-    void initWithTestData(Object o,String entityName,String attribName);
+    void initWithTestData(Object o,String entityName,String attribName,boolean needed) throws DaoException;
 
     Integer getInt(boolean needed);
     Integer getInt(int min, int max, boolean needed);

@@ -18,6 +18,12 @@ import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Random
 import java.math.RoundingMode
+import de.othsoft.codeGen.requirements.DaoException
+import java.lang.reflect.Method
+import java.lang.reflect.Field
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+
 /**
  *
  * @author eiko
@@ -26,24 +32,327 @@ class TestDataHelper implements ITestDataHelper {
     public def charBase = ['a','b','c','d','e','f','g',' ','h','i','j','k','l',' ','m','n','o','p','q','r','s',' ','t','u','v','w','x','y',' ','z','ä','ö','ü',' ','ß',
                             'A','B','C','D','E','F','G',' ','H','I','J','K','K',' ','M','N','O','P','Q','R','S',' ','T','U','V','W','X','Y',' ','Z','Ä','Ö','Ü',' '];
     private Random random = new Random();
+    
+    def elemRowCount = [:];
+    def elemValueRestr = [:];
+    
+    private void setRestr(String entityName,String attribName,def restr) {
+        def attribRestrList = elemValueRestr[entityName];
+        if (!attribRestrList) {
+            attribRestrList = [:];
+            elemValueRestr[entityName] = attribRestrList;
+        }
+        attribRestrList[attribName]=restr;
+    }
+    
+    private Object getRestr(String entityName,String attribName) {
+        def attribRestrList = elemValueRestr[entityName];
+        if (!attribRestrList) return null;
+        def restr = attribRestrList[attribName];
+        if (restr)
+            return restr;
+        else
+            return null;
+    }
+    
+    void setIntRestr (String entityName,String attribName,int min, int max) {
+        Restr_Int_MinMax r = new Restr_Int_MinMax(min,max);
+        setRestr(entityName,attribName,r);
+    }
+
+    void setIntRestr (String entityName,String attribName,List<Integer> elems) {
+        Restr_Int_List r = new Restr_Int_List(elems);
+        setRestr(entityName,attribName,r);
+    }
+
+    void setLongRestr (String entityName,String attribName,long min, long max) {
+        Restr_Long_MinMax r = new Restr_Long_MinMax(min,max);
+        setRestr(entityName,attribName,r);
+    }
+
+    void setLongRestr (String entityName,String attribName,List<Long> elems) {
+        Restr_Long_List r = new Restr_Long_List(elems);
+        setRestr(entityName,attribName,r);
+    }
+
+    void setStringRestr (String entityName,String attribName,int minLen,int maxLen) {
+        Restr_String_MinMaxLen r = new Restr_String_MinMaxLen(minLen,maxLen);
+        setRestr(entityName,attribName,r);
+    }
+
+    void setStringRestr (String entityName,String attribName,List<String> elems) {
+        Restr_String_List r = new Restr_String_List(elems);
+        setRestr(entityName,attribName,r);
+    }
+
+    void setDateRestr (String entityName,String attribName,String min,String max,DateFormat f) {
+        Restr_Date_MinMax_Str r = new Restr_Date_MinMax_Str(min,max,f);
+        setRestr(entityName,attribName,r);
+    }
+
+    void setDateRestr (String entityName,String attribName,Date min,Date max) {
+        Restr_Date_MinMax r = new Restr_Date_MinMax(min,max);
+        setRestr(entityName,attribName,r);
+    }
+
+    void setDateRestr (String entityName,String attribName,List<Date> elems) {
+        Restr_Date_List r = new Restr_Date_List(elems);
+        setRestr(entityName,attribName,r);
+    }
+
+    void setDateRestr (String entityName,String attribName,List<String> elems,DateFormat f) {
+        Restr_Date_List_Str r = new Restr_Date_List_Str(elems,f);
+        setRestr(entityName,attribName,r);
+    }
+
+    void setTimestampRestr (String entityName,String attribName,String min,String max,DateFormat f) {
+        Restr_Timestamp_MinMax_Str r = new Restr_Timestamp_MinMax_Str(min,max,f);
+        setRestr(entityName,attribName,r);
+    }
+
+    void setTimestampRestr (String entityName,String attribName,Date min,Date max) {
+        Restr_Timestamp_MinMax r = new Restr_Timestamp_MinMax(min,max);
+        setRestr(entityName,attribName,r);
+    }
+
+    void setTimestampRestr (String entityName,String attribName,List<Date> elems) {
+        Restr_Timestamp_List r = new Restr_Timestamp_List(elems);
+        setRestr(entityName,attribName,r);
+    }
+
+    void setTimestampRestr (String entityName,String attribName,List<String> elems,DateFormat f) {
+        Restr_Timestamp_List_Str r = new Restr_Timestamp_List_Str(elems,f);
+        setRestr(entityName,attribName,r);
+    }
+
+    void setMoneyRestr (String entityName,String attribName,String min,String max) {
+        Restr_Money_MinMax_Str r = new Restr_Money_MinMax_Str(min,max);
+        setRestr(entityName,attribName,r);
+    }
+
+    void setMoneyRestr (String entityName,String attribName,BigDecimal min,BigDecimal max) {
+        Restr_Money_MinMax r = new Restr_Money_MinMax(min,max);
+        setRestr(entityName,attribName,r);
+    }
+
+    void setMoneyRestr (String entityName,String attribName,List<String> elems) {
+        Restr_Money_List_Str r = new Restr_Money_List_Str(elems);
+        setRestr(entityName,attribName,r);
+    }
+
+    void setMoneyRestr (String entityName,String attribName,List<BigDecimal> elems) {
+        Restr_Money_List r = new Restr_Money_List(elems);
+        setRestr(entityName,attribName,r);
+    }
+
+    void setDoubleRestr (String entityName,String attribName,double min, double max) {
+        Restr_Double_MinMax r = new Restr_Double_MinMax(min,max);
+        setRestr(entityName,attribName,r);
+    }
+
+    void setDoubleRestr (String entityName,String attribName,List<Double> elems) {
+        Restr_Double_List r = new Restr_Double_List(elems);
+        setRestr(entityName,attribName,r);
+    }
+
+    
+    /**
+     * set a desired test data count for a spezific model element
+     * @param elemName name of entity or m2n
+     * @param count number of desired data entries
+     */
+    void addElemRowCount(String elemName, int count) {
+        elemRowCount[elemName]=count;
+    }
+    
+    /**
+     * set the desired max string length for test data
+     * @param maxLength max length
+     */
+    void setMaxStringLength(int maxLength) {
+        defaultMaxStringLength = maxLength;
+    }
+    
+    /**
+     * set default count for test data per model element
+     * @param count number of desired test data
+     */
+    void setDefaultElemCount(int count) {
+        defaultRowCount = count;
+    }
 
     int defaultMaxStringLength=255;
     long defaultMaxDateDiff=10000;
     
-    private int entityRowCount=1000;
-    
-    void setEntityRowCount(int c) {
-        this.entityRowCount = c;
+    int defaultRowCount=1000;
+        
+    int getRowCount(String entityName) {
+        if (elem[entityName])
+            return elem[entityName];
+        else
+            return defaultRowCount;
     }
-    
-    int getEntityRowCount(String entityName) {
-        // TODO
-        return this.entityRowCount;
-    }
-    
-    void initWithTestData(Object o,String entityName,String attribName) {
-        // TODO - initialize the attrib given with 'attribName' of Object o with
-        // a random value
+
+    void initWithTestData(Object o,String entityName,String attribName,boolean needed) throws DaoException {
+        try {
+            Class c = o.getClass();
+            Field field = c.getDeclaredField(attribName);
+            Class attribTypeClass = field.getType();
+            String s = attribName.replaceAll(/_id$/,'Id');
+            String setterName = 'set' + s.substring(0,1).toUpperCase()+s.substring(1);
+            Method method = c.getDeclaredMethod(setterName,attribTypeClass);
+            
+            def restr = getRestr(entitiyName,attribName);
+            def unknownClassStr = null;
+            
+            Object v = null; // a random value
+            switch (attribTypeClass) {
+            case String.class:
+                if (restr==null) {
+                    v = getString(needed);
+                }
+                else if (restr instanceof Restr_String_MinMaxLen) {
+                    Restr_String_MinMaxLen r = (Restr_String_MinMaxLen)restr;
+                    v = getString(r.minLen,r.maxLen,needed);
+                }
+                else if (restr instanceof Restr_String_List) {
+                    Restr_String_List r = (Restr_String_List)restr;
+                    v = getStringFromList(r.elems,needed);
+                }
+                else {
+                    unknownClassStr = restr.getClass().getName();
+                }
+                break;
+            case Integer.class:
+                if (restr==null) {
+                    v = getInt(needed);
+                }
+                else if (restr instanceof Restr_Int_MinMax) {
+                    Restr_Int_MinMax r = (Restr_Int_MinMax) restr;
+                    v = getInt(r.min,r.max,needed);
+                }
+                else if (restr instanceof Restr_Int_List) {
+                    Restr_Int_List r = (Restr_Int_List)restr;
+                    v = getIntFromList(r.elems,needed);
+                }
+                else {
+                    unknownClassStr = restr.getClass().getName();
+                }
+                break;
+            case Long.class:
+                if (restr==null) {
+                    v = getLong(needed);
+                }
+                else if (restr instanceof Restr_Long_MinMax) {
+                    Restr_Long_MinMax r = (Restr_Long_MinMax)restr;
+                    v = getLong(r.min,r.max,needed);
+                }
+                else if (restr instanceof Restr_Long_List) {
+                    Restr_Long_List r = (Restr_Long_List)restr;
+                    v = getLongFromList(r.elems,needed);
+                }
+                else {
+                    unknownClassStr = restr.getClass().getName();
+                }
+                break;
+            case Double.class:
+                if (restr==null) {
+                    v = getDouble(needed);
+                }
+                else if (restr instanceof Restr_Double_MinMax) {
+                    Restr_Double_MinMax r = (Restr_Double_MinMax)restr;
+                    v = getDouble(r.min,r.max,needed);
+                }
+                else if (restr instanceof Restr_Double_List) {
+                    Restr_Double_List r = (Restr_Double_List)restr;
+                    v = getDoubleFromList(r.elems,needed);
+                }
+                else {
+                    unknownClassStr = restr.getClass().getName();
+                }
+                break;
+            case BigDecimal.class:
+                if (restr==null) {
+                    v = getMoney(needed);
+                }
+                else if (restr instanceof Restr_Money_MinMax_Str) {
+                    Restr_Money_MinMax_Str r = (Restr_Money_MinMax_Str)restr;
+                    v = getMoney(r.min,r.max,needed);
+                }
+                else if (restr instanceof Restr_Money_MinMax) {
+                    Restr_Money_MinMax r = (Restr_Money_MinMax)restr;
+                    v = getMoney(r.min,r.max,needed);
+                }
+                else if (restr instanceof Restr_Money_List_Str) {
+                    Restr_Money_List_Str r = (Restr_Money_List_Str)restr;
+                    v = getMoneyFromStrList(r.elems,needed);
+                }
+                else if (restr instanceof Restr_Money_List) {
+                    Restr_Money_List r = (Restr_Money_List)restr;
+                    v = getMoneyFromList(r.elems,needed);
+                }
+                else {
+                    unknownClassStr = restr.getClass().getName();
+                }
+                break;
+            case Date.class:
+                if (restr==null) {
+                    // not unique ... date attribute is the same for date and timestamp attribs
+                    v = getTimestamp(needed);
+                }
+                else if (restr instanceof Restr_Date_MinMax_Str) {
+                    Restr_Date_MinMax_Str r = (Restr_Date_MinMax_Str)restr;
+                    v = getDate(r.min,r.max,needed,r.f);
+                }
+                else if (restr instanceof Restr_Date_MinMax) {
+                    Restr_Date_MinMax r = (Restr_Date_MinMax)restr;
+                    v = getDate(r.min,r.max,needed);
+                }
+                else if (restr instanceof Restr_Date_List_Str) {
+                    Restr_Date_List_Str r = (Restr_Date_List_Str)restr;
+                    v = getDateFromList(r.elems,needed,r.f);
+                }
+                else if (restr instanceof Restr_Date_List) {
+                    Restr_Date_List r = (Restr_Date_List)restr;
+                    v = getDateFromList(r.elems,needed);
+                }
+                else if (restr instanceof Restr_Timestamp_MinMax_Str) {
+                    Restr_Timestamp_MinMax_Str r = (Restr_Timestamp_MinMax_Str)restr;
+                    v = getTimestamp(r.min,r.max,needed,r.f);
+                }
+                else if (restr instanceof Restr_Timestamp_MinMax) {
+                    Restr_Timestamp_MinMax r = (Restr_Timestamp_MinMax)restr;
+                    v = getTimestamp(r.min,r.max,needed);
+                }
+                else if (restr instanceof Restr_Timestamp_List_Str) {
+                    Restr_Timestamp_List_Str r = (Restr_Timestamp_List_Str)restr;
+                    v = getTimestampFromList(r.elems,needed,r.f);
+                }
+                else if (restr instanceof Restr_Timestamp_List) {
+                    Restr_Timestamp_List r = (Restr_Timestamp_List)restr;
+                    v = getTimestampFromList(r.elems,needed);
+                }
+                else {
+                    unknownClassStr = restr.getClass().getName();
+                }
+            break;
+            case Boolean.class:
+                v = getBoolean(needed);
+                break;
+            default:
+                throw new DaoException(log,"unknown attrib type: $attribTypeClass");
+            }
+            if (unknownClassStr!=null)
+                throw new DaoException(log,"unknown restr class for $entityName.$attribName: ${unknownClassStr}");
+                
+            method.invokeMethod(o,v);
+        }
+        catch(DaoException e) {
+            throw e;
+        }
+        catch(Exception e) {
+            throw new DaoException(log,e);
+        }
     }
 
     
@@ -474,5 +783,159 @@ class TestDataHelper implements ITestDataHelper {
         }
         else
             return null;
+    }
+    private static final Logger log = LoggerFactory.getLogger(TestDataHelper.class);
+}
+
+class Restr_Int_MinMax {
+    int min;
+    int max;
+    Restr_Int_MinMax(int min, int max) {
+      this.min = min;
+      this.max = max;
+    }
+}
+
+class Restr_Int_List {
+    List<Integer> elems;
+    Restr_Int_List (List<Integer> e) {
+        this.elems = e;
+    }
+}
+
+class Restr_Long_MinMax{
+    long min;
+    long max;
+    Restr_Long_MinMax(long min, long max) {
+      this.min = min;
+      this.max = max;
+    }
+}
+
+class Restr_Long_List {
+    List<Long> elems;
+    Restr_Long_List (List<Long> e) {
+        this.elems = e;
+    }
+}
+
+class Restr_String_MinMaxLen{
+    int minLen;
+    int maxLen;
+    Restr_String_MinMaxLen(int minLen, int maxLen) {
+      this.minLen = minLen;
+      this.maxLen = maxLen;
+    }
+}
+
+class Restr_String_List {
+    List<String> elems;
+    Restr_String_List (List<String> e) {
+        this.elems = e;
+    }
+}
+
+class Restr_Double_MinMax{
+    double min;
+    double max;
+    Restr_Double_MinMax(double min, double max) {
+      this.min = min;
+      this.max = max;
+    }
+}
+
+class Restr_Double_List {
+    List<Double> elems;
+    Restr_Double_List (List<Double> e) {
+        this.elems = e;
+    }
+}
+
+class Restr_Date_MinMax_Str {
+    String min;
+    String max;
+    DateFormat f;
+
+    Restr_Date_MinMax_Str(String min,String max,DateFormat f) {
+      this.min = min;
+      this.max = max;
+      this.f = f;
+    }
+}
+
+class Restr_Date_MinMax {
+    Date min;
+    Date max;
+
+    Restr_Date_MinMax(Date min,Date max) {
+      this.min = min;
+      this.max = max;
+    }
+}
+
+class Restr_Date_List_Str {
+    List<String> elems;
+    DateFormat f;
+
+    Restr_Date_List_Str(List<String> elems,DateFormat f) {
+      this.elems = elems;
+      this.f = f;
+    }
+}
+
+class Restr_Date_List {
+    List<Date> elems;
+
+    Restr_Date_List(List<Date> elems) {
+      this.elems = elems;
+    }
+}
+
+class Restr_Timestamp_MinMax_Str extends Restr_Date_MinMax_Str {
+}
+
+class Restr_Timestamp_MinMax extends Restr_Date_MinMax {
+}
+
+class Restr_Timestamp_List_Str extends Restr_Date_List_Str {
+}
+
+class Restr_Timestamp_List extends Restr_Date_List {
+}
+
+
+class Restr_Money_MinMax_Str {
+    String min;
+    String max;
+
+    Restr_Money_MinMax_Str(String min,String max) {
+      this.min = min;
+      this.max = max;
+    }
+}
+
+class Restr_Money_MinMax {
+    BigDecimal min;
+    BigDecimal max;
+
+    Restr_Money_MinMax(Date min,Date max) {
+      this.min = min;
+      this.max = max;
+    }
+}
+
+class Restr_Money_List_Str {
+    List<String> elems;
+
+    Restr_Money_List_Str(List<String> elems) {
+      this.elems = elems;
+    }
+}
+
+class Restr_Money_List {
+    List<BigDecimal> elems;
+
+    Restr_Money_List(List<BigDecimal> elems) {
+      this.elems = elems;
     }
 }

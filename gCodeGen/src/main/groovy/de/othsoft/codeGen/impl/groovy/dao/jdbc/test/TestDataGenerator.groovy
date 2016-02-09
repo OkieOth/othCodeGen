@@ -129,13 +129,13 @@ public class ${className} {
 <% model.entities*.each { entity -> %>
     private void createDataFor_${entity.value.name}() throws DaoException {
         MinMaxCont minMaxCont = null;
-        for (int i=0;i<testDataHelper.getEntityRowCount("${entity.value.name}");i++) {
+        for (int i=0;i<testDataHelper.getRowCount("${entity.value.name}");i++) {
             ${entity.value.name} v = dataFactory.create_${entity.value.name}();
         <% entity.value.attribs.each { attrib -> if ( attrib.type == strListType ) {
         %>
-            this.testDataHelper.initWithTestData(v,"${entity.value.name}","${attrib.name}IdTxt");
+            this.testDataHelper.initWithTestData(v,"${entity.value.name}","${attrib.name}IdTxt",${attrib.needed});
         <% } else { %>
-            this.testDataHelper.initWithTestData(v,"${entity.value.name}","${attrib.name}");<% } } %>
+            this.testDataHelper.initWithTestData(v,"${entity.value.name}","${attrib.name}",${attrib.needed});<% } } %>
             // handle references
             <% entity.value.refs.each { ref -> 
             %>
@@ -188,7 +188,7 @@ public class ${className} {
         if (minMax_r1==null) throw new DaoException ("minMaxCont for '${m2n.value.ref1.entity.name}' not foundaktElem");
         MinMaxCont minMax_r2 = entityMinMaxMap.get("${m2n.value.ref2.entity.name}");
         if (minMax_r2==null) throw new DaoException ("minMaxCont for '${m2n.value.ref2.entity.name}' not found");
-        for (int i=0;i<testDataHelper.getEntityRowCount("${m2n.value.name}");i++) {
+        for (int i=0;i<testDataHelper.getRowCount("${m2n.value.name}");i++) {
             boolean notFound = true;
             while (notFound) {
                 int id_r1 = testDataHelper.getInt(minMax_r1.getMin(),minMax_r1.getMax(),true);

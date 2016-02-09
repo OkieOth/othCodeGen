@@ -220,7 +220,7 @@ class DataModel {
         if (!map."$key")
             throw new CheckModelException ("value needed for key='$key', $map")
         map."$key"
-    }
+    }    
 }
 
 class BaseModelEntry {
