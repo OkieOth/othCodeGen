@@ -55,102 +55,138 @@ class TestDataHelper implements ITestDataHelper {
             return null;
     }
     
-    void setIntRestr (String entityName,String attribName,int min, int max) {
+    void setIntRestr (String entityName,String attribName,int min, int max) throws DaoException {
+        if (entityName==null || attribName==null) throw new DaoException ('entity and attrib params are needed');
+        if (max<min) throw new DaoException ('min max range not valid');
         Restr_Int_MinMax r = new Restr_Int_MinMax(min,max);
         setRestr(entityName,attribName,r);
     }
 
-    void setIntRestr (String entityName,String attribName,List<Integer> elems) {
+    void setIntRestr (String entityName,String attribName,List<Integer> elems) throws DaoException {
+        if (entityName==null || attribName==null) throw new DaoException ('entity and attrib params are needed');
+        if (!elems) throw new DaoException ('no valid elem list given');
         Restr_Int_List r = new Restr_Int_List(elems);
         setRestr(entityName,attribName,r);
     }
 
-    void setLongRestr (String entityName,String attribName,long min, long max) {
+    void setLongRestr (String entityName,String attribName,long min, long max) throws DaoException {
+        if (entityName==null || attribName==null) throw new DaoException ('entity and attrib params are needed');
+        if (max<min) throw new DaoException ('min max range not valid');
         Restr_Long_MinMax r = new Restr_Long_MinMax(min,max);
         setRestr(entityName,attribName,r);
     }
 
-    void setLongRestr (String entityName,String attribName,List<Long> elems) {
+    void setLongRestr (String entityName,String attribName,List<Long> elems) throws DaoException {
+        if (entityName==null || attribName==null) throw new DaoException ('entity and attrib params are needed');
+        if (!elems) throw new DaoException ('no valid elem list given');
         Restr_Long_List r = new Restr_Long_List(elems);
         setRestr(entityName,attribName,r);
     }
 
-    void setStringRestr (String entityName,String attribName,int minLen,int maxLen) {
+    void setStringRestr (String entityName,String attribName,int minLen,int maxLen) throws DaoException {
+        if (entityName==null || attribName==null) throw new DaoException ('entity and attrib params are needed');
+        if (minLen<=0 || maxLen<min) throw new DaoException ('min max range not valid');
         Restr_String_MinMaxLen r = new Restr_String_MinMaxLen(minLen,maxLen);
         setRestr(entityName,attribName,r);
     }
 
-    void setStringRestr (String entityName,String attribName,List<String> elems) {
+    void setStringRestr (String entityName,String attribName,List<String> elems) throws DaoException {
+        if (entityName==null || attribName==null) throw new DaoException ('entity and attrib params are needed');
+        if (!elems) throw new DaoException ('no valid elem list given');
         Restr_String_List r = new Restr_String_List(elems);
         setRestr(entityName,attribName,r);
     }
 
-    void setDateRestr (String entityName,String attribName,String min,String max,DateFormat f) {
+    void setDateRestr (String entityName,String attribName,String min,String max,DateFormat f) throws DaoException {
+        if (entityName==null || attribName==null) throw new DaoException ('entity and attrib params are needed');        
+        if (f==null) throw new DaoException ('DateFormat instance is needed');
         Restr_Date_MinMax_Str r = new Restr_Date_MinMax_Str(min,max,f);
         setRestr(entityName,attribName,r);
     }
 
-    void setDateRestr (String entityName,String attribName,Date min,Date max) {
+    void setDateRestr (String entityName,String attribName,Date min,Date max) throws DaoException {
+        if (entityName==null || attribName==null) throw new DaoException ('entity and attrib params are needed');
         Restr_Date_MinMax r = new Restr_Date_MinMax(min,max);
         setRestr(entityName,attribName,r);
     }
 
-    void setDateRestr (String entityName,String attribName,List<Date> elems) {
+    void setDateRestr (String entityName,String attribName,List<Date> elems) throws DaoException {
+        if (entityName==null || attribName==null) throw new DaoException ('entity and attrib params are needed');
+        if (!elems) throw new DaoException ('no valid elem list given');
         Restr_Date_List r = new Restr_Date_List(elems);
         setRestr(entityName,attribName,r);
     }
 
-    void setDateRestr (String entityName,String attribName,List<String> elems,DateFormat f) {
+    void setDateRestr (String entityName,String attribName,List<String> elems,DateFormat f) throws DaoException {
+        if (entityName==null || attribName==null) throw new DaoException ('entity and attrib params are needed');
+        if (f==null) throw new DaoException ('DateFormat instance is needed');
         Restr_Date_List_Str r = new Restr_Date_List_Str(elems,f);
         setRestr(entityName,attribName,r);
     }
 
-    void setTimestampRestr (String entityName,String attribName,String min,String max,DateFormat f) {
+    void setTimestampRestr (String entityName,String attribName,String min,String max,DateFormat f) throws DaoException {
+        if (entityName==null || attribName==null) throw new DaoException ('entity and attrib params are needed');
+        if (f==null) throw new DaoException ('DateFormat instance is needed');
         Restr_Timestamp_MinMax_Str r = new Restr_Timestamp_MinMax_Str(min,max,f);
         setRestr(entityName,attribName,r);
     }
 
-    void setTimestampRestr (String entityName,String attribName,Date min,Date max) {
+    void setTimestampRestr (String entityName,String attribName,Date min,Date max) throws DaoException {
+        if (entityName==null || attribName==null) throw new DaoException ('entity and attrib params are needed');
         Restr_Timestamp_MinMax r = new Restr_Timestamp_MinMax(min,max);
         setRestr(entityName,attribName,r);
     }
 
-    void setTimestampRestr (String entityName,String attribName,List<Date> elems) {
+    void setTimestampRestr (String entityName,String attribName,List<Date> elems) throws DaoException {
+        if (entityName==null || attribName==null) throw new DaoException ('entity and attrib params are needed');
+        if (!elems) throw new DaoException ('no valid elem list given');
         Restr_Timestamp_List r = new Restr_Timestamp_List(elems);
         setRestr(entityName,attribName,r);
     }
 
-    void setTimestampRestr (String entityName,String attribName,List<String> elems,DateFormat f) {
+    void setTimestampRestr (String entityName,String attribName,List<String> elems,DateFormat f) throws DaoException {
+        if (entityName==null || attribName==null) throw new DaoException ('entity and attrib params are needed');
+        if (!elems) throw new DaoException ('no valid elem list given');
+        if (f==null) throw new DaoException ('DateFormat instance is needed');
         Restr_Timestamp_List_Str r = new Restr_Timestamp_List_Str(elems,f);
         setRestr(entityName,attribName,r);
     }
 
-    void setMoneyRestr (String entityName,String attribName,String min,String max) {
+    void setMoneyRestr (String entityName,String attribName,String min,String max) throws DaoException {
+        if (entityName==null || attribName==null) throw new DaoException ('entity and attrib params are needed');
         Restr_Money_MinMax_Str r = new Restr_Money_MinMax_Str(min,max);
         setRestr(entityName,attribName,r);
     }
 
-    void setMoneyRestr (String entityName,String attribName,BigDecimal min,BigDecimal max) {
+    void setMoneyRestr (String entityName,String attribName,BigDecimal min,BigDecimal max) throws DaoException {
+        if (entityName==null || attribName==null) throw new DaoException ('entity and attrib params are needed');
         Restr_Money_MinMax r = new Restr_Money_MinMax(min,max);
         setRestr(entityName,attribName,r);
     }
 
-    void setMoneyStrListRestr (String entityName,String attribName,List<String> elems) {
+    void setMoneyStrListRestr (String entityName,String attribName,List<String> elems) throws DaoException {
+        if (entityName==null || attribName==null) throw new DaoException ('entity and attrib params are needed');
+        if (!elems) throw new DaoException ('no valid elem list given');
         Restr_Money_List_Str r = new Restr_Money_List_Str(elems);
         setRestr(entityName,attribName,r);
     }
 
-    void setMoneyRestr (String entityName,String attribName,List<BigDecimal> elems) {
+    void setMoneyRestr (String entityName,String attribName,List<BigDecimal> elems) throws DaoException {
+        if (entityName==null || attribName==null) throw new DaoException ('entity and attrib params are needed');
+        if (!elems) throw new DaoException ('no valid elem list given');
         Restr_Money_List r = new Restr_Money_List(elems);
         setRestr(entityName,attribName,r);
     }
 
-    void setDoubleRestr (String entityName,String attribName,double min, double max) {
+    void setDoubleRestr (String entityName,String attribName,double min, double max) throws DaoException {
+        if (entityName==null || attribName==null) throw new DaoException ('entity and attrib params are needed');
         Restr_Double_MinMax r = new Restr_Double_MinMax(min,max);
         setRestr(entityName,attribName,r);
     }
 
-    void setDoubleRestr (String entityName,String attribName,List<Double> elems) {
+    void setDoubleRestr (String entityName,String attribName,List<Double> elems) throws DaoException {
+        if (entityName==null || attribName==null) throw new DaoException ('entity and attrib params are needed');
+        if (!elems) throw new DaoException ('no valid elem list given');
         Restr_Double_List r = new Restr_Double_List(elems);
         setRestr(entityName,attribName,r);
     }
@@ -194,15 +230,27 @@ class TestDataHelper implements ITestDataHelper {
     }
 
     void initWithTestData(Object o,String entityName,String attribName,boolean needed) throws DaoException {
+        if (o==null || entityName==null || attribName==null)
+            throw new DaoException ('null params not allowed');
         try {
             Class c = o.getClass();
-            Field field = c.getDeclaredField(attribName);
+            Field field = null;
+            String realAttribName = attribName;
+            try {
+                field = c.getDeclaredField(realAttribName);
+            }
+            catch(NoSuchFieldException nsfe) {
+                realAttribName = realAttribName+'IdTxt';
+                field = c.getDeclaredField("${realAttribName}");                
+            }
             Class attribTypeClass = field.getType();
-            String s = attribName.replaceAll(/_id$/,'Id');
+            String s = realAttribName.replaceAll(/_id$/,'Id');
             String setterName = 'set' + s.substring(0,1).toUpperCase()+s.substring(1);
             Method method = c.getDeclaredMethod(setterName,attribTypeClass);
+            if (method==null)
+                throw new DaoException ("no setter '$setterName' found in entity '$entityName', o.class=${c.getName()}");
             
-            def restr = getRestr(entitiyName,attribName);
+            def restr = getRestr(entityName,attribName);
             def unknownClassStr = null;
             
             Object v = null; // a random value
@@ -345,7 +393,7 @@ class TestDataHelper implements ITestDataHelper {
             if (unknownClassStr!=null)
                 throw new DaoException(log,"unknown restr class for $entityName.$attribName: ${unknownClassStr}");
                 
-            method.invokeMethod(o,v);
+            method.invoke(o,v);
         }
         catch(DaoException e) {
             throw e;

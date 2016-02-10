@@ -131,11 +131,9 @@ public class ${className} {
         MinMaxCont minMaxCont = null;
         for (int i=0;i<testDataHelper.getRowCount("${entity.value.name}");i++) {
             ${entity.value.name} v = dataFactory.create_${entity.value.name}();
-        <% entity.value.attribs.each { attrib -> if ( attrib.type == strListType ) {
+        <% entity.value.attribs.each { attrib -> 
         %>
-            this.testDataHelper.initWithTestData(v,"${entity.value.name}","${attrib.name}IdTxt",${attrib.needed});
-        <% } else { %>
-            this.testDataHelper.initWithTestData(v,"${entity.value.name}","${attrib.name}",${attrib.needed});<% } } %>
+            this.testDataHelper.initWithTestData(v,"${entity.value.name}","${attrib.name}",${attrib.needed});<% } %>
             // handle references
             <% entity.value.refs.each { ref -> 
             %>
