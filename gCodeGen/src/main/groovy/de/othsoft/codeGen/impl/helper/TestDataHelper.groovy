@@ -218,7 +218,7 @@ class TestDataHelper implements ITestDataHelper {
     }
 
     int defaultMaxStringLength=255;
-    long defaultMaxDateDiff=10000;
+    long defaultMaxDateDiff=100000000000;
     
     int defaultRowCount=1000;
         
@@ -648,7 +648,7 @@ class TestDataHelper implements ITestDataHelper {
                 long newL = random.nextLong();
                 boolean bSub = newL < 0;
                 if (bSub)
-                    Math.abs(newL)
+                    newL = Math.abs(newL)
                 newL = newL % defaultMaxDateDiff;
                 Date ret = new Date();
                 long l = ret.getTime();
@@ -658,6 +658,7 @@ class TestDataHelper implements ITestDataHelper {
                 else {
                     ret.setTime(l+newL);                    
                 }
+                println "newL=$newL,l=$l, ret=$ret"
                 return ret;                
             }
         }

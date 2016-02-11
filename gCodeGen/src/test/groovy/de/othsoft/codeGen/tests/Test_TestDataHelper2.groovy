@@ -90,22 +90,59 @@ class Test_TestDataHelper2 {
 
      @Test
      public void initWithTestData_money() {
-         //
+        DummyClass o = new DummyClass();
+        assertNull(o.getMoneyValue())
+        TestDataHelper helper = new TestDataHelper();
+        helper.initWithTestData(o,'DummyClass','moneyValue',true);
+        BigDecimal s1 = o.getMoneyValue();
+        assertNotNull(s1);
+        helper.initWithTestData(o,'DummyClass','moneyValue',true);
+        BigDecimal s2 = o.getMoneyValue();
+        assertNotNull(s2);
+        assertTrue(!s1.equals(s2));
      }
 
      @Test
      public void initWithTestData_date() {
-         //
+        DummyClass o = new DummyClass();
+        assertNull(o.getDateValue())
+        TestDataHelper helper = new TestDataHelper();
+        helper.initWithTestData(o,'DummyClass','dateValue',true);
+        Date s1 = o.getDateValue();
+        assertNotNull(s1);
+        helper.initWithTestData(o,'DummyClass','dateValue',true);
+        Date s2 = o.getDateValue();
+        assertNotNull(s2);
+        println ("$s1, $s2");
+        assertTrue(!s1.equals(s2));
      }
 
      @Test
      public void initWithTestData_timestamp() {
-         //
+        DummyClass o = new DummyClass();
+        assertNull(o.getTimestampValue())
+        TestDataHelper helper = new TestDataHelper();
+        helper.initWithTestData(o,'DummyClass','timestampValue',true);
+        Date s1 = o.getTimestampValue();
+        assertNotNull(s1);
+        helper.initWithTestData(o,'DummyClass','timestampValue',true);
+        Date s2 = o.getTimestampValue();
+        assertNotNull(s2);
+        assertTrue(!s1.equals(s2));
      }
 
      @Test
      public void initWithTestData_double() {
-         //
+        DummyClass o = new DummyClass();
+        assertNull(o.getDoubleValue())
+        TestDataHelper helper = new TestDataHelper();
+        helper.initWithTestData(o,'DummyClass','doubleValue',true);
+        Double s1 = o.getDoubleValue();
+        assertNotNull(s1);
+        helper.initWithTestData(o,'DummyClass','doubleValue',true);
+        Double s2 = o.getDoubleValue();
+        assertNotNull(s2);
+        assertTrue(!s1.equals(s2));
      }
 }
 
@@ -126,8 +163,38 @@ class DummyClass {
     }
 
     private Integer intValue;
-    public Integer getIntValue() { return longValue; }
+    public Integer getIntValue() { return intValue; }
     public void setIntValue(Integer l) {
-        longValue = l;
+        intValue = l;
+    }
+
+    private String strValue;
+    public String getStrValue() { return strValue; }
+    public void setIntValue(String l) {
+        strValue = l;
+    }
+
+    private Date dateValue;
+    public Date getDateValue() { return dateValue; }
+    public void setDateValue(Date l) {
+        dateValue = l;
+    }
+
+    private Date timestampValue;
+    public Date getTimestampValue() { return timestampValue; }
+    public void setTimestampValue(Date l) {
+        timestampValue = l;
+    }
+
+    private Double doubleValue;
+    public Double getDoubleValue() { return doubleValue; }
+    public void setDoubleValue(Double l) {
+        doubleValue = l;
+    }
+
+    private BigDecimal moneyValue;
+    public BigDecimal getMoneyValue() { return moneyValue; }
+    public void setMoneyValue(BigDecimal l) {
+        moneyValue = l;
     }
 }
