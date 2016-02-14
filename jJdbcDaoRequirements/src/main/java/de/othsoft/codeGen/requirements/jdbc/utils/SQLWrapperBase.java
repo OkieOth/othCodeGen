@@ -12,6 +12,7 @@ specific language governing permissions and limitations under the License.
 */
 package de.othsoft.codeGen.requirements.jdbc.utils;
 
+import de.othsoft.codeGen.requirements.AttribType;
 import de.othsoft.codeGen.requirements.CmdData;
 import de.othsoft.codeGen.requirements.DaoException;
 import de.othsoft.codeGen.requirements.QueryRestr;
@@ -20,6 +21,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import org.slf4j.Logger;
 
 /**
@@ -65,6 +67,93 @@ public class SQLWrapperBase {
     protected String addCountToSql(String sql) {
         return StringConsts.SQL_COUNT_PART_1+sql+StringConsts.SQL_COUNT_PART_2;
     }
+    
+    public static void setValue(int index,PreparedStatement ps,Object value,AttribType fieldType) throws SQLException,DaoException {
+        int sqlType;
+        switch (fieldType) {
+            case t_int:
+                sqlType = Types.INTEGER;
+                break;
+            case t_long:
+                sqlType = Types.INTEGER;
+                break;
+            case t_string:
+                sqlType = Types.VARCHAR;                
+                break;
+            case t_key:
+                sqlType = Types.INTEGER;
+                break;
+            case t_boolean:
+                sqlType = Types.BOOLEAN;
+                break;
+            case t_date:
+                sqlType = Types.DATE;
+                break;
+            case t_timestamp:
+                sqlType = Types.TIMESTAMP;
+                break;
+/* TODO
+            case t_geo:
+                sqlType = Types.INTEGER;
+                break;
+            case t_time:
+                sqlType = Types.INTEGER;
+                break;
+*/
+            case t_money:
+                sqlType = Types.NUMERIC;
+                break;
+            case t_meters:
+                sqlType = Types.DOUBLE;
+                break;
+            case t_milimeters:
+                sqlType = Types.INTEGER;
+                break;
+            case t_kilometers:
+                sqlType = Types.DOUBLE;
+                break;
+            case t_kmh:
+                sqlType = Types.DOUBLE;
+                break;
+            case t_prozent:
+                sqlType = Types.DOUBLE;
+                break;
+            case t_hour:
+                sqlType = Types.INTEGER;
+                break;
+            case t_min:
+                sqlType = Types.INTEGER;
+                break;
+            case t_sec:
+                sqlType = Types.INTEGER;
+                break;
+            case t_volt:
+                sqlType = Types.DOUBLE;
+                break;
+            case t_float:
+                sqlType = Types.DOUBLE;
+                break;
+            case t_str_list:    
+                sqlType = Types.INTEGER;
+                break;
+            
+            default:
+                throw new DaoException ("unknown AttribType: "+fieldType);
+        }
+        
+        if (value==null)
+            ps.setNull(index, sqlType);
+        else
+            ps.setObject(index, value, sqlType);
+    }
+    
+    public static String prepareUpdColPart(String existingParts,String newColPart) {
+        if (existingParts!=null)
+            return existingParts+","+newColPart;
+        else
+            return existingParts=newColPart;
+    }
+
     
     public static String addFilter2Sql(String colNameWithAlias, QueryRestr r, String sql) throws DaoException {
         StringBuilder sb = new StringBuilder();

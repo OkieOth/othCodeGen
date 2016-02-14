@@ -12,7 +12,7 @@ specific language governing permissions and limitations under the License.
 */
 package de.othsoft.codeGen.requirements.jdbc.utils;
 
-import de.othsoft.codeGen.requirements.jdbc.ConnectionFactory;
+import de.othsoft.codeGen.requirements.DaoException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
@@ -22,6 +22,6 @@ import java.sql.SQLException;
  */
 public interface ISQLUpdWrapperUser<T> {
     String getUpdSql(T data);
-    void setUpdValues(PreparedStatement ps,T data) throws SQLException;
+    void setUpdValues(PreparedStatement ps,T data) throws SQLException,DaoException;
     T create(IJdbcDataFactoryBase dataFactory);
 }

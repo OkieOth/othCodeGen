@@ -21,6 +21,8 @@ import de.othsoft.codeGen.requirements.jdbc.utils.ISetPagingImpl
 import de.othsoft.codeGen.requirements.jdbc.utils.impl.Psql_SetPagingImpl
 import de.othsoft.codeGen.requirements.jdbc.utils.impl.SimpleSetFilterValuesImpl
 import de.othsoft.codeGen.test.integration.generated.InsertTestData
+import de.gCodeGen.test.dao.jdbc.test.TestData_rman
+import de.othsoft.codeGen.impl.helper.TestDataHelper
 
 /**
  *
@@ -169,6 +171,16 @@ class Test_CreatePsqlDb {
         dataFactory.setSetFilterValuesImpl(new SimpleSetFilterValuesImpl())
         InsertTestData insertTestData = new InsertTestData()
         insertTestData.dummy(dataFactory)
+        
+        testInsertTestData(dataFactory);
+    }
+    
+    void testInsertTestData(DataFactory_rman dataFactory) {
+        TestData_rman testData = new TestData_rman()
+        testData.setDataFactory(dataFactory)
+        TestDataHelper testDataHelper = new TestDataHelper()
+        testData.setTestDataHelper(testDataHelper)
+        testData.createTestData()
     }
     
     void testVersion1 () {

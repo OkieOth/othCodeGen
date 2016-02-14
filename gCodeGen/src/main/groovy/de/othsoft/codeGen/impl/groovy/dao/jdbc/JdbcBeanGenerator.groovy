@@ -15,7 +15,7 @@ package de.othsoft.codeGen.impl.groovy.dao.jdbc
 
 import de.othsoft.codeGen.types.CodeGenException
 import de.othsoft.codeGen.types.DataModel
-import de.othsoft.codeGen.types.AttribType
+import de.othsoft.codeGen.requirements.AttribType
 import de.othsoft.codeGen.types.ICodeGenImpl
 import de.othsoft.codeGen.impl.helper.FileHelper
 import de.othsoft.codeGen.impl.java.JavaBeanGeneratorBase
@@ -223,7 +223,10 @@ import java.sql.ResultSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import de.othsoft.codeGen.requirements.jdbc.utils.IJdbcDataFactoryBase;
+import de.othsoft.codeGen.requirements.AttribType;
 import static de.othsoft.codeGen.requirements.jdbc.utils.SQLWrapperBase.addFilter2Sql;
+import static de.othsoft.codeGen.requirements.jdbc.utils.SQLWrapperBase.setValue;
+import static de.othsoft.codeGen.requirements.jdbc.utils.SQLWrapperBase.prepareUpdColPart;
 
 public class ${className} extends ${baseClassName} {
     protected IJdbcDataFactoryBase dataFactory;
@@ -333,10 +336,10 @@ public class ${className} extends ${baseClassName} {
     public void update(CmdData cmdData,UserData userData) throws DaoException {
         if (!hasChanged()) return;
     <% aktElem.attribs.each { attrib -> if ( attrib.type == strListType ) { %>
-        init${attrib.getNameWithFirstLetterUpper()}IdWithTxt(cmdData,userData,origState.get${attrib.getNameWithFirstLetterUpper()}IdTxt());
+        init${attrib.getNameWithFirstLetterUpper()}IdWithTxt(cmdData,userData,origState==null ? null : origState.get${attrib.getNameWithFirstLetterUpper()}IdTxt());
     <% } } %>
     <% aktElem.refs.each { ref -> if (ref.entity.hasVisKey()) { %>
-        init${ref.getUpperCamelCaseName()}WithTxt(cmdData,userData,origState.get${ref.getUpperCamelCaseName()}Txt());
+        init${ref.getUpperCamelCaseName()}WithTxt(cmdData,userData,origState==null ? null : origState.get${ref.getUpperCamelCaseName()}Txt());
     <% } } %>
         SQLExecWrapper<${baseClassName}> wrapper = new SQLExecWrapper(log);
         wrapper.update(wrapperUser,this,dataFactory,userData,cmdData);
@@ -439,18 +442,18 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}>,
     }
 
     @Override
-    public void setInsValues(PreparedStatement ps,${baseClassName} data) throws SQLException {
+    public void setInsValues(PreparedStatement ps,${baseClassName} data) throws SQLException,DaoException {
         int i=0;
     <% aktElem.attribs.each { attrib -> if ( attrib.type == strListType ) 
     { %>    i++;
-        ps.setObject(i,data.get${attrib.getNameWithFirstLetterUpper()}Id());
+        setValue(i,ps,data.get${attrib.getNameWithFirstLetterUpper()}Id(),AttribType.${attrib.type});
     <% } else 
     { %>    i++;
-        ps.setObject(i,data.get${attrib.getNameWithFirstLetterUpper()}());
+        setValue(i,ps,data.get${attrib.getNameWithFirstLetterUpper()}(),AttribType.${attrib.type});
     <% } } %>
     <% aktElem.refs.each { ref -> 
     %>    i++;
-        ps.setObject(i,data.get${ref.getUpperCamelCaseName()}());
+        setValue(i,ps,data.get${ref.getUpperCamelCaseName()}(),AttribType.t_key);
     <% } %>
     }
 
@@ -458,20 +461,17 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}>,
     public String getUpdSql(${baseClassName} data) {
         String colPart=null;
     <% aktElem.attribs.each { attrib -> if ( attrib.type == strListType ) 
-    { %>    if (SQLExecWrapper.isChanged(data.getOrigState().get${attrib.getNameWithFirstLetterUpper()}Id(),data.get${attrib.getNameWithFirstLetterUpper()}Id())) {
-            if (colPart!=null) colPart+=",";
-            colPart+="${attrib.getNameWithFirstLetterLower()}Id=?";
+    { %>    if (data.getOrigState()==null || SQLExecWrapper.isChanged(data.getOrigState().get${attrib.getNameWithFirstLetterUpper()}Id(),data.get${attrib.getNameWithFirstLetterUpper()}Id())) {\n\
+            colPart = prepareUpdColPart(colPart,"${attrib.name}_id=?");
         }
     <% } else 
-    { %>    if (SQLExecWrapper.isChanged(data.getOrigState().get${attrib.getNameWithFirstLetterUpper()}(),data.get${attrib.getNameWithFirstLetterUpper()}())) {
-            if (colPart!=null) colPart+=",";
-            colPart+="${attrib.getNameWithFirstLetterLower()}=?";
+    { %>    if (data.getOrigState()==null || SQLExecWrapper.isChanged(data.getOrigState().get${attrib.getNameWithFirstLetterUpper()}(),data.get${attrib.getNameWithFirstLetterUpper()}())) {
+            colPart = prepareUpdColPart(colPart,"${attrib.name}=?");
         }
     <% } } %>
     <% aktElem.refs.each { ref -> 
-    %>    if (SQLExecWrapper.isChanged(data.getOrigState().get${ref.getUpperCamelCaseName()}(),data.get${ref.getUpperCamelCaseName()}())) {
-            if (colPart!=null) colPart+=",";
-            colPart+="${ref.getLowerCamelCaseName()}=?";
+    %>    if (data.getOrigState()==null || SQLExecWrapper.isChanged(data.getOrigState().get${ref.getUpperCamelCaseName()}(),data.get${ref.getUpperCamelCaseName()}())) {
+            colPart = prepareUpdColPart(colPart,"${ref.name}=?");
         }
     <% } %>
 
@@ -479,25 +479,27 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}>,
     }
 
     @Override
-    public void setUpdValues(PreparedStatement ps,${baseClassName} data) throws SQLException {
+    public void setUpdValues(PreparedStatement ps,${baseClassName} data) throws SQLException,DaoException {
         int i=0;
     <% aktElem.attribs.each { attrib -> if ( attrib.type == strListType ) 
-    { %>    if (SQLExecWrapper.isChanged(data.getOrigState().get${attrib.getNameWithFirstLetterUpper()}Id(),data.get${attrib.getNameWithFirstLetterUpper()}Id())) {
+    { %>    if (data.getOrigState()==null || SQLExecWrapper.isChanged(data.getOrigState().get${attrib.getNameWithFirstLetterUpper()}Id(),data.get${attrib.getNameWithFirstLetterUpper()}Id())) {
             i++;
-            ps.setObject(i,data.get${attrib.getNameWithFirstLetterUpper()}Id());
+            setValue(i,ps,data.get${attrib.getNameWithFirstLetterUpper()}Id(),AttribType.${attrib.type});
         }
     <% } else 
-    { %>    if (SQLExecWrapper.isChanged(data.getOrigState().get${attrib.getNameWithFirstLetterUpper()}(),data.get${attrib.getNameWithFirstLetterUpper()}())) {
+    { %>    if (data.getOrigState()==null || SQLExecWrapper.isChanged(data.getOrigState().get${attrib.getNameWithFirstLetterUpper()}(),data.get${attrib.getNameWithFirstLetterUpper()}())) {
             i++;
-            ps.setObject(i,data.get${attrib.getNameWithFirstLetterUpper()}());
+            setValue(i,ps,data.get${attrib.getNameWithFirstLetterUpper()}(),AttribType.${attrib.type});
         }
     <% } } %>
     <% aktElem.refs.each { ref -> 
-    %>    if (SQLExecWrapper.isChanged(data.getOrigState().get${ref.getUpperCamelCaseName()}(),data.get${ref.getUpperCamelCaseName()}())) {
+    %>    if (data.getOrigState()==null || SQLExecWrapper.isChanged(data.getOrigState().get${ref.getUpperCamelCaseName()}(),data.get${ref.getUpperCamelCaseName()}())) {
             i++;
-            ps.setObject(i,data.get${ref.getUpperCamelCaseName()}());
+            setValue(i,ps,data.get${ref.getUpperCamelCaseName()}(),AttribType.t_key);
         }
     <% } %>
+        i++;
+        setValue(i,ps,data.getId(),AttribType.t_key);
     }
 
     @Override
@@ -566,6 +568,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import de.othsoft.codeGen.requirements.jdbc.utils.IJdbcDataFactoryBase;
 import static de.othsoft.codeGen.requirements.jdbc.utils.SQLWrapperBase.addFilter2Sql;
+import static de.othsoft.codeGen.requirements.jdbc.utils.SQLWrapperBase.setValue;
+import static de.othsoft.codeGen.requirements.jdbc.utils.SQLWrapperBase.prepareUpdColPart;
+import de.othsoft.codeGen.requirements.AttribType;
+
 
 
 public class ${className} extends ${baseClassName} {
@@ -675,54 +681,52 @@ class ${className}_User implements ISQLQueryWrapperUser<${baseClassName}>,
     }
 
     @Override
-    public void setInsValues(PreparedStatement ps,${baseClassName} data) throws SQLException {
-        ps.setObject(1,data.getBez());
-        ps.setObject(2,data.getLang());
-        ps.setObject(3,data.getAktiv());
-        ps.setObject(4,data.getReihenf());
+    public void setInsValues(PreparedStatement ps,${baseClassName} data) throws SQLException,DaoException {
+        setValue(1,ps,data.getBez(),AttribType.t_string);
+        setValue(2,ps,data.getLang(),AttribType.t_string);
+        setValue(3,ps,data.getAktiv(),AttribType.t_boolean);
+        setValue(4,ps,data.getReihenf(),AttribType.t_int);
     }
 
     @Override
     public String getUpdSql(${baseClassName} data) {
         String colPart=null;
-        if (SQLExecWrapper.isChanged(data.getOrigState().getBez(),data.getBez())) {
-            if (colPart!=null) colPart+=",";
-            colPart+="bez=?";
+        if (data.getOrigState()==null || SQLExecWrapper.isChanged(data.getOrigState().getBez(),data.getBez())) {
+            colPart = prepareUpdColPart(colPart,"bez=?");
         }
-        if (SQLExecWrapper.isChanged(data.getOrigState().getLang(),data.getLang())) {
-            if (colPart!=null) colPart+=",";
-            colPart+="lang=?";
+        if (data.getOrigState()==null || SQLExecWrapper.isChanged(data.getOrigState().getLang(),data.getLang())) {
+            colPart = prepareUpdColPart(colPart,"lang=?");
         }
-        if (SQLExecWrapper.isChanged(data.getOrigState().getAktiv(),data.getAktiv())) {
-            if (colPart!=null) colPart+=",";
-            colPart+="aktiv=?";
+        if (data.getOrigState()==null || SQLExecWrapper.isChanged(data.getOrigState().getAktiv(),data.getAktiv())) {
+            colPart = prepareUpdColPart(colPart,"aktiv=?");
         }
-        if (SQLExecWrapper.isChanged(data.getOrigState().getReihenf(),data.getReihenf())) {
-            if (colPart!=null) colPart+=",";
-            colPart+="reihenf=?";
+        if (data.getOrigState()==null || SQLExecWrapper.isChanged(data.getOrigState().getReihenf(),data.getReihenf())) {
+            colPart = prepareUpdColPart(colPart,"reihenf=?");
         }
         return UPDATE_SQL_BASE+colPart+StringConsts.WHERE_ID_SQL;
     }
 
     @Override
-    public void setUpdValues(PreparedStatement ps,${baseClassName} data) throws SQLException {
+    public void setUpdValues(PreparedStatement ps,${baseClassName} data) throws SQLException,DaoException {
         int i=0;
-        if (SQLExecWrapper.isChanged(data.getOrigState().getBez(),data.getBez())) {
+        if (data.getOrigState()==null || SQLExecWrapper.isChanged(data.getOrigState().getBez(),data.getBez())) {
             i++;
-            ps.setObject(i,data.getBez());
+            setValue(i,ps,data.getBez(),AttribType.t_string);
         }
-        if (SQLExecWrapper.isChanged(data.getOrigState().getLang(),data.getLang())) {
+        if (data.getOrigState()==null || SQLExecWrapper.isChanged(data.getOrigState().getLang(),data.getLang())) {
             i++;
-            ps.setObject(i,data.getLang());
+            setValue(i,ps,data.getLang(),AttribType.t_string);
         }
-        if (SQLExecWrapper.isChanged(data.getOrigState().getAktiv(),data.getAktiv())) {
+        if (data.getOrigState()==null || SQLExecWrapper.isChanged(data.getOrigState().getAktiv(),data.getAktiv())) {
             i++;
-            ps.setObject(i,data.getAktiv());
+            setValue(i,ps,data.getAktiv(),AttribType.t_boolean);
         }
-        if (SQLExecWrapper.isChanged(data.getOrigState().getReihenf(),data.getReihenf())) {
+        if (data.getOrigState()==null || SQLExecWrapper.isChanged(data.getOrigState().getReihenf(),data.getReihenf())) {
             i++;
-            ps.setObject(i,data.getReihenf());
+            setValue(i,ps,data.getReihenf(),AttribType.t_int);
         }
+        i++;
+        setValue(i,ps,data.getId(),AttribType.t_key);
     }
 
     @Override
@@ -774,6 +778,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import de.othsoft.codeGen.requirements.jdbc.utils.IJdbcDataFactoryBase;
 import static de.othsoft.codeGen.requirements.jdbc.utils.SQLWrapperBase.addFilter2Sql;
+import static de.othsoft.codeGen.requirements.jdbc.utils.SQLWrapperBase.setValue;
+import de.othsoft.codeGen.requirements.AttribType;
 
 
 public class ${className} extends ${baseClassName} {
@@ -883,6 +889,8 @@ import java.sql.ResultSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import de.othsoft.codeGen.requirements.jdbc.utils.IJdbcDataFactoryBase;
+import de.othsoft.codeGen.requirements.AttribType;
+import static de.othsoft.codeGen.requirements.jdbc.utils.SQLWrapperBase.setValue;
 
 
 public class ${className} extends ${baseClassName} {
@@ -955,9 +963,9 @@ class ${className}_User implements ISQLM2NWrapperUser<${baseClassName}> {
     }
 
     @Override
-    public void setInsValues(PreparedStatement ps,${baseClassName} data) throws SQLException {
-        ps.setObject(1,data.get${aktElem.ref1.getUpperCamelCaseName()}());
-        ps.setObject(2,data.get${aktElem.ref2.getUpperCamelCaseName()}());
+    public void setInsValues(PreparedStatement ps,${baseClassName} data) throws SQLException,DaoException {
+        setValue(1,ps,data.get${aktElem.ref1.getUpperCamelCaseName()}(),AttribType.t_key);
+        setValue(2,ps,data.get${aktElem.ref2.getUpperCamelCaseName()}(),AttribType.t_key);
     }
 
     @Override
@@ -969,7 +977,7 @@ class ${className}_User implements ISQLM2NWrapperUser<${baseClassName}> {
     public ${baseClassName} initFromResultSet(IJdbcDataFactoryBase dataFactory,ResultSet rs) throws SQLException {
         ${className} ret = new ${className}(dataFactory);
         ret.set${aktElem.ref1.getUpperCamelCaseName()}(rs.getInt(1));
-        ret.set${aktElem.ref2.getUpperCamelCaseName()}(rs.getInt(2));\n\
+        ret.set${aktElem.ref2.getUpperCamelCaseName()}(rs.getInt(2));
         return ret;
     }
 

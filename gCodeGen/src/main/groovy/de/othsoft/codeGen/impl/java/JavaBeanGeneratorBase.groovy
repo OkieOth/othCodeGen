@@ -15,7 +15,7 @@ package de.othsoft.codeGen.impl.java
 
 import de.othsoft.codeGen.types.DataModel
 import groovy.text.SimpleTemplateEngine
-import de.othsoft.codeGen.types.AttribType
+import de.othsoft.codeGen.requirements.AttribType
 
 /**
  *

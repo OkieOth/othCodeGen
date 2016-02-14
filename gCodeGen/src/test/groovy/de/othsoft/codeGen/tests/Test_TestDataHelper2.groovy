@@ -46,8 +46,9 @@ class Test_TestDataHelper2 {
     @After
     public void tearDown() {
     }
-     @Test
-     public void initWithTestData_int() {
+
+    @Test
+    public void initWithTestData_int() {
         DummyClass o = new DummyClass();
         assertNull(o.getIntValue())
         TestDataHelper helper = new TestDataHelper();
@@ -58,10 +59,24 @@ class Test_TestDataHelper2 {
         Integer s2 = o.getIntValue();
         assertNotNull(s2);
         assertTrue(!s1.equals(s2));
-     }
+    }
 
-     @Test
-     public void initWithTestData_long() {
+    @Test
+    public void initWithTestData_int2() {
+        DummyClass2 o = new DummyClass2();
+        assertNull(o.getIntValue())
+        TestDataHelper helper = new TestDataHelper();
+        helper.initWithTestData(o,'DummyClass2','intValue',true);
+        Integer s1 = o.getIntValue();
+        assertNotNull(s1);
+        helper.initWithTestData(o,'DummyClass2','intValue',true);
+        Integer s2 = o.getIntValue();
+        assertNotNull(s2);
+        assertTrue(!s1.equals(s2));
+    }
+
+    @Test
+    public void initWithTestData_long() {
         DummyClass o = new DummyClass();
         assertNull(o.getLongValue())
         TestDataHelper helper = new TestDataHelper();
@@ -72,10 +87,10 @@ class Test_TestDataHelper2 {
         Long s2 = o.getLongValue();
         assertNotNull(s2);
         assertTrue(!s1.equals(s2));
-     }
+    }
 
-     @Test
-     public void initWithTestData_string() {
+    @Test
+    public void initWithTestData_string() {
         DummyClass o = new DummyClass();
         assertNull(o.getLandIdTxt())
         TestDataHelper helper = new TestDataHelper();
@@ -86,10 +101,10 @@ class Test_TestDataHelper2 {
         String s2 = o.getLandIdTxt();
         assertNotNull(s2);
         assertTrue(!s1.equals(s2));
-     }
+    }
 
-     @Test
-     public void initWithTestData_money() {
+    @Test
+    public void initWithTestData_money() {
         DummyClass o = new DummyClass();
         assertNull(o.getMoneyValue())
         TestDataHelper helper = new TestDataHelper();
@@ -100,10 +115,10 @@ class Test_TestDataHelper2 {
         BigDecimal s2 = o.getMoneyValue();
         assertNotNull(s2);
         assertTrue(!s1.equals(s2));
-     }
+    }
 
-     @Test
-     public void initWithTestData_date() {
+    @Test
+    public void initWithTestData_date() {
         DummyClass o = new DummyClass();
         assertNull(o.getDateValue())
         TestDataHelper helper = new TestDataHelper();
@@ -115,10 +130,10 @@ class Test_TestDataHelper2 {
         assertNotNull(s2);
         println ("$s1, $s2");
         assertTrue(!s1.equals(s2));
-     }
+    }
 
-     @Test
-     public void initWithTestData_timestamp() {
+    @Test
+    public void initWithTestData_timestamp() {
         DummyClass o = new DummyClass();
         assertNull(o.getTimestampValue())
         TestDataHelper helper = new TestDataHelper();
@@ -129,10 +144,10 @@ class Test_TestDataHelper2 {
         Date s2 = o.getTimestampValue();
         assertNotNull(s2);
         assertTrue(!s1.equals(s2));
-     }
+    }
 
-     @Test
-     public void initWithTestData_double() {
+    @Test
+    public void initWithTestData_double() {
         DummyClass o = new DummyClass();
         assertNull(o.getDoubleValue())
         TestDataHelper helper = new TestDataHelper();
@@ -143,8 +158,12 @@ class Test_TestDataHelper2 {
         Double s2 = o.getDoubleValue();
         assertNotNull(s2);
         assertTrue(!s1.equals(s2));
-     }
+    }
 }
+
+class DummyClass2 extends DummyClass {
+}
+
 
 /**
  * this class contains attributes, getter and setter in the gCodeGen style

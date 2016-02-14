@@ -19,7 +19,7 @@ import de.othsoft.codeGen.types.DataModel
 import de.othsoft.codeGen.types.ICodeGenImpl
 import de.othsoft.codeGen.impl.helper.FileHelper
 import de.othsoft.codeGen.impl.helper.ITestDataHelper
-import de.othsoft.codeGen.types.AttribType
+import de.othsoft.codeGen.requirements.AttribType
 import groovy.text.SimpleTemplateEngine
 
 class TestDataGenerator extends JavaBeanGeneratorBase implements ICodeGenImpl {    
@@ -114,21 +114,17 @@ public class ${className} {
         this.dataFactory = df;
     }
 
-    public void createTestData() {
-        try {
-            writeEntityTestData();
-            writeM2NTestData();
-            linkRefData();
-            // view data can't be written
-        }
-        catch(DaoException e) {
-            e.printStackTrace();
-        }
+    public void createTestData() throws DaoException {
+        writeEntityTestData();
+        writeM2NTestData();
+        linkRefData();
+        // view data can't be written
     }
 
 <% model.entities*.each { entity -> %>
     private void createDataFor_${entity.value.name}() throws DaoException {
         MinMaxCont minMaxCont = null;
+        System.out.println("starting ${entity.value.name}...");
         for (int i=0;i<testDataHelper.getRowCount("${entity.value.name}");i++) {
             ${entity.value.name} v = dataFactory.create_${entity.value.name}();
         <% entity.value.attribs.each { attrib -> 
@@ -148,6 +144,7 @@ public class ${className} {
             minMaxCont.setMax(v.getId());
         }
         entityMinMaxMap.put("${entity.value.name}",minMaxCont);
+        System.out.println("finished ${entity.value.name}.");
     }<% } %>
 
     private void writeEntityTestData() throws DaoException {
@@ -168,20 +165,23 @@ public class ${className} {
         MinMaxCont minMax_e = entityMinMaxMap.get("${entity.value.name}");
         MinMaxCont minMax_r1 = entityMinMaxMap.get("${ref.entity.name}");
         if (minMax_r1==null) throw new DaoException ("minMaxCont for '${ref.entity.name}' not foundaktElem");\n\\n\
+        System.out.println("start linking ${entity.value.name}->${ref.entity.name} ...");
         int min=minMax_e.getMin();
         int max=minMax_e.getMax();
         for (int i=min;i<=max;i++)  {
             ${entity.value.getNameWithFirstLetterUpper()} e = dataFactory.byId_${entity.value.getNameWithFirstLetterUpper()}(null,null,i);\n\
             if (e==null) continue;
-            int id_r1 = testDataHelper.getInt(minMax_r1.getMin(),minMax_r1.getMax(),${ref.needed});
+            Integer id_r1 = testDataHelper.getInt(minMax_r1.getMin(),minMax_r1.getMax(),${ref.needed});
             e.set${ref.getUpperCamelCaseName()}(id_r1);\n\
             e.update(null,null);
         }
+        System.out.println("linking finished ${entity.value.name}->${ref.entity.name}");
     }
 <% } } %>
 
 <% model.m2nRelations.each { m2n -> %>
     private void createDataFor_${m2n.value.name}() throws DaoException {
+        System.out.println("starting ${m2n.value.name}...");
         MinMaxCont minMax_r1 = entityMinMaxMap.get("${m2n.value.ref1.entity.name}");
         if (minMax_r1==null) throw new DaoException ("minMaxCont for '${m2n.value.ref1.entity.name}' not foundaktElem");
         MinMaxCont minMax_r2 = entityMinMaxMap.get("${m2n.value.ref2.entity.name}");
@@ -189,8 +189,8 @@ public class ${className} {
         for (int i=0;i<testDataHelper.getRowCount("${m2n.value.name}");i++) {
             boolean notFound = true;
             while (notFound) {
-                int id_r1 = testDataHelper.getInt(minMax_r1.getMin(),minMax_r1.getMax(),true);
-                int id_r2 = testDataHelper.getInt(minMax_r2.getMin(),minMax_r2.getMax(),true);
+                Integer id_r1 = testDataHelper.getInt(minMax_r1.getMin(),minMax_r1.getMax(),true);
+                Integer id_r2 = testDataHelper.getInt(minMax_r2.getMin(),minMax_r2.getMax(),true);
                 ${m2n.value.name} v = dataFactory.byIds_${m2n.value.name}(null,null,id_r1,id_r2);
                 if (v==null) {
                     v = dataFactory.create_${m2n.value.name}();
@@ -201,6 +201,7 @@ public class ${className} {
                 }
             }
         }
+        System.out.println("finished ${m2n.value.name}");
     }<% } %>
     
     private void writeM2NTestData() throws DaoException {

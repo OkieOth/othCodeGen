@@ -18,7 +18,7 @@ import de.othsoft.codeGen.types.ICodeGenImpl
 import groovy.text.SimpleTemplateEngine
 import de.othsoft.codeGen.impl.helper.FileHelper
 
-import de.othsoft.codeGen.types.AttribType
+import de.othsoft.codeGen.requirements.AttribType
 
 /**
  *

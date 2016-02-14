@@ -223,8 +223,8 @@ class TestDataHelper implements ITestDataHelper {
     int defaultRowCount=1000;
         
     int getRowCount(String entityName) {
-        if (elem[entityName])
-            return elem[entityName];
+        if (elemRowCount[entityName])
+            return elemRowCount[entityName];
         else
             return defaultRowCount;
     }
@@ -233,15 +233,25 @@ class TestDataHelper implements ITestDataHelper {
         if (o==null || entityName==null || attribName==null)
             throw new DaoException ('null params not allowed');
         try {
-            Class c = o.getClass();
+            Class sc = o.getClass();
+            Class c;
             Field field = null;
             String realAttribName = attribName;
-            try {
-                field = c.getDeclaredField(realAttribName);
-            }
-            catch(NoSuchFieldException nsfe) {
-                realAttribName = realAttribName+'IdTxt';
-                field = c.getDeclaredField("${realAttribName}");                
+            String realAttribName2 = realAttribName+'IdTxt';
+            while (sc!=null && Object.class!=sc) {
+                c = sc;
+                try {
+                    field = c.getDeclaredField(realAttribName);
+                    break;
+                }
+                catch(NoSuchFieldException nsfe) {}
+                try {
+                    field = c.getDeclaredField(realAttribName2);
+                    realAttribName = realAttribName2;
+                    break;
+                }
+                catch(NoSuchFieldException nsfe) {}
+                sc = c.getSuperclass();
             }
             Class attribTypeClass = field.getType();
             String s = realAttribName.replaceAll(/_id$/,'Id');
@@ -385,15 +395,15 @@ class TestDataHelper implements ITestDataHelper {
                 }
             break;
             case Boolean.class:
-                v = getBoolean(needed);
+                v = getBool(needed);
                 break;
             default:
                 throw new DaoException(log,"unknown attrib type: $attribTypeClass");
             }
             if (unknownClassStr!=null)
                 throw new DaoException(log,"unknown restr class for $entityName.$attribName: ${unknownClassStr}");
-                
-            method.invoke(o,v);
+            if (v!=null)
+                method.invoke(o,v);
         }
         catch(DaoException e) {
             throw e;

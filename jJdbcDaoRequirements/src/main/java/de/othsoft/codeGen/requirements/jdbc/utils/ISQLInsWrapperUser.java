@@ -12,6 +12,7 @@ specific language governing permissions and limitations under the License.
 */
 package de.othsoft.codeGen.requirements.jdbc.utils;
 
+import de.othsoft.codeGen.requirements.DaoException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
@@ -21,5 +22,5 @@ import java.sql.SQLException;
  */
 public interface ISQLInsWrapperUser<T> {
     String getInsSql();
-    void setInsValues(PreparedStatement ps,T data) throws SQLException;
+    void setInsValues(PreparedStatement ps,T data) throws SQLException,DaoException;
 }

@@ -14,6 +14,7 @@ specific language governing permissions and limitations under the License.
 package de.othsoft.codeGen.tests.models
 
 import de.othsoft.codeGen.types.*
+import de.othsoft.codeGen.requirements.AttribType
 
 /**
  *

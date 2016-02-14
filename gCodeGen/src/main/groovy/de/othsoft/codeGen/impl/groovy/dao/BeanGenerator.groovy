@@ -15,7 +15,7 @@ package de.othsoft.codeGen.impl.groovy.dao
 
 import de.othsoft.codeGen.types.CodeGenException
 import de.othsoft.codeGen.types.DataModel
-import de.othsoft.codeGen.types.AttribType
+import de.othsoft.codeGen.requirements.AttribType
 import de.othsoft.codeGen.types.ICodeGenImpl
 import de.othsoft.codeGen.impl.helper.FileHelper
 import de.othsoft.codeGen.impl.java.JavaBeanGeneratorBase
