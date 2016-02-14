@@ -35,6 +35,14 @@ repositories {
     mavenCentral()
 }
 
+clean.doFirst {
+    delete "src/generated/java/"
+    delete "src/generated/resources/"    
+    delete "src/test/vagrant/ubuntu_psql/tmp/psql"
+    delete "src/test/vagrant/ubuntu_psql/run/ip_address.txt"
+    println "src/generated/java/"
+}
+
 dependencies {
     compile 'org.codehaus.groovy:groovy-all:2.4.5'
     compile 'de.othsoft.codeGen:jJdbcDaoRequirements:0.1'
