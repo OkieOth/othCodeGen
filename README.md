@@ -11,6 +11,13 @@ In reason of some integration testing stuff the project works best under a linux
 * Java 8
 * Gradle 2.8
 * Groovy 2.4.5
+* Vagrant 1.7.4
+
+
+If you want run the tests for jJdbcjDaoRequirements you need currently a
+installed postgresql maybe add a config file for the connection params.
+Take a look at
+ [TestConnectionFactory](./jJdbcjDaoRequirements/src/test/de/othsoft/codeGen/requirements/TestConnectionFactory.java)
 
 ## Steps to run
 
@@ -22,7 +29,8 @@ In reason of some integration testing stuff the project works best under a linux
     gradle clean test publish
 
     cd $OTH_CODE_GEN_HOME/jJdbcjDaoRequirements
-    gradle clean test publish
+    # gradle clean test publish
+    gradle clean publish
 
     # build and test the main code of the code generation
     cd $OTH_CODE_GEN_HOME/gCodeGen
