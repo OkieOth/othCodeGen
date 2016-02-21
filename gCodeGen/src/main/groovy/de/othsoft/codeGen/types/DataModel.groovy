@@ -61,6 +61,7 @@ class DataModel {
      */
     def entity(Map params) {
         String name = initNeededOrThrowException(params,'name')
+        name = name.substring(0,1).toUpperCase()+name.substring(1)
         int since = params.since ? params.since : 1
         String id = "e${entities.size() + 1}"
 
@@ -81,6 +82,8 @@ class DataModel {
         String refName2 = initNeededOrThrowException(params,'refName2')
         int since = params.since ? params.since : 1
         String name=params.name ? params.name : "$refName1$refName2"
+        name = name.substring(0,1).toUpperCase()+name.substring(1)
+
         String id = "m${m2nRelations.size() + 1}"
 
         if (entities."$name" || m2nRelations."$name" || views."$name")
@@ -98,6 +101,7 @@ class DataModel {
      */
     def view(Map params) {
         String name = initNeededOrThrowException(params,'name')
+        name = name.substring(0,1).toUpperCase()+name.substring(1)
         int since = params.since ? params.since : 1
         String id = "v${views.size() + 1}"
 
@@ -117,7 +121,7 @@ class DataModel {
         if (! lastUsed instanceof IAttribCont)
             throw new CheckModelException("parent of ref ${params} is not IAttribCont")
 
-        String name = initNeededOrThrowException(params,'name')
+        String name = initNeededOrThrowException(params,'name').toLowerCase()
         if (name == 'id')
             throw new CheckModelException("attrib name 'id' ist not allowed")
         String type = params.type
@@ -143,7 +147,8 @@ class DataModel {
             throw new CheckModelException("parent of ref $params is not IRefCont")
 
         String refName = initNeededOrThrowException(params,'refName')
-        String name = params.name ? params.name : refName.toLowerCase() + '_id'
+        String name = params.name ? params.name : refName + '_id'
+        name = name.toLowerCase()
         boolean needed = params.needed ? true : false
         int since = params.since ? params.since : 1
         String id = "${lastUsed.id}_r${lastUsed.refCount() +1}"
@@ -184,42 +189,115 @@ class DataModel {
         })
     }
     
+    static List extractSimpleEntries(List<String> strList,boolean bEntity) {
+        if (strList==null) return []
+        def ret = []
+        strList.each {
+            if (!(it ==~ /.*\*.*/ )) {
+                def txt = bEntity ? it.substring(0,1).toUpperCase() + it.substring(1) : it.toLowerCase() 
+                ret.add(txt)
+            }
+        }
+        return ret
+    }
+    
+    static List extractRegExpEntries(List<String> strList,boolean bEntity) {
+        if (strList==null) return []
+        def ret = []
+        strList.each {
+            if (it ==~ /.*\*.*/ ) {
+                def txt = bEntity ? it.substring(0,1).toUpperCase() + it.substring(1) : it.toLowerCase() 
+                ret.add(txt.replaceAll('\\*','.*'))
+            }
+        } 
+        return ret
+    }
+
     /*
-     * clone the currend datamodel based on a black list
-     * @param blackListedNames regular expressions for names of not cloned objects
+     * clone the currend datamodel
      * @return a copy of current data model
      */
-    DataModel cloneBlackListBased(List<String> blackListedNames) {
+    DataModel cloneAllowedWithDeniedAttribs(List<String> allowedEntities,List<String> deniedAttribs) {
+        def regexpEntities=extractRegExpEntries(allowedEntities,true)
+        def simpleEntities=extractSimpleEntries(allowedEntities,true)
+        def regexpAttribs=extractRegExpEntries(deniedAttribs,false)
+        def simpleAttribs=extractSimpleEntries(deniedAttribs,false)
+        DataModel ret = cloneBase()
+        ret.entities = [:]
+        entities.findAll { key, entity ->
+            simpleEntities.find { key == it } || regexpEntities.find { key ==~ it }
+        }.each { key, entity ->
+            ret.entities[key] = entity.cloneDeniedByRestriction(simpleAttribs,regexpAttribs)
+        }
+        ret.views = [:]
+        views.findAll { key, entity ->
+            simpleEntities.find { key == it } || regexpEntities.find { key ==~ it }
+        }.each {
+            ret.views[it.key] = it.value.cloneDeniedByRestriction(simpleAttribs,regexpAttribs)
+        }
+
+        ret.m2nRelations = [:]
+        m2nRelations.findAll { key, entity ->
+            simpleEntities.find { key == it } || regexpEntities.find { key ==~ it }
+        }.each {
+            // it make no sence to restrict references of m2n relations
+            ret.m2nRelations[it.key] = it.value.clone()
+        } 
+        return ret
+    }
+
+    /*
+     * clone the currend datamodel
+     * @return a copy of current data model
+     */
+    DataModel cloneAllowedWithAllowedAttribs(List<String> allowedEntities,List<String> allowedAttribs) {
+        def regexpEntities=extractRegExpEntries(allowedEntities,true)
+        def simpleEntities=extractSimpleEntries(allowedEntities,true)
+        def regexpAttribs=extractRegExpEntries(allowedAttribs,false)
+        def simpleAttribs=extractSimpleEntries(allowedAttribs,false)
         // TODO
         return null
     }
     
-    /**
-     * clone the current datamodel based on a white list
-     * @param whiteListedNames regular expressions for names of objects to clone
+     /*
+     * clone the currend datamodel
      * @return a copy of current data model
      */
-    DataModel cloneWhiteListBased(List<String> whiteListedNames) {
+    DataModel cloneNotDeniedWithDeniedAttribs(List<String> deniedEntites,List<String> deniedAttribs) {
+        def regexpEntities=extractRegExpEntries(deniedEntities,true)
+        def simpleEntities=extractSimpleEntries(deniedEntites,true)
+        def regexpAttribs=extractRegExpEntries(deniedAttribs,false)
+        def simpleAttribs=extractSimpleEntries(deniedAttribs,false)
         // TODO
         return null
     }
 
-    /**
-     * clone the current datamodel based on a white list
-     */
-    DataModel cloneRestricted(List<String> blackListedNames,List<String> whiteListedNames) {
+    DataModel cloneNotDeniedWithAllowedAttribs(List<String> deniedEntites,List<String> allowedAttribs) {
+        def regexpEntities=extractRegExpEntries(deniedEntities,true)
+        def simpleEntities=extractSimpleEntries(deniedEntites,true)
+        def regexpAttribs=extractRegExpEntries(allowedAttribs,false)
+        def simpleAttribs=extractSimpleEntries(allowedAttribs,false)
         // TODO
         return null
+    }
+    
+    private DataModel cloneBase() {
+        DataModel ret = new DataModel()
+        ret.version = version
+        ret.shortName = shortName
+        ret.descr = descr
+        ret.defaultTypes = [:]
+        defaultTypes.each {
+            ret.defaultTypes[it.key] = it.value
+        }
+        return ret
     }
 
     /**
      * clone the current datamodel
      */
     DataModel clone() {
-        DataModel ret = new DataModel();
-        ret.version = version
-        ret.shortName = shortName
-        ret.descr = descr
+        DataModel ret = cloneBase()
         ret.entities = [:]
         entities.each {
             ret.entities[it.key] = it.value.clone()
@@ -232,12 +310,7 @@ class DataModel {
         ret.m2nRelations = [:]
         m2nRelations.each {
             ret.m2nRelations[it.key] = it.value.clone()
-        }
-        
-        ret.defaultTypes = [:]
-        defaultTypes.each {
-            ret.defaultTypes[it.key] = it.value
-        }
+        }        
         return ret
     }
 
@@ -254,7 +327,7 @@ class DataModel {
     private def initNeededOrThrowException(Map map,key) throws CheckModelException {
         if (!map."$key")
             throw new CheckModelException ("value needed for key='$key', $map")
-        map."$key"
+            map."$key"
     }
 }
 
@@ -332,14 +405,18 @@ class Entity extends BaseModelEntry implements IRefCont,Cloneable {
         throw new CheckModelException("entity '$name' has more than one visKay")
     }
     
-    Entity clone() {
+    private Entity cloneBase() {
         Entity ret = new Entity()
         ret.id = id
         ret.name = name
         ret.since = since
         ret.needed = needed
         ret.descr = descr
-
+        return ret
+    }
+    
+    Entity clone() {
+        Entity ret = cloneBase()
         ret.attribs = []
         attribs.each {
             Attrib attrib = it.clone()
@@ -348,6 +425,29 @@ class Entity extends BaseModelEntry implements IRefCont,Cloneable {
         }
         ret.refs=[]
         refs.each {
+            EntityReference ref = it.clone()
+            ref.parent = ret
+            ret.refs.add(ref)
+            }
+        return ret
+    }
+    
+    Entity cloneDeniedByRestriction(List<String> simpleAttribs,List<String> regexpAttribs) {
+        Entity ret = cloneBase()
+        ret.attribs = []
+        ret.refs=[]
+        attribs.findAll { attrib ->
+            def name = attrib.name
+            !(simpleAttribs.find { name == it } || regexpAttribs.find { name ==~ it })
+        }.each {
+            Attrib attrib = it.clone()
+            attrib.parent = ret
+            ret.attribs.add(attrib)
+        }
+        refs.findAll { ref ->
+            def name = ref.name
+            !(simpleAttribs.find { name == it } || regexpAttribs.find { name ==~ it })
+        }.each {
             EntityReference ref = it.clone()
             ref.parent = ret
             ret.refs.add(ref)
@@ -443,14 +543,19 @@ class EntityReference extends BaseModelEntry implements Cloneable {
 class M2NRelation extends BaseModelEntry implements ITopLeveEntry, Cloneable {
     EntityReference ref1
     EntityReference ref2
-    
-    M2NRelation clone() {
+
+    M2NRelation cloneBase () {
         M2NRelation ret = new M2NRelation()
         ret.id = id
         ret.name = name
         ret.since = since
         ret.needed = needed
         ret.descr = descr
+        return ret
+    }
+
+    M2NRelation clone() {
+        M2NRelation ret = cloneBase ()
         ret.ref1 = ref1.clone()
         ret.ref1.parent = ret
         ret.ref2 = ref2.clone()
@@ -480,13 +585,32 @@ class View extends BaseModelEntry implements IAttribCont, Cloneable {
         attribs.size()
     }
     
-    View clone() {
+    View cloneBase() {
         View ret = new View()
         ret.id = id
         ret.name = name
         ret.since = since
         ret.needed = needed
         ret.descr = descr
+        return ret
+    }
+    
+    View cloneDeniedByRestriction(List<String> simpleAttribs,List<String> regexpAttribs) {
+        View ret = cloneBase()
+        ret.attribs = []
+        attribs.findAll { attrib ->
+            def name = attrib.name
+            !(simpleAttribs.find { name == it } || regexpAttribs.find { name ==~ it })
+        }.each {
+            Attrib attrib = it.clone()
+            attrib.parent = ret
+            ret.attribs.add(attrib)
+        }
+        return ret
+    }
+
+    View clone() {
+        View ret = cloneBase()
         ret.attribs = []
         attribs.each {
             ret.attribs.add( it.clone() )

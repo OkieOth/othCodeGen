@@ -28,7 +28,8 @@ import java.text.SimpleDateFormat
  * @author eiko
  */
 class Test_TestDataHelper {
-
+    final static int maxElems=20
+    
     public Test_TestDataHelper() {
     }
 
@@ -37,7 +38,7 @@ class Test_TestDataHelper {
         TestDataHelper testDataHelper = new TestDataHelper();
         int nullCount = 0;
         int valCount = 0;
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             Integer iValue = testDataHelper.getInt(false);
             if (iValue==null) 
                 nullCount++;
@@ -50,7 +51,7 @@ class Test_TestDataHelper {
 
         nullCount = 0;
         valCount = 0;
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             Integer iValue = testDataHelper.getInt(true);
             if (iValue==null) 
                 nullCount++;
@@ -59,7 +60,7 @@ class Test_TestDataHelper {
         }
         println ("testGetInt_1_2: nullCount=$nullCount, valCount=$valCount");
         assertEquals(0,nullCount)
-        assertEquals(10,valCount)
+        assertEquals(maxElems,valCount)
     }
 
     @Test
@@ -70,7 +71,7 @@ class Test_TestDataHelper {
         int nullCount = 0;
         int valCount = 0;
         def values = [];
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             Integer iValue = testDataHelper.getInt(min,max,false);
             if (iValue==null) 
                 nullCount++;
@@ -86,7 +87,7 @@ class Test_TestDataHelper {
         nullCount = 0;
         valCount = 0;
         values = [];        
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             Integer iValue = testDataHelper.getInt(min,max,true);
             if (iValue==null) 
                 nullCount++;
@@ -97,7 +98,7 @@ class Test_TestDataHelper {
         }
         println ("testGetInt_2_2: nullCount=$nullCount, valCount=$valCount, values:$values");
         assertEquals(0,nullCount)
-        assertEquals(10,valCount)
+        assertEquals(maxElems,valCount)
     }
 
     @Test
@@ -107,7 +108,7 @@ class Test_TestDataHelper {
         int nullCount = 0;
         int valCount = 0;
         def values = [];
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             Integer iValue = testDataHelper.getIntFromList(testList,false);
             if (iValue==null) 
                 nullCount++;
@@ -123,7 +124,7 @@ class Test_TestDataHelper {
         nullCount = 0;
         valCount = 0;
         values = [];        
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             Integer iValue = testDataHelper.getIntFromList(testList,true);
             if (iValue==null) 
                 nullCount++;
@@ -134,7 +135,7 @@ class Test_TestDataHelper {
         }
         println ("testGetInt_3_2: nullCount=$nullCount, valCount=$valCount, values:$values");
         assertEquals(0,nullCount)
-        assertEquals(10,valCount)
+        assertEquals(maxElems,valCount)
     }
 
     @Test
@@ -142,7 +143,7 @@ class Test_TestDataHelper {
         TestDataHelper testDataHelper = new TestDataHelper();
         int nullCount = 0;
         int valCount = 0;
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             Long iValue = testDataHelper.getLong(false);
             if (iValue==null) 
                 nullCount++;
@@ -155,7 +156,7 @@ class Test_TestDataHelper {
 
         nullCount = 0;
         valCount = 0;
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             Long iValue = testDataHelper.getLong(true);
             if (iValue==null) 
                 nullCount++;
@@ -164,7 +165,7 @@ class Test_TestDataHelper {
         }
         println ("testGetLong_1_2: nullCount=$nullCount, valCount=$valCount");
         assertEquals(0,nullCount)
-        assertEquals(10,valCount)
+        assertEquals(maxElems,valCount)
     }
 
     @Test
@@ -175,7 +176,7 @@ class Test_TestDataHelper {
         int nullCount = 0;
         int valCount = 0;
         def values = [];
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             Long iValue = testDataHelper.getLong(min,max,false);
             if (iValue==null) 
                 nullCount++;
@@ -191,7 +192,7 @@ class Test_TestDataHelper {
         nullCount = 0;
         valCount = 0;
         values = [];        
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             Long iValue = testDataHelper.getLong(min,max,true);
             if (iValue==null) 
                 nullCount++;
@@ -202,7 +203,7 @@ class Test_TestDataHelper {
         }
         println ("testGetLong_2_2: nullCount=$nullCount, valCount=$valCount, values:$values");
         assertEquals(0,nullCount)
-        assertEquals(10,valCount)
+        assertEquals(maxElems,valCount)
     }
 
     @Test
@@ -212,7 +213,7 @@ class Test_TestDataHelper {
         int nullCount = 0;
         int valCount = 0;
         def values = [];
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             Long iValue = testDataHelper.getLongFromList(testList,false);
             if (iValue==null) 
                 nullCount++;
@@ -228,7 +229,7 @@ class Test_TestDataHelper {
         nullCount = 0;
         valCount = 0;
         values = [];        
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             Long iValue = testDataHelper.getLongFromList(testList,true);
             if (iValue==null) 
                 nullCount++;
@@ -239,7 +240,7 @@ class Test_TestDataHelper {
         }
         println ("testGetLong_3_2: nullCount=$nullCount, valCount=$valCount, values:$values");
         assertEquals(0,nullCount)
-        assertEquals(10,valCount)
+        assertEquals(maxElems,valCount)
     }
 
     @Test
@@ -247,7 +248,7 @@ class Test_TestDataHelper {
         TestDataHelper testDataHelper = new TestDataHelper();
         int nullCount = 0;
         int valCount = 0;
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             Double iValue = testDataHelper.getDouble(false);
             if (iValue==null) 
                 nullCount++;
@@ -260,7 +261,7 @@ class Test_TestDataHelper {
 
         nullCount = 0;
         valCount = 0;
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             Double iValue = testDataHelper.getDouble(true);
             if (iValue==null) 
                 nullCount++;
@@ -269,7 +270,7 @@ class Test_TestDataHelper {
         }
         println ("testGetDouble_1_2: nullCount=$nullCount, valCount=$valCount");
         assertEquals(0,nullCount)
-        assertEquals(10,valCount)
+        assertEquals(maxElems,valCount)
     }
 
     @Test
@@ -280,7 +281,7 @@ class Test_TestDataHelper {
         int nullCount = 0;
         int valCount = 0;
         def values = [];
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             Double iValue = testDataHelper.getDouble(min,max,false);
             if (iValue==null) 
                 nullCount++;
@@ -296,7 +297,7 @@ class Test_TestDataHelper {
         nullCount = 0;
         valCount = 0;
         values = [];        
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             Double iValue = testDataHelper.getDouble(min,max,true);
             if (iValue==null) 
                 nullCount++;
@@ -307,7 +308,7 @@ class Test_TestDataHelper {
         }
         println ("testGetDouble_2_2: nullCount=$nullCount, valCount=$valCount, values:$values");
         assertEquals(0,nullCount)
-        assertEquals(10,valCount)
+        assertEquals(maxElems,valCount)
     }
 
     @Test
@@ -317,7 +318,7 @@ class Test_TestDataHelper {
         int nullCount = 0;
         int valCount = 0;
         def values = [];
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             Double iValue = testDataHelper.getDoubleFromList(testList,false);
             if (iValue==null) 
                 nullCount++;
@@ -333,7 +334,7 @@ class Test_TestDataHelper {
         nullCount = 0;
         valCount = 0;
         values = [];        
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             Double iValue = testDataHelper.getDoubleFromList(testList,true);
             if (iValue==null) 
                 nullCount++;
@@ -344,7 +345,7 @@ class Test_TestDataHelper {
         }
         println ("testGetDouble_3_2: nullCount=$nullCount, valCount=$valCount, values:$values");
         assertEquals(0,nullCount)
-        assertEquals(10,valCount)
+        assertEquals(maxElems,valCount)
     }
 
     @Test
@@ -352,7 +353,7 @@ class Test_TestDataHelper {
         TestDataHelper testDataHelper = new TestDataHelper();
         int nullCount = 0;
         int valCount = 0;
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             BigDecimal iValue = testDataHelper.getMoney(false);
             if (iValue==null) 
                 nullCount++;
@@ -365,7 +366,7 @@ class Test_TestDataHelper {
 
         nullCount = 0;
         valCount = 0;
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             BigDecimal iValue = testDataHelper.getMoney(true);
             if (iValue==null) 
                 nullCount++;
@@ -374,7 +375,7 @@ class Test_TestDataHelper {
         }
         println ("testGetMoney_1_2: nullCount=$nullCount, valCount=$valCount");
         assertEquals(0,nullCount)
-        assertEquals(10,valCount)
+        assertEquals(maxElems,valCount)
     }
 
     @Test
@@ -385,7 +386,7 @@ class Test_TestDataHelper {
         int nullCount = 0;
         int valCount = 0;
         def values = [];
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             BigDecimal iValue = testDataHelper.getMoney(min,max,false);
             if (iValue==null) 
                 nullCount++;
@@ -401,7 +402,7 @@ class Test_TestDataHelper {
         nullCount = 0;
         valCount = 0;
         values = [];        
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             BigDecimal iValue = testDataHelper.getMoney(min,max,true);
             if (iValue==null) 
                 nullCount++;
@@ -412,7 +413,7 @@ class Test_TestDataHelper {
         }
         println ("testGetMoney_2_2: nullCount=$nullCount, valCount=$valCount, values:$values");
         assertEquals(0,nullCount)
-        assertEquals(10,valCount)
+        assertEquals(maxElems,valCount)
     }
 
     @Test
@@ -422,7 +423,7 @@ class Test_TestDataHelper {
         int nullCount = 0;
         int valCount = 0;
         def values = [];
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             BigDecimal iValue = testDataHelper.getMoneyFromList(testList,false);
             if (iValue==null) 
                 nullCount++;
@@ -438,7 +439,7 @@ class Test_TestDataHelper {
         nullCount = 0;
         valCount = 0;
         values = [];        
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             BigDecimal iValue = testDataHelper.getMoneyFromList(testList,true);
             if (iValue==null) 
                 nullCount++;
@@ -449,7 +450,7 @@ class Test_TestDataHelper {
         }
         println ("testGetMoney_3_2: nullCount=$nullCount, valCount=$valCount, values:$values");
         assertEquals(0,nullCount)
-        assertEquals(10,valCount)
+        assertEquals(maxElems,valCount)
     }
 
     @Test
@@ -458,7 +459,7 @@ class Test_TestDataHelper {
         int nullCount = 0;
         int valCount = 0;
         def values = [];
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             Boolean iValue = testDataHelper.getBool(false);
             if (iValue==null) 
                 nullCount++;
@@ -473,7 +474,7 @@ class Test_TestDataHelper {
 
         nullCount = 0;
         valCount = 0;
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             Boolean iValue = testDataHelper.getBool(true);
             if (iValue==null) 
                 nullCount++;
@@ -482,7 +483,7 @@ class Test_TestDataHelper {
         }
         println ("testGetBool_1_2: nullCount=$nullCount, valCount=$valCount");
         assertEquals(0,nullCount)
-        assertEquals(10,valCount)
+        assertEquals(maxElems,valCount)
     }
 
     @Test
@@ -490,7 +491,7 @@ class Test_TestDataHelper {
         TestDataHelper testDataHelper = new TestDataHelper();
         int nullCount = 0;
         int valCount = 0;
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             String iValue = testDataHelper.getString(false);
             if (iValue==null) 
                 nullCount++;
@@ -503,7 +504,7 @@ class Test_TestDataHelper {
 
         nullCount = 0;
         valCount = 0;
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             String iValue = testDataHelper.getString(true);
             if (iValue==null) 
                 nullCount++;
@@ -512,7 +513,7 @@ class Test_TestDataHelper {
         }
         println ("testGetString_1_2: nullCount=$nullCount, valCount=$valCount");
         assertEquals(0,nullCount)
-        assertEquals(10,valCount)
+        assertEquals(maxElems,valCount)
     }
 
     @Test
@@ -523,7 +524,7 @@ class Test_TestDataHelper {
         int nullCount = 0;
         int valCount = 0;
         def values = [];
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             String iValue = testDataHelper.getString(min,max,false);
             if (iValue==null) 
                 nullCount++;
@@ -539,7 +540,7 @@ class Test_TestDataHelper {
         nullCount = 0;
         valCount = 0;
         values = [];        
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             String iValue = testDataHelper.getString(min,max,true);
             if (iValue==null) 
                 nullCount++;
@@ -550,7 +551,7 @@ class Test_TestDataHelper {
         }
         println ("testGetString_2_2: nullCount=$nullCount, valCount=$valCount, values:$values");
         assertEquals(0,nullCount)
-        assertEquals(10,valCount)
+        assertEquals(maxElems,valCount)
     }
 
     @Test
@@ -560,7 +561,7 @@ class Test_TestDataHelper {
         int nullCount = 0;
         int valCount = 0;
         def values = [];
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             String iValue = testDataHelper.getStringFromList(testList,false);
             if (iValue==null) 
                 nullCount++;
@@ -576,7 +577,7 @@ class Test_TestDataHelper {
         nullCount = 0;
         valCount = 0;
         values = [];        
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             String iValue = testDataHelper.getStringFromList(testList,true);
             if (iValue==null) 
                 nullCount++;
@@ -587,7 +588,7 @@ class Test_TestDataHelper {
         }
         println ("testGetString_3_2: nullCount=$nullCount, valCount=$valCount, values:$values");
         assertEquals(0,nullCount)
-        assertEquals(10,valCount)
+        assertEquals(maxElems,valCount)
     }
 
     @Test
@@ -596,7 +597,7 @@ class Test_TestDataHelper {
         int nullCount = 0;
         int valCount = 0;
         def values = [];
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             Date iValue = testDataHelper.getDate(false);
             if (iValue==null) 
                 nullCount++;
@@ -611,7 +612,7 @@ class Test_TestDataHelper {
 
         nullCount = 0;
         valCount = 0;
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             Date iValue = testDataHelper.getDate(true);
             if (iValue==null) 
                 nullCount++;
@@ -620,7 +621,7 @@ class Test_TestDataHelper {
         }
         println ("testGetDate_1_2: nullCount=$nullCount, valCount=$valCount");
         assertEquals(0,nullCount)
-        assertEquals(10,valCount)
+        assertEquals(maxElems,valCount)
     }
      
     @Test
@@ -632,7 +633,7 @@ class Test_TestDataHelper {
         int nullCount = 0;
         int valCount = 0;
         def values = [];
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             Date iValue = testDataHelper.getDate(min,max,false,df);
             if (iValue==null) 
                 nullCount++;
@@ -648,7 +649,7 @@ class Test_TestDataHelper {
         nullCount = 0;
         valCount = 0;
         values = [];        
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             Date iValue = testDataHelper.getDate(min,max,true,df);
             if (iValue==null) 
                 nullCount++;
@@ -659,7 +660,7 @@ class Test_TestDataHelper {
         }
         println ("testGetDate_2_2: nullCount=$nullCount, valCount=$valCount, values:$values");
         assertEquals(0,nullCount)
-        assertEquals(10,valCount)
+        assertEquals(maxElems,valCount)
     }
 
     @Test
@@ -671,7 +672,7 @@ class Test_TestDataHelper {
         int nullCount = 0;
         int valCount = 0;
         def values = [];
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             Date iValue = testDataHelper.getDate(min,max,false);
             if (iValue==null) 
                 nullCount++;
@@ -687,7 +688,7 @@ class Test_TestDataHelper {
         nullCount = 0;
         valCount = 0;
         values = [];        
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             Date iValue = testDataHelper.getDate(min,max,true);
             if (iValue==null) 
                 nullCount++;
@@ -698,7 +699,7 @@ class Test_TestDataHelper {
         }
         println ("testGetDate_2_2: nullCount=$nullCount, valCount=$valCount, values:$values");
         assertEquals(0,nullCount)
-        assertEquals(10,valCount)
+        assertEquals(maxElems,valCount)
     }
 
     
@@ -710,7 +711,7 @@ class Test_TestDataHelper {
         int nullCount = 0;
         int valCount = 0;
         def values = [];
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             Date iValue = testDataHelper.getDateFromList(testList,false,df);
             if (iValue==null) 
                 nullCount++;
@@ -726,7 +727,7 @@ class Test_TestDataHelper {
         nullCount = 0;
         valCount = 0;
         values = [];        
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             Date iValue = testDataHelper.getDateFromList(testList,true,df);
             if (iValue==null) 
                 nullCount++;
@@ -737,7 +738,7 @@ class Test_TestDataHelper {
         }
         println ("testGetDate_3_2: nullCount=$nullCount, valCount=$valCount, values:$values");
         assertEquals(0,nullCount)
-        assertEquals(10,valCount)
+        assertEquals(maxElems,valCount)
     }
 
     @Test
@@ -748,7 +749,7 @@ class Test_TestDataHelper {
         int nullCount = 0;
         int valCount = 0;
         def values = [];
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             Date iValue = testDataHelper.getDateFromList(testList,false);
             if (iValue==null) 
                 nullCount++;
@@ -764,7 +765,7 @@ class Test_TestDataHelper {
         nullCount = 0;
         valCount = 0;
         values = [];        
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             Date iValue = testDataHelper.getDateFromList(testList,true);
             if (iValue==null) 
                 nullCount++;
@@ -775,7 +776,7 @@ class Test_TestDataHelper {
         }
         println ("testGetDate_4_2: nullCount=$nullCount, valCount=$valCount, values:$values");
         assertEquals(0,nullCount)
-        assertEquals(10,valCount)
+        assertEquals(maxElems,valCount)
     }
 
     @Test
@@ -784,7 +785,7 @@ class Test_TestDataHelper {
         int nullCount = 0;
         int valCount = 0;
         def values = [];
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             Date iValue = testDataHelper.getTimestamp(false);
             if (iValue==null) 
                 nullCount++;
@@ -799,7 +800,7 @@ class Test_TestDataHelper {
 
         nullCount = 0;
         valCount = 0;
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             Date iValue = testDataHelper.getTimestamp(true);
             if (iValue==null) 
                 nullCount++;
@@ -808,7 +809,7 @@ class Test_TestDataHelper {
         }
         println ("testGetDate_1_2: nullCount=$nullCount, valCount=$valCount");
         assertEquals(0,nullCount)
-        assertEquals(10,valCount)
+        assertEquals(maxElems,valCount)
     }
      
     @Test
@@ -820,7 +821,7 @@ class Test_TestDataHelper {
         int nullCount = 0;
         int valCount = 0;
         def values = [];
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             Date iValue = testDataHelper.getTimestamp(min,max,false,df);
             if (iValue==null) 
                 nullCount++;
@@ -836,7 +837,7 @@ class Test_TestDataHelper {
         nullCount = 0;
         valCount = 0;
         values = [];        
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             Date iValue = testDataHelper.getTimestamp(min,max,true,df);
             if (iValue==null) 
                 nullCount++;
@@ -847,7 +848,7 @@ class Test_TestDataHelper {
         }
         println ("testGetTimestamp_2_2: nullCount=$nullCount, valCount=$valCount, values:$values");
         assertEquals(0,nullCount)
-        assertEquals(10,valCount)
+        assertEquals(maxElems,valCount)
     }
 
     @Test
@@ -859,7 +860,7 @@ class Test_TestDataHelper {
         int nullCount = 0;
         int valCount = 0;
         def values = [];
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             Date iValue = testDataHelper.getTimestamp(min,max,false);
             if (iValue==null) 
                 nullCount++;
@@ -875,7 +876,7 @@ class Test_TestDataHelper {
         nullCount = 0;
         valCount = 0;
         values = [];        
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             Date iValue = testDataHelper.getTimestamp(min,max,true);
             if (iValue==null) 
                 nullCount++;
@@ -886,7 +887,7 @@ class Test_TestDataHelper {
         }
         println ("testGetTimestamp_2_2: nullCount=$nullCount, valCount=$valCount, values:$values");
         assertEquals(0,nullCount)
-        assertEquals(10,valCount)
+        assertEquals(maxElems,valCount)
     }
 
     
@@ -898,7 +899,7 @@ class Test_TestDataHelper {
         int nullCount = 0;
         int valCount = 0;
         def values = [];
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             Date iValue = testDataHelper.getTimestampFromList(testList,false,df);
             if (iValue==null) 
                 nullCount++;
@@ -914,7 +915,7 @@ class Test_TestDataHelper {
         nullCount = 0;
         valCount = 0;
         values = [];        
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             Date iValue = testDataHelper.getTimestampFromList(testList,true,df);
             if (iValue==null) 
                 nullCount++;
@@ -925,7 +926,7 @@ class Test_TestDataHelper {
         }
         println ("testGetTimestamp_3_2: nullCount=$nullCount, valCount=$valCount, values:$values");
         assertEquals(0,nullCount)
-        assertEquals(10,valCount)
+        assertEquals(maxElems,valCount)
     }
 
     @Test
@@ -936,7 +937,7 @@ class Test_TestDataHelper {
         int nullCount = 0;
         int valCount = 0;
         def values = [];
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             Date iValue = testDataHelper.getTimestampFromList(testList,false);
             if (iValue==null) 
                 nullCount++;
@@ -952,7 +953,7 @@ class Test_TestDataHelper {
         nullCount = 0;
         valCount = 0;
         values = [];        
-        for (int i=0;i<10;i++) {
+        for (int i=0;i<maxElems;i++) {
             Date iValue = testDataHelper.getTimestampFromList(testList,true);
             if (iValue==null) 
                 nullCount++;
@@ -963,7 +964,7 @@ class Test_TestDataHelper {
         }
         println ("testGetTimestamp_4_2: nullCount=$nullCount, valCount=$valCount, values:$values");
         assertEquals(0,nullCount)
-        assertEquals(10,valCount)
+        assertEquals(maxElems,valCount)
     }
 
 }
