@@ -509,12 +509,14 @@ class TestDataHelper implements ITestDataHelper {
     // t_string,
     String getString(boolean needed) {
         if (needed || shouldSetValue()) {
-            int len = random.nextInt();
-            if (len<0)
-                len = Math.abs(len)
-            if (len > defaultMaxStringLength)
-            len = len % defaultMaxStringLength;
-            if (len==0) return null;
+            int len = 0;
+            while (len==0) {
+                len = random.nextInt()
+                if (len<0)
+                    len = Math.abs(len)
+                if (len > defaultMaxStringLength)
+                len = len % defaultMaxStringLength;
+            }
             StringBuilder sb = new StringBuilder();
             for (int i=0;i<len;i++) {
                 sb.append(getRandomChar(i));

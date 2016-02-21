@@ -212,11 +212,117 @@ class Test_DataModelClone {
         def attribResult = ['bis', 'periode', 'aktiv', 'bis', 'preis', 'preis', 'aktiv', 'name', 'termin_anzahl', 'bis', 'preis_netto', 'land', 'ort', 'plz', 'str', 'hausnr', 'zusatz']
         println attribsList
         println attribResult
-        for (def i=0;i<attribResult.size();i++) {
-            println("$i, ${attribResult.get(i)}, ${attribsList.get(i)}")
-            assertEquals(attribResult.get(i), attribsList.get(i))
-        }
         assertEquals(attribsList,attribResult)
-        println ':)'
+    }
+
+    @Test
+    public void test_restrictedClone_3() {
+        ResManModel_v1 model = new ResManModel_v1()
+        def allowedEntities = ['Termin','Kunde*','A*']
+        def deniedAttribs = ['*_id','bemerkung']
+        def cloned = model.cloneAllowedWithAllowedAttribs(allowedEntities,deniedAttribs)
+        def clonedNames = []
+        println '>>> test_restrictedClone_3 ...'
+        assertTrue (cloned!=null)
+        def attribsList = []
+        cloned.entities.each { key,entity ->
+            clonedNames.add (key)
+            entity.attribs.each {
+                attribsList.add( it.name )
+            }
+            entity.refs.each {
+                attribsList.add( it.name )
+            }
+        }
+        cloned.views.each { key,view ->
+            clonedNames.add (key)
+            view.attribs.each {
+                attribsList.add( it.name )
+            }
+        }
+        cloned.m2nRelations.each {
+            println it.key
+            clonedNames.add (it.key)
+        }
+        println '<<< test_restrictedClone_3'
+        println ''
+        assertEquals(clonedNames,['Termin','Kunde','KundeKundenGruppe','KundeKundenGruppeZahlung','KundenGruppe','KundengruppePreis','Adresse','AktiveKunden','Ansprechpartner'])
+        def attribResult = ['bemerkung', 'kunde_id', 'bemerkung', 'kunde_id', 'kundengruppe_id', 'kundekundengruppe_id', 'bemerkung', 'mehrwertsteuer_id', 'bemerkung', 'person_id', 'bemerkung']
+        println attribsList
+        println attribResult
+        assertEquals(attribsList,attribResult)
+    }
+
+    @Test
+    public void test_restrictedClone_4() {
+        ResManModel_v1 model = new ResManModel_v1()
+        def cloned1 = model.cloneNotDeniedWithDeniedAttribs(null,null)
+        def cloned2 = model.clone()
+        assertEquals(cloned1,cloned2)
+    }
+
+    @Test
+    public void test_restrictedClone_5() {
+        ResManModel_v1 model = new ResManModel_v1()
+        def deniedEntities = ['Termin','*Kunde*','A*']
+        
+        def cloned = model.cloneNotDeniedWithDeniedAttribs(deniedEntities,null)
+        assertTrue (cloned!=null)
+        def clonedNames = []
+        println ''
+        println '>>> test_restrictedClone_5 ...'
+        cloned.entities.each {
+            println it.key
+            clonedNames.add (it.key)
+        }
+        cloned.views.each {
+            println it.key
+            clonedNames.add (it.key)
+        }
+        cloned.m2nRelations.each {
+            println it.key
+            clonedNames.add (it.key)
+        }
+        println '<<< test_restrictedClone_5'
+        println ''        
+        assertEquals(clonedNames,['TerminResource','Mehrwertsteuer','Person','Resource','Feiertage'])
+    }
+
+    @Test
+    public void test_restrictedClone_6() {
+        ResManModel_v1 model = new ResManModel_v1()
+        def deniedEntities = ['Termin','*Kunde*','A*']
+        def deniedAttribs = ['*_id']
+        def cloned = model.cloneNotDeniedWithAllowedAttribs(deniedEntities,deniedAttribs)
+        def clonedNames = []
+        println '>>> test_restrictedClone_6 ...'
+        assertTrue (cloned!=null)
+        def attribsList = []
+        cloned.entities.each { key,entity ->
+            clonedNames.add (key)
+            entity.attribs.each {
+                attribsList.add( it.name )
+            }
+            entity.refs.each {
+                attribsList.add( it.name )
+            }
+        }
+        cloned.views.each { key,view ->
+            clonedNames.add (key)
+            view.attribs.each {
+                attribsList.add( it.name )
+            }
+        }
+        cloned.m2nRelations.each {
+            println it.key
+            clonedNames.add (it.key)
+        }
+        println '<<< test_restrictedClone_6'
+        println ''
+        assertEquals(clonedNames,['TerminResource','Mehrwertsteuer','Person','Resource','Feiertage'])
+        def attribResult = ['termin_id', 'resource_id']
+        println attribsList
+        println attribResult
+        assertEquals(attribsList,attribResult)
     }
 }
