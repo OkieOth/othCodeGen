@@ -1,0 +1,55 @@
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'maven-publish'
+
+
+sourceCompatibility = '1.8'
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+project.group = 'de.othsoft.codeGen'
+project.version = '0.1-SNAPSHOT'
+
+
+// NetBeans will automatically add "run" and "debug" tasks relying on the
+// "mainClass" property. You may however define the property prior executing
+// tasks by passing a "-PmainClass=<QUALIFIED_CLASS_NAME>" argument.
+//
+// Note however, that you may define your own "run" and "debug" task if you
+// prefer. In this case NetBeans will not add these tasks but you may rely on
+// your own implementation.
+if (!hasProperty('mainClass')) {
+    ext.mainClass = ''
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+}
+
+publishing {
+    repositories {
+        maven {
+            url "${System.getenv('HOME')}/myMavenRepos"
+        }
+    }
+}
+
+repositories {
+    maven {
+        url "${System.getenv('HOME')}/myMavenRepos"
+    }
+    mavenCentral()
+}
+
+dependencies {
+    // TODO: Add dependencies here ...
+    // You can read more about how to add dependency here:
+    //   http://www.gradle.org/docs/current/userguide/dependency_management.html#sec:how_to_declare_your_dependencies
+    compile gradleApi()
+    compile localGroovy()
+    compile 'de.othsoft.codeGen:gCodeGen:0.1-SNAPSHOT'
+    testCompile 'junit:junit:4.10'
+}
