@@ -27,6 +27,41 @@ import groovy.text.SimpleTemplateEngine
  * @author eiko
  */
 class JdbcBeanGenerator extends JavaBeanGeneratorBase implements ICodeGenImpl {
+    private final static String defDestPath='src/main/java'
+    private final static String defTestPath='src/test/java'
+    
+    private String buildDefPackageName (DataModel model) {
+        return "de.gCodeGen.dao.${model.shortName}"
+    }
+
+    void genCode(DataModel model) {
+        def params = [packageName:buildDefPackageName(model),
+            destPathRoot:defDestPath]
+        genCodeNow(model,params)
+    }
+
+    void genCode(DataModel model,Map params) {
+        if (!params.packageName)
+            params.packageName = buildDefPackageName(model)
+        if (!params.destPathRoot)
+            params.destPathRoot = defDestPath 
+        genCodeNow(model,params)
+    }
+
+    void genTestCode(DataModel model) {
+        def params = [packageName:buildDefPackageName(model),
+            destPathRoot:defTestPath]
+        genTestCodeNow(model,params)
+    }
+
+    void genTestCode(DataModel model,Map params) {
+        if (!params.packageName)
+            params.packageName = buildDefPackageName(model)
+        if (!params.destPathRoot)
+            params.destPathRoot = defTestPath 
+        genTestCodeNow(model,params)
+    }
+
     def newTypeConvert = { type ->
             switch (type) {
             case AttribType.t_int : return 'Int'
@@ -67,7 +102,7 @@ class JdbcBeanGenerator extends JavaBeanGeneratorBase implements ICodeGenImpl {
         return destPath;
     }
 
-    void genCode(DataModel model,Map params) {
+    void genCodeNow(DataModel model,Map params) {
         String packageName=addGenPackageName(params.packageName)
         String baseClassPackage=basePackageName(params.packageName)
         String destPath = getDestPath (params,packageName)
@@ -76,7 +111,7 @@ class JdbcBeanGenerator extends JavaBeanGeneratorBase implements ICodeGenImpl {
         createM2NBeans(destPath, packageName, model,baseClassPackage)
         createViewBeans(destPath, packageName, model,baseClassPackage)
     }
-    void genTestCode(DataModel model,Map params) {
+    void genTestCodeNow(DataModel model,Map params) {
         String packageName=addGenPackageName(params.packageName)
         String testPackageName=addGenPackageName(params.packageName)+".tests"
         String destPath = getDestPath (params,testPackageName)

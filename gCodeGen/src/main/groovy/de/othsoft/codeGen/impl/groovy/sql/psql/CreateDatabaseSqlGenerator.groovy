@@ -24,15 +24,32 @@ import groovy.text.SimpleTemplateEngine
  * @author hulk
  */
 class CreateDatabaseSqlGenerator implements ICodeGenImpl {
+    final private static String defDestPath='src/generated/resources/sql/psql'
+        
     void genCode(DataModel model,Map params) {
         String destPath=params.destPathRoot
+        if (destPath==null)
+            destPath = defDestPath
+        genCodeNow(model,destPath)
+    }
+
+    void genCode(DataModel model) {
+        genCodeNow(model,defDestPath)
+    }
+
+    private void genCodeNow(DataModel model,String destPath) {
         if (!destPath.endsWith(File.separator))
             destPath+=File.separator
         createCreateSql(destPath,model)
         createUpdateSql(destPath,model)
     }
+
     
     void genTestCode(DataModel model,Map params) {
+        // TODO
+    }
+
+    void genTestCode(DataModel model) {
         // TODO
     }
 

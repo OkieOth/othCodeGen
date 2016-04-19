@@ -27,6 +27,41 @@ import groovy.text.SimpleTemplateEngine
  * To see how it works take a look at the test class @see de.othsoft.codeGen.tests.generators.BeanGenerator_Test
  */
 class BeanGenerator extends JavaBeanGeneratorBase implements ICodeGenImpl {
+    private final static String defDestPath='src/main/java'
+    private final static String defTestPath='src/test/java'
+    
+    private String buildDefPackageName (DataModel model) {
+        return "de.gCodeGen.dao.${model.shortName}"
+    }
+
+    void genCode(DataModel model) {
+        def params = [packageName:buildDefPackageName(model),
+            destPathRoot:defDestPath]
+        genCodeNow(model,params)
+    }
+
+    void genCode(DataModel model,Map params) {
+        if (!params.packageName)
+            params.packageName = buildDefPackageName(model)
+        if (!params.destPathRoot)
+            params.destPathRoot = defDestPath 
+        genCodeNow(model,params)
+    }
+
+    void genTestCode(DataModel model) {
+        def params = [packageName:buildDefPackageName(model),
+            destPathRoot:defTestPath]
+        genTestCodeNow(model,params)
+    }
+
+    void genTestCode(DataModel model,Map params) {
+        if (!params.packageName)
+            params.packageName = buildDefPackageName(model)
+        if (!params.destPathRoot)
+            params.destPathRoot = defTestPath 
+        genTestCodeNow(model,params)
+    }
+
     private String getDestPath(Map params,String packageName) {
         String destPathRoot=params.destPathRoot
         if (!destPathRoot.endsWith(File.separator))
@@ -39,7 +74,7 @@ class BeanGenerator extends JavaBeanGeneratorBase implements ICodeGenImpl {
         return destPath;
     }
 
-    void genCode(DataModel model,Map params) {            
+    void genCodeNow(DataModel model,Map params) {            
         String packageName=addGenPackageName(params.packageName)
         String destPath = getDestPath (params,packageName)
         createListBeans(destPath, packageName, model)
@@ -48,7 +83,7 @@ class BeanGenerator extends JavaBeanGeneratorBase implements ICodeGenImpl {
         createViewBeans(destPath, packageName, model)
     }
     
-    void genTestCode(DataModel model,Map params) {
+    void genTestCodeNow(DataModel model,Map params) {
         String packageName=addGenPackageName(params.packageName)
         String testPackageName=addGenPackageName(params.packageName)+".tests"
         String destPath = getDestPath (params,testPackageName)

@@ -25,10 +25,26 @@ import de.othsoft.codeGen.requirements.AttribType
  * @author eiko
  */
 class JdbcFactoryInterfGenerator implements ICodeGenImpl {
+    private final static String defDestPath='src/main/java'
+    
+    private String buildDefPackageName (DataModel model) {
+        return "de.gCodeGen.dao.${model.shortName}"
+    }
+
+    void genCode(DataModel model) {
+        genCodeNow(model,buildDefPackageName(model),defDestPath)
+    }
+
     void genCode(DataModel model,Map params) {
-        String packageName=addGenPackageName(params.packageName)
-        String beanPackage=params.packageName+".beans"
-        String destPathRoot=params.destPathRoot
+        String packageBaseName = params.packageName ? params.packageName : buildDefPackageName(model)
+        String destRootPath = params.destPathRoot ? params.destPathRoot : defDestPath 
+        genCodeNow(model,packageBaseName,destRootPath)
+    }
+        
+    void genCodeNow(DataModel model,String packageBaseName,String destRootPath) {
+        String packageName=addGenPackageName(packageBaseName)
+        String beanPackage=packageBaseName+".beans"
+        String destPathRoot=destRootPath
         if (!destPathRoot.endsWith(File.separator))
             destPathRoot+=File.separator
         String packagePath=FileHelper.packageToDirName(packageName)
@@ -50,6 +66,10 @@ class JdbcFactoryInterfGenerator implements ICodeGenImpl {
         //file.write(removeEmptyLines(ergebnis.toString()))
         file.write(ergebnis.toString())
 
+    }
+
+    void genTestCode(DataModel model) {
+        // TODO
     }
 
     void genTestCode(DataModel model,Map params) {

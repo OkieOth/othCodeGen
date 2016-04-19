@@ -22,16 +22,37 @@ import de.othsoft.codeGen.impl.helper.ITestDataHelper
 import de.othsoft.codeGen.requirements.AttribType
 import groovy.text.SimpleTemplateEngine
 
-class TestDataGenerator extends JavaBeanGeneratorBase implements ICodeGenImpl {    
+class TestDataGenerator extends JavaBeanGeneratorBase implements ICodeGenImpl {   
+    private final static String defDestPath='src/main/java'
+    
+    private String buildDefPackageName (DataModel model) {
+        return "de.gCodeGen.testData.${model.shortName}"
+    }
+    
     void genCode(DataModel model,Map params) {
         // not needed here
     }
-    
+
+    void genCode(DataModel model) {
+        // not needed here
+    }
+
     void genTestCode(DataModel model,Map params) {
-        String packageName=addGenPackageName(params.packageName)
-        String beanPackageName=addBeanPackageName(params.packageName)
-        String testPackageName=addTestPackageName(params.packageName)+""
-        String destPath = getTestPath (params,testPackageName)
+        String packageBaseName = params.packageName ? params.packageName : defDestPath
+        String destPathRoot = params.testPathRoot ? params.testPathRoot : buildDefPackageName(model)
+        genTestCodeNow(model,packageBaseName,destPathRoot)
+    }
+
+    void genTestCode(DataModel model) {
+        String packageBaseName = buildDefPackageName(model)
+        genTestCodeNow(model,packageBaseName,defDestPath)
+    }
+
+    private void genTestCodeNow(DataModel model,String packageBaseName,String destPathRoot) {
+        String packageName=addGenPackageName(packageBaseName)
+        String beanPackageName=addBeanPackageName(packageBaseName)
+        String testPackageName=addTestPackageName(packageBaseName)+""
+        String destPath = getTestPath (destPathRoot,testPackageName)
         def className = "TestData_${model.shortName}"
         def engine = new SimpleTemplateEngine()
         def template = engine.createTemplate(testDataTemplate)
@@ -49,8 +70,7 @@ class TestDataGenerator extends JavaBeanGeneratorBase implements ICodeGenImpl {
         file.write(ergebnis.toString())
     }
     
-    private String getTestPath(Map params,String packageName) {
-        String destPathRoot=params.destPathRoot
+    private String getTestPath(String destPathRoot,String packageName) {
         if (!destPathRoot.endsWith(File.separator))
             destPathRoot+=File.separator
         String packagePath=FileHelper.packageToDirName(packageName)

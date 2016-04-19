@@ -18,7 +18,9 @@ package de.othsoft.codeGen.types
  * @author hulk
  */
 interface ICodeGenImpl {
+    void genCode(DataModel model);
     void genCode(DataModel model,Map params)
+    void genTestCode(DataModel model)
     void genTestCode(DataModel model,Map params)
 }
 

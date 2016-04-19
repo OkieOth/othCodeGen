@@ -26,7 +26,27 @@ import de.othsoft.codeGen.requirements.AttribType
  * @author hulk
  */
 class JdbcDataFactoryGenerator implements ICodeGenImpl {
+    private final static String defDestPath='src/main/java'
+    
+    private String buildDefPackageName (DataModel model) {
+        return "de.gCodeGen.dao.${model.shortName}"
+    }
+
+    void genCode(DataModel model) {
+        def params = [packageName:buildDefPackageName(model),
+            destPathRoot:defDestPath]
+        genCodeNow(model,params)
+    }
+
     void genCode(DataModel model,Map params) {
+        if (!params.packageName)
+            params.packageName = buildDefPackageName(model)
+        if (!params.destPathRoot)
+            params.destPathRoot = defDestPath 
+        genCodeNow(model,params)
+    }
+
+    void genCodeNow(DataModel model,Map params) {
         String packageName=addGenPackageName(params.packageName)
         String beanPackage=params.packageName+".beans"
         String interfPackage=params.packageName+".dao.interf"
@@ -56,6 +76,10 @@ class JdbcDataFactoryGenerator implements ICodeGenImpl {
     }
 
     void genTestCode(DataModel model,Map params) {
+        // TODO
+    }
+
+    void genTestCode(DataModel model) {
         // TODO
     }
 

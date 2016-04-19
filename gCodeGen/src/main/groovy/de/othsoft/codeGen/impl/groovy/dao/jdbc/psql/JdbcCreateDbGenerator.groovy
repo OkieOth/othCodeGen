@@ -26,7 +26,27 @@ import groovy.text.SimpleTemplateEngine
  * @author eiko
  */
 class JdbcCreateDbGenerator implements ICodeGenImpl {
+    private final static String defDestPath='src/main/java'
+    
+    private String buildDefPackageName (DataModel model) {
+        return "de.gCodeGen.db.${model.shortName}"
+    }
+
+    void genCode(DataModel model) {
+        def params = [packageName:buildDefPackageName(model),
+            destPathRoot:defDestPath]
+        genCodeNow(model,params)
+    }
+
     void genCode(DataModel model,Map params) {
+        if (!params.packageName)
+            params.packageName = buildDefPackageName(model)
+        if (!params.destPathRoot)
+            params.destPathRoot = defDestPath 
+        genCodeNow(model,params)
+    }
+        
+    void genCodeNow(DataModel model,Map params) {
         genCodeCreateDb(model,params);
         genCodeCreateExtraInterf(model,params);
         genCodeCreateAll(model,params);
@@ -70,6 +90,10 @@ class JdbcCreateDbGenerator implements ICodeGenImpl {
     }
     
     void genTestCode(DataModel model,Map params) {
+        // not needed this time
+    }
+
+    void genTestCode(DataModel model) {
         // not needed this time
     }
 

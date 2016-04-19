@@ -27,7 +27,19 @@ class SimpleBeanGenerator implements ICodeGenImpl {
         // TODO
     }
 
+    void genCode(DataModel model) {
+        String destPath=params.destPath
+        String targetPackage=params.targetPackage
+        // TODO
+    }
+
     void genTestCode(DataModel model,Map params) {
+        String destPath=params.destPath
+        String targetPackage=params.targetPackage
+        // TODO
+    }
+
+    void genTestCode(DataModel model) {
         String destPath=params.destPath
         String targetPackage=params.targetPackage
         // TODO

@@ -25,7 +25,28 @@ import groovy.text.SimpleTemplateEngine
  * @author eiko
  */
 class JdbcCheckDbGenerator implements ICodeGenImpl {
+    private final static String defDestPath='src/main/java'
+    private final static String defTestPath='src/test/java'
+    
+    private String buildDefPackageName (DataModel model) {
+        return "de.gCodeGen.checkdb.${model.shortName}"
+    }
+
+    void genCode(DataModel model) {
+        def params = [packageName:buildDefPackageName(model),
+            destPathRoot:defDestPath]
+        genCodeNow(model,params)
+    }
+
     void genCode(DataModel model,Map params) {
+        if (!params.packageName)
+            params.packageName = buildDefPackageName(model)
+        if (!params.destPathRoot)
+            params.destPathRoot = defDestPath 
+        genCodeNow(model,params)
+    }
+
+    void genCodeNow(DataModel model,Map params) {
         genCodeCheckDb(model,params);
         genCodeCheckExtraInterf(model,params);
     }
@@ -76,7 +97,22 @@ class JdbcCheckDbGenerator implements ICodeGenImpl {
         file.write(ergebnis.toString())
     }
 
+    void genTestCode(DataModel model) {
+        def params = [packageName:buildDefPackageName(model),
+            destPathRoot:defTestPath]
+        genCodeNow(model,params)
+    }
+
     void genTestCode(DataModel model,Map params) {
+        if (!params.packageName)
+            params.packageName = buildDefPackageName(model)
+        if (!params.destPathRoot)
+            params.destPathRoot = defTestPath 
+        genCodeNow(model,params)
+    }
+
+    
+    void genTestCodeNow(DataModel model,Map params) {
         def checkClassWithPackage = addGenPackageName(params.packageName)+".DbCheck_${model.shortName}"
         String packageName=addGenPackageName(params.packageName)+".tests"
         String destPath = getDestPath (params,packageName)

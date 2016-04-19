@@ -30,7 +30,28 @@ import de.othsoft.codeGen.requirements.AttribType
  * @author eiko
  */
 class DataModelPumlGenerator {
+    private final static String defDestPath='src/doc'
+    
+    private String buildDefPackageName (DataModel model) {
+        return "de.gCodeGen.dao.${model.shortName}"
+    }
+
+    void genCode(DataModel model) {
+        def params = [packageName:buildDefPackageName(model),
+            destPathRoot:defDestPath]
+        genCodeNow(model,params)
+    }
+
     void genCode(DataModel model,Map params) {
+        if (!params.packageName)
+            params.packageName = buildDefPackageName(model)
+        if (!params.destPathRoot)
+            params.destPathRoot = defDestPath 
+        genCodeNow(model,params)
+    }
+
+
+    void genCodeNow(DataModel model,Map params) {
         def engine = new SimpleTemplateEngine()
         def template = engine.createTemplate(templateClassDiagramm)
         def daten = [
@@ -49,6 +70,10 @@ class DataModelPumlGenerator {
     }
     
     void genTestCode(DataModel model,Map params) {
+        // TODO
+    }
+
+    void genTestCode(DataModel model) {
         // TODO
     }
 
