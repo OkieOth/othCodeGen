@@ -24,7 +24,7 @@ import groovy.text.SimpleTemplateEngine
  * @author hulk
  */
 class CreateDatabaseSqlGenerator implements ICodeGenImpl {
-    final private static String defDestPath='src/generated/resources/sql/psql'
+    final private static String defDestPath='src/sql/psql'
         
     void genCode(DataModel model,Map params) {
         String destPath=params.destPathRoot
