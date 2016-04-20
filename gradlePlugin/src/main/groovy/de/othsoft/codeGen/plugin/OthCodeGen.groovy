@@ -20,6 +20,7 @@ import de.othsoft.codeGen.impl.groovy.dao.DataModelPumlGenerator
 import de.othsoft.codeGen.impl.groovy.dao.FactoryInterfGenerator
 import de.othsoft.codeGen.impl.groovy.dao.jdbc.JdbcBeanGenerator
 import de.othsoft.codeGen.impl.groovy.dao.jdbc.JdbcDataFactoryGenerator
+import de.othsoft.codeGen.impl.groovy.dao.jdbc.JdbcFactoryInterfGenerator
 import de.othsoft.codeGen.impl.groovy.dao.jdbc.test.TestDataGenerator
 import de.othsoft.codeGen.types.DataModel
 import de.othsoft.codeGen.types.ICodeGenImpl
@@ -43,7 +44,8 @@ class OthCodeGen implements Plugin<Project> {
                 throw new Exception (msg)
             }
             DataModel model = project.othCodeGen.model;
-            for (Object o:generators) {
+            for (Object o:project.othCodeGen.generators) {
+
                 if (o instanceof ICodeGenImpl) {                    
                     // a normal generator
                     def generator = (ICodeGenImpl)o;
@@ -86,7 +88,7 @@ class OthCodeGen implements Plugin<Project> {
     }
     
     private void handleGeneratorString(String s, DataModel model,Map paramMap) {
-        switch((String)o) {
+        switch((String)s) {
             case 'db_psql':
                 // create database code for postgresql
                 def generator = new de.othsoft.codeGen.impl.groovy.sql.psql.CreateDatabaseSqlGenerator()
@@ -116,17 +118,22 @@ class OthCodeGen implements Plugin<Project> {
                 // creates a jdbc datafactory
                 JdbcBeanGenerator jdbcBeanGenerator = new JdbcBeanGenerator()
                 JdbcDataFactoryGenerator jdbcDataFactoryGenerator = new JdbcDataFactoryGenerator();
+                JdbcFactoryInterfGenerator jdbcFactoryInterfGenerator = new JdbcFactoryInterfGenerator();
                 if (paramMap!=null) {
                     jdbcBeanGenerator.genCode(model,paramMap)
                     jdbcBeanGenerator.genTestCode(model,paramMap)
                     jdbcDataFactoryGenerator.genCode(model,paramMap)
                     jdbcDataFactoryGenerator.genTestCode(model,paramMap)
+                    jdbcFactoryInterfGenerator.genCode(model,paramMap)
+                    jdbcFactoryInterfGenerator.genTestCode(model,paramMap)
                 }
                 else {
                     jdbcBeanGenerator.genCode(model)
                     jdbcBeanGenerator.genTestCode(model)
                     jdbcDataFactoryGenerator.genCode(model)
                     jdbcDataFactoryGenerator.genTestCode(model)                    
+                    jdbcFactoryInterfGenerator.genCode(model)
+                    jdbcFactoryInterfGenerator.genTestCode(model)
                 }
                 break;
             case 'test_data':
@@ -146,7 +153,7 @@ class OthCodeGen implements Plugin<Project> {
                     generator.genCode(model);
                 break;
             default:
-                throw new Exception ('unknown generator string.\ncurrently available: db_psql,dao_base, dao_jdbc, test_data, model_puml')
+                throw new Exception ("unknown generator string: ${s}.\ncurrently available: db_psql,dao_base, dao_jdbc, test_data, model_puml")
         }        
     }
 }
