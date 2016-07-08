@@ -12,7 +12,7 @@ specific language governing permissions and limitations under the License.
 */
 
 apply plugin: 'java'
-apply plugin: 'maven-publish'
+apply plugin: 'maven'
 apply plugin: 'groovy'
 
 sourceCompatibility = '1.7'
@@ -26,29 +26,36 @@ task testJar(type: Jar) {
   from sourceSets.test.output
 }
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-            
-            artifact testJar {
-                classifier "test"
-            }
-        }
-    }
-}
 
-publishing {
-    repositories {
-        maven {
-            url "${System.getenv('HOME')}/myMavenRepos"
+/*
+ * the following attributes need to be declared in $HOME/.gradle/gradle.properties
+    mavenReleaseRepo=http://localhost:8081/content/repositories/releases
+    mavenSnapshotRepo=http://localhost:8081/content/repositories/snapshots
+    mavenUser=admin
+    mavenUserPwd=admin123
+    mavenBaseRepo=http://localhost:8081/content/groups/public
+ **/
+
+uploadArchives {
+    repositories{
+        mavenDeployer {
+            repository(url: "${mavenReleaseRepo}") {
+                    authentication(userName: "${mavenUser}", password: "${mavenUserPwd}")
+            }        
+            snapshotRepository(url: "${mavenSnapshotRepo}") {
+                    authentication(userName: "${mavenUser}", password: "${mavenUserPwd}")
+            }        
+            pom.version = "${project.version}"
+            pom.artifactId = "${project.name}"
+            pom.groupId = "${project.group}"        
         }
     }
 }
 
 repositories {
+    mavenLocal()
     maven {
-        url "${System.getenv('HOME')}/myMavenRepos"
+        url "${mavenBaseRepo}"
     }
     mavenCentral()
 }

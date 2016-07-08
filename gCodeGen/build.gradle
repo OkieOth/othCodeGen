@@ -1,7 +1,7 @@
 apply plugin: 'java'
 //apply plugin: 'application'
 apply plugin: 'groovy'
-apply plugin: 'maven-publish'
+apply plugin: 'maven'
 
 def vagrantMachineName='ubuntu_psql'
 
@@ -12,25 +12,35 @@ sourceCompatibility = '1.7'
 project.group = 'de.othsoft.codeGen'
 project.version = '0.1-SNAPSHOT'
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-        }
-    }
-}
+/*
+ * the following attributes need to be declared in $HOME/.gradle/gradle.properties
+    mavenReleaseRepo=http://localhost:8081/content/repositories/releases
+    mavenSnapshotRepo=http://localhost:8081/content/repositories/snapshots
+    mavenUser=admin
+    mavenUserPwd=admin123
+    mavenBaseRepo=http://localhost:8081/content/groups/public
+ **/
 
-publishing {
-    repositories {
-        maven {
-            url "${System.getenv('HOME')}/myMavenRepos"
+uploadArchives {
+    repositories{
+        mavenDeployer {
+            repository(url: "${mavenReleaseRepo}") {
+                    authentication(userName: "${mavenUser}", password: "${mavenUserPwd}")
+            }        
+            snapshotRepository(url: "${mavenSnapshotRepo}") {
+                    authentication(userName: "${mavenUser}", password: "${mavenUserPwd}")
+            }        
+            pom.version = "${project.version}"
+            pom.artifactId = "${project.name}"
+            pom.groupId = "${project.group}"        
         }
     }
 }
 
 repositories {
+    mavenLocal()
     maven {
-        url "${System.getenv('HOME')}/myMavenRepos"
+        url "${mavenBaseRepo}"
     }
     mavenCentral()
 }
